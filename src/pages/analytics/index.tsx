@@ -1,10 +1,14 @@
-import { BackOfficeLayout } from '@/components/layout/BackOfficeLayout';
-import { AnalyticsView } from '@/components/AnalyticsView';
+import { PageLayout } from "@/components/layout/PageLayout";
+import { AnalyticsView } from "@/components/dashboard/AnalyticsView";
+import { NextPageWithLayout } from "@/utils/types/globals";
+import { ReactElement } from "react";
 
-export default function AnalyticsPage() {
-  return (
-    <BackOfficeLayout pageTitle="Analytics Business">
-      <AnalyticsView />
-    </BackOfficeLayout>
-  );
-}
+const AnalyticsPage: NextPageWithLayout = () => {
+  return <AnalyticsView />;
+};
+
+AnalyticsPage.getLayout = function (page: ReactElement) {
+  return <PageLayout pageTitle="Analytics Business">{page}</PageLayout>;
+};
+
+export default AnalyticsPage;
