@@ -1,5 +1,4 @@
-import { Card, CardContent, CardHeader, CardTitle } from './ui/card';
-import { Badge } from './ui/badge';
+import { Card, CardContent, CardHeader, CardTitle } from '../ui/card';
 import {
   Table,
   TableBody,
@@ -7,13 +6,12 @@ import {
   TableHead,
   TableHeader,
   TableRow,
-} from './ui/table';
-import { Progress } from './ui/progress';
+} from '../ui/table';
+import { Progress } from '../ui/progress';
 import { TrendingUp, Activity, Flame, Moon } from 'lucide-react';
 import { LineChart, Line, BarChart, Bar, AreaChart, Area, PieChart, Pie, Cell, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from 'recharts';
 
 export function AnalyticsView() {
-  // Mock data - Engagement
   const engagementData = [
     { date: '01/02', steps: 8234, calories: 2145, sleep: 7.2 },
     { date: '02/02', steps: 9521, calories: 2389, sleep: 6.8 },

@@ -1,25 +1,14 @@
-import { BackOfficeLayout } from '@/components/layout/BackOfficeLayout';
-import { DashboardView } from '@/components/DashboardView';
+import { DashboardView } from "@/components/dashboard/DashboardView";
+import { PageLayout } from "@/components/layout/PageLayout";
+import { NextPageWithLayout } from "@/utils/types/globals";
+import { ReactElement } from "react";
 
-export default function DashboardPage({ num, num2 }: { num: string, num2: string}) {
-  return (
-    <BackOfficeLayout pageTitle="Dashboard de Pilotage">
-      {/* <DashboardView /> */}
-      <div className='text-2xl font-bold text-black'>Hello {num} {num2}</div>
-    </BackOfficeLayout>
-  );
-}
+const DashboardPage: NextPageWithLayout = () => {
+  return <DashboardView />;
+};
 
+DashboardPage.getLayout = function (page: ReactElement) {
+  return <PageLayout pageTitle="Dashboard">{page}</PageLayout>;
+};
 
-export async function getServerSideProps() {
-
-  const num = "ts"
-  const num2 = "100000"
-
-  return {
-    props: {
-      num,
-      num2
-    }
-  }
-}
+export default DashboardPage;
