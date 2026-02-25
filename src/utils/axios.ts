@@ -17,7 +17,8 @@ const api = axios.create({
   },
 });
 
-api.interceptors.request.use((config) => {
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+api.interceptors.request.use((config: any) => {
   const isRefresh = config.url?.includes(REFRESH_ENDPOINT);
   if (!isRefresh) {
     const token = getAccessToken();
