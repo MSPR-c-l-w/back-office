@@ -17,7 +17,7 @@ export const Sidebar = ({ routes }: SidebarProps) => {
 
     return (
         <aside
-        className="flex w-64 shrink-0 flex-col border-r border-gray-200 bg-white"
+        className="fixed inset-y-0 left-0 z-40 flex w-64 shrink-0 flex-col border-r border-gray-200 bg-white"
         role="navigation"
         aria-label="Navigation principale"
       >
@@ -62,7 +62,7 @@ export const Sidebar = ({ routes }: SidebarProps) => {
             </Avatar>
             <div className="flex-1">
               <p className="text-sm font-medium text-[#4A5568]">{user?.first_name} {user?.last_name}</p>
-              <p className="text-xs text-[#4A5568] opacity-70">Utilisateur connecté</p>
+              <p className="text-xs text-[#4A5568] opacity-70">{user?.role?.name}</p>
             </div>
           </div>
         </div>

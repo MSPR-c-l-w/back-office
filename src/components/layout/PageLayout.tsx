@@ -59,7 +59,7 @@ export function PageLayout({ children, pageTitle }: Props) {
             pageTitle={pageTitle}
           />
 
-          <main className="min-h-0 flex-1 overflow-auto p-8" role="main">
+          <main className="min-h-0 flex-1 overflow-auto p-8 ml-64 mt-[92px]" role="main">
             {children}
           </main>
         </div>

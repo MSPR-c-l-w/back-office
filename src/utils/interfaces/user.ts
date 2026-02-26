@@ -1,6 +1,10 @@
+import { Organization } from "./organization"
+import { Role } from "./role"
+
 export interface User {
     id: number
-    organization_id?: number
+    organization?: Organization
+    role?: Role
     email: string
     first_name: string
     last_name: string

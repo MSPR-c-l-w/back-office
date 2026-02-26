@@ -12,7 +12,7 @@ export const Header = ({ notifications_count, pageTitle }: HeaderProps) => {
 
     return (
         <header
-          className="flex h-[92px] shrink-0 items-center justify-between border-b border-gray-200 bg-white px-8"
+          className="fixed top-0 left-64 right-0 z-30 flex h-[92px] shrink-0 items-center justify-between border-b border-gray-200 bg-white px-8"
           role="banner"
         >
           <div>
