@@ -16,7 +16,7 @@ const DashboardPage: NextPageWithLayout = () => {
       {/* KPIs Grid */}
       <section aria-labelledby="kpi-section">
         <h3 id="kpi-section" className="sr-only">Indicateurs clés de performance</h3>
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
           {kpiData.map((kpi) => <KpiCard key={kpi.label} kpi={kpi}/>)}
         </div>
       </section>

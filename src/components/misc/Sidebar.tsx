@@ -6,21 +6,27 @@ import { Routes } from "@/utils/types/globals";
 import { useAuth } from "@/hooks/useAuth";
 
 type SidebarProps = {
-    routes: Routes[]
-}
+  routes: Routes[];
+  open?: boolean;
+  onClose?: () => void;
+};
 
-export const Sidebar = ({ routes }: SidebarProps) => {
-    const router = useRouter();
-    const { user, loading, logout } = useAuth();
+export const Sidebar = ({ routes, open = false, onClose }: SidebarProps) => {
+  const router = useRouter();
+  const { user, loading } = useAuth();
 
-    if (loading) return <p>Chargement...</p>;
+  if (loading) return <p className="p-4 text-[#4A5568]">Chargement...</p>;
 
-    return (
-        <aside
-        className="fixed inset-y-0 left-0 z-40 flex w-64 shrink-0 flex-col border-r border-gray-200 bg-white"
-        role="navigation"
-        aria-label="Navigation principale"
-      >
+  return (
+    <aside
+      className={cn(
+        "fixed inset-y-0 left-0 z-40 flex w-64 shrink-0 flex-col border-r border-gray-200 bg-white transition-transform duration-200 ease-out lg:translate-x-0",
+        open ? "translate-x-0" : "-translate-x-full"
+      )}
+      role="navigation"
+      aria-label="Navigation principale"
+      aria-hidden={!open}
+    >
         <div className="px-6 h-[92px] border-b border-gray-200 flex flex-col justify-center">
           <h1 className="text-xl font-bold text-[#4A5568] leading-tight">HealthAI Coach</h1>
           <p className="text-sm text-[#4A5568] opacity-70 mt-1">Back-office Admin</p>
@@ -38,6 +44,7 @@ export const Sidebar = ({ routes }: SidebarProps) => {
                 <li key={item.path}>
                   <Link
                     href={item.path}
+                    onClick={() => onClose?.()}
                     className={cn(
                       'inline-flex w-full items-center justify-start gap-3 rounded-md px-3 py-2 text-sm font-medium transition-colors',
                       isActive

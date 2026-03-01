@@ -1,28 +1,41 @@
-import { Badge, Bell, LogOut } from "lucide-react"
+import { Badge, Bell, LogOut, Menu } from "lucide-react"
 import { Button } from "../ui/button"
 import { useAuth } from "@/hooks/useAuth"
 
 type HeaderProps = {
-    notifications_count: number;
-    pageTitle: string;
-}
+  notifications_count: number;
+  pageTitle: string;
+  onMenuClick?: () => void;
+};
 
-export const Header = ({ notifications_count, pageTitle }: HeaderProps) => {
-    const { logout } = useAuth()
+export const Header = ({ notifications_count, pageTitle, onMenuClick }: HeaderProps) => {
+  const { logout } = useAuth();
 
-    return (
-        <header
-          className="fixed top-0 left-64 right-0 z-30 flex h-[92px] shrink-0 items-center justify-between border-b border-gray-200 bg-white px-8"
-          role="banner"
+  return (
+    <header
+      className="fixed top-0 left-0 right-0 z-30 flex h-[92px] shrink-0 items-center justify-between gap-4 border-b border-gray-200 bg-white px-4 sm:px-6 lg:left-64 lg:px-8"
+      role="banner"
+    >
+      <div className="flex items-center gap-3 min-w-0">
+        <Button
+          type="button"
+          variant="ghost"
+          size="icon"
+          className="shrink-0 lg:hidden"
+          onClick={onMenuClick}
+          aria-label="Ouvrir le menu"
         >
-          <div>
-            <h2 className="text-2xl font-bold leading-tight text-[#4A5568]">{pageTitle}</h2>
-            <p className="mt-1 text-sm text-[#4A5568] opacity-70">
-              Supervision et pilotage des données de santé
-            </p>
-          </div>
+          <Menu className="h-6 w-6 text-[#4A5568]" aria-hidden="true" />
+        </Button>
+        <div className="min-w-0">
+          <h2 className="text-lg sm:text-2xl font-bold leading-tight text-[#4A5568] truncate">{pageTitle}</h2>
+          <p className="mt-0.5 text-xs sm:text-sm text-[#4A5568] opacity-70 hidden sm:block">
+            Supervision et pilotage des données de santé
+          </p>
+        </div>
+      </div>
 
-          <div className="flex items-center gap-2">
+      <div className="flex items-center gap-2 shrink-0">
             <Button
               variant="ghost"
               size="icon"

@@ -33,25 +33,23 @@ export const DatasetCard = ({
       role="button"
       aria-pressed={selectedDataset === dataset.id}
     >
-      <CardContent className="pt-6">
-        <div className="flex items-start justify-between mb-4">
-          <div className="flex items-center gap-3">
-            <div className="w-10 h-10 rounded-lg bg-[#4A90E2] bg-opacity-10 flex items-center justify-center">
-              <Database className="w-5 h-5 text-[#4A90E2]" aria-hidden="true" />
+      <CardContent className="pt-4 pb-4">
+        <div className="flex items-start justify-between gap-2 mb-3">
+          <div className="flex items-center gap-2 min-w-0">
+            <div className="w-9 h-9 rounded-lg bg-[#4A90E2] bg-opacity-10 flex items-center justify-center flex-shrink-0">
+              <Database className="w-4 h-4 text-[#4A90E2]" aria-hidden="true" />
             </div>
-            <div>
-              <h4 className="font-semibold text-[#4A5568]">{dataset.name}</h4>
-            </div>
+            <h4 className="font-semibold text-[#4A5568] truncate">{dataset.name}</h4>
           </div>
           {dataset.status === "warning" && (
             <AlertCircle
-              className="w-5 h-5 text-[#FFB88C]"
+              className="w-5 h-5 text-[#FFB88C] flex-shrink-0"
               aria-label="Avertissement"
             />
           )}
           {dataset.status === "success" && (
             <CheckCircle
-              className="w-5 h-5 text-[#5CC58C]"
+              className="w-5 h-5 text-[#5CC58C] flex-shrink-0"
               aria-label="Aucun problème"
             />
           )}
@@ -62,7 +60,7 @@ export const DatasetCard = ({
             {dataset.issues}
           </Badge>
         </div>
-        <div className="flex items-center justify-between text-sm mt-2">
+        <div className="flex items-center justify-between text-sm mt-1">
           <span className="text-[#4A5568] opacity-70">Dernière sync</span>
           <span className="text-[#4A5568]">{dataset.lastSync}</span>
         </div>
