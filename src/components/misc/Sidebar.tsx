@@ -4,6 +4,7 @@ import { useRouter } from "next/router";
 import { cn } from "@/lib/utils";
 import { Routes } from "@/utils/types/globals";
 import { useAuth } from "@/hooks/useAuth";
+import { hasRequiredRole } from "@/utils/roles";
 
 type SidebarProps = {
   routes: Routes[];
@@ -34,7 +35,13 @@ export const Sidebar = ({ routes, open = false, onClose }: SidebarProps) => {
 
         <nav className="flex-1 p-4">
           <ul className="space-y-2" role="list">
-            {routes.map((item) => {
+            {routes
+              .filter(
+                (item) =>
+                  !item.requiredRole ||
+                  hasRequiredRole(user?.role?.name ?? null, item.requiredRole)
+              )
+              .map((item) => {
               const Icon = item.icon;
               const isActive =
                 item.path === '/'

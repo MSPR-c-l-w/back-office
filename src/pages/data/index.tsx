@@ -1,3 +1,7 @@
+import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Play } from "lucide-react";
+import { useState } from "react";
 import { AnomalyModal } from "@/components/dashboard/data-management/AnomalyModal";
 import { DataQualityAnomalies } from "@/components/dashboard/data-management/DataQualityAnomalies";
 import { DatasetCard } from "@/components/dashboard/data-management/DatasetCard";
@@ -11,22 +15,21 @@ import {
 import { PipelineLog } from "@/components/dashboard/data-management/PipelineLog";
 import { ServerStatusCard } from "@/components/dashboard/data-management/ServerStatusCard";
 import { PageLayout } from "@/components/layout/PageLayout";
-import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { NextPageWithLayout } from "@/utils/types/globals";
-import { Play } from "lucide-react";
-import { ReactElement, useState } from "react";
+import { ReactElement } from "react";
 
 const DataPage: NextPageWithLayout = () => {
   const [isLaunching, setIsLaunching] = useState(false);
-  const [pipelineStatus, setPipelineStatus] = useState<'idle' | 'running' | 'success' | 'error'>('success');
+  const [pipelineStatus, setPipelineStatus] = useState<
+    "idle" | "running" | "success" | "error"
+  >("success");
   const [selectedDataset, setSelectedDataset] = useState("nutrition");
   const [selectedAnomalies, setSelectedAnomalies] = useState<number[]>([]);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [hasJsonChanged, setHasJsonChanged] = useState(false);
   const [currentAnomaly, setCurrentAnomaly] = useState<AnomalieType | null>(null);
-  const [jsonValue, setJsonValue] = useState('');
-  const [originalJsonValue, setOriginalJsonValue] = useState('');
+  const [jsonValue, setJsonValue] = useState("");
+  const [originalJsonValue, setOriginalJsonValue] = useState("");
 
   const openModal = (anomaly: AnomalieType) => {
     setCurrentAnomaly(anomaly);
@@ -39,28 +42,24 @@ const DataPage: NextPageWithLayout = () => {
   const closeModal = () => {
     setIsModalOpen(false);
     setCurrentAnomaly(null);
-    setJsonValue('');
-    setOriginalJsonValue('');
+    setJsonValue("");
+    setOriginalJsonValue("");
     setHasJsonChanged(false);
   };
 
   const handleLaunchPipeline = () => {
     setIsLaunching(true);
-    setPipelineStatus('running');
+    setPipelineStatus("running");
     setTimeout(() => {
       setIsLaunching(false);
-      setPipelineStatus('success');
+      setPipelineStatus("success");
     }, 2000);
   };
 
   return (
     <div className="space-y-6">
       <div className="flex items-center justify-between">
-        <div>
-          <h3 className="text-lg font-semibold text-[#4A5568]">
-            Datasets Disponibles
-          </h3>
-        </div>
+        <h3 className="text-lg font-semibold text-[#4A5568]">Datasets Disponibles</h3>
         <Button
           size="default"
           className="bg-[#FF887B] hover:bg-[#ff7066] text-white gap-2"
@@ -72,7 +71,6 @@ const DataPage: NextPageWithLayout = () => {
         </Button>
       </div>
 
-      {/* Datasets Overview */}
       <section aria-labelledby="datasets-section">
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
           {datasets.map((dataset) => (
@@ -86,10 +84,8 @@ const DataPage: NextPageWithLayout = () => {
         </div>
       </section>
 
-      {/* Pipeline Logs */}
       <PipelineLog pipelineStatus={pipelineStatus} pipelineLogs={pipelineLogs} />
 
-      {/* Data Quality & Anomalies */}
       <DataQualityAnomalies
         datasets={datasets}
         selectedDataset={selectedDataset}
@@ -99,7 +95,6 @@ const DataPage: NextPageWithLayout = () => {
         openModal={openModal}
       />
 
-      {/* Server Status */}
       <Card>
         <CardHeader>
           <CardTitle>Statut des Serveurs ETL</CardTitle>
@@ -113,8 +108,7 @@ const DataPage: NextPageWithLayout = () => {
         </CardContent>
       </Card>
 
-      {/* Modal for Anomaly Details */}
-      <AnomalyModal 
+      <AnomalyModal
         isModalOpen={isModalOpen}
         setIsModalOpen={setIsModalOpen}
         currentAnomaly={currentAnomaly}

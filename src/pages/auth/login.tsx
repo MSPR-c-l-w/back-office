@@ -19,6 +19,15 @@ export default function LoginPage() {
     }
   }, [loading, user, router]);
 
+  useEffect(() => {
+    if (router.query.error === "forbidden") {
+      setError(
+        "Accès refusé. Seuls les administrateurs et les coachs peuvent accéder au back-office."
+      );
+      void router.replace("/auth/login", undefined, { shallow: true });
+    }
+  }, [router.query.error, router]);
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError(null);
@@ -26,9 +35,19 @@ export default function LoginPage() {
     try {
       await login(email, password);
     } catch (err: unknown) {
-      const res = err && typeof err === "object" && "response" in err
-        ? (err as { response?: { data?: { message?: string }; status?: number } }).response
-        : undefined;
+      const isAccessDenied =
+        err instanceof Error && err.message === "BACK_OFFICE_ACCESS_DENIED";
+      if (isAccessDenied) {
+        setError(
+          "Accès refusé. Seuls les administrateurs et les coachs peuvent accéder au back-office."
+        );
+        return;
+      }
+      const res =
+        err && typeof err === "object" && "response" in err
+          ? (err as { response?: { data?: { message?: string }; status?: number } })
+              .response
+          : undefined;
       const message = res?.data?.message;
       if (res?.status === 401 || message === "INVALID_CREDENTIALS") {
         setError("Email ou mot de passe incorrect.");
