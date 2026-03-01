@@ -6,7 +6,9 @@ export const BACK_OFFICE_ROLES = ["ADMIN"] as const;
 
 export type BackOfficeRole = (typeof BACK_OFFICE_ROLES)[number];
 
-export function hasBackOfficeAccess(roleName: string | undefined | null): boolean {
+export function hasBackOfficeAccess(
+  roleName: string | undefined | null
+): boolean {
   if (!roleName) return false;
   return BACK_OFFICE_ROLES.includes(roleName as BackOfficeRole);
 }

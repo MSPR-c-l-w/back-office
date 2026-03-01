@@ -1,8 +1,17 @@
-import { Area, AreaChart, CartesianGrid, Legend, Line, Tooltip, XAxis, YAxis } from "recharts";
+import {
+  Area,
+  AreaChart,
+  CartesianGrid,
+  Legend,
+  Line,
+  Tooltip,
+  XAxis,
+  YAxis,
+} from "recharts";
 import { EngagementType } from "./mocks";
 
 interface Props {
-    engagementData: EngagementType[]
+  engagementData: EngagementType[];
 }
 
 export const EvolutionChart = ({ engagementData }: Props) => {

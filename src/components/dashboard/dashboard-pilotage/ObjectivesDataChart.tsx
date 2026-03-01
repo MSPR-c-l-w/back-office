@@ -1,9 +1,4 @@
-import {
-  Cell,
-  Pie,
-  PieChart,
-  Tooltip,
-} from "recharts";
+import { Cell, Pie, PieChart, Tooltip } from "recharts";
 import { ObjectivesDataType } from "./mocks";
 
 interface Props {

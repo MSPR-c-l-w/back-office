@@ -1,9 +1,16 @@
 import { Progress } from "@/components/ui/progress";
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
 import { NutritionTrendType } from "./mocks";
 
 interface Props {
-    nutritionTrends: NutritionTrendType[]
+  nutritionTrends: NutritionTrendType[];
 }
 
 export const NutritionTrendsTable = ({ nutritionTrends }: Props) => {
@@ -22,7 +29,7 @@ export const NutritionTrendsTable = ({ nutritionTrends }: Props) => {
         {nutritionTrends.map((trend, index) => {
           const totalUsers = nutritionTrends.reduce(
             (sum, t) => sum + t.users,
-            0,
+            0
           );
           const percentage = ((trend.users / totalUsers) * 100).toFixed(1);
           return (

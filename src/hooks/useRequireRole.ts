@@ -21,7 +21,9 @@ import { useEffect } from "react";
  * // Page accessible aux admins uniquement
  * useRequireRole("ADMIN");
  */
-export function useRequireRole(requiredRole: BackOfficeRole | BackOfficeRole[]): void {
+export function useRequireRole(
+  requiredRole: BackOfficeRole | BackOfficeRole[]
+): void {
   const { user, loading } = useAuth();
   const router = useRouter();
 

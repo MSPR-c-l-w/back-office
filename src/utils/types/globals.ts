@@ -1,7 +1,12 @@
 import { LucideProps } from "lucide-react";
 import { NextPage } from "next";
 import { AppProps } from "next/app";
-import { ForwardRefExoticComponent, ReactElement, ReactNode, RefAttributes } from "react";
+import {
+  ForwardRefExoticComponent,
+  ReactElement,
+  ReactNode,
+  RefAttributes,
+} from "react";
 import type { BackOfficeRole } from "@/utils/roles";
 
 export type NextPageWithLayout<T = unknown> = NextPage<T> & {
@@ -15,7 +20,9 @@ export type AppPropsWithLayout = AppProps & {
 export type Routes = {
   path: string;
   label: string;
-  icon: ForwardRefExoticComponent<Omit<LucideProps, "ref"> & RefAttributes<SVGSVGElement>>;
+  icon: ForwardRefExoticComponent<
+    Omit<LucideProps, "ref"> & RefAttributes<SVGSVGElement>
+  >;
   /** Rôle requis pour voir ce lien. Absent = accessible à tous les admins. */
   requiredRole?: BackOfficeRole;
 };

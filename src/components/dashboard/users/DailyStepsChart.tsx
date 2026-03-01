@@ -26,10 +26,18 @@ export function DailyStepsChart({ data }: Props) {
             <XAxis dataKey="date" stroke="#4A5568" />
             <YAxis stroke="#4A5568" />
             <Tooltip
-              contentStyle={{ backgroundColor: "white", border: "1px solid #E2E8F0" }}
+              contentStyle={{
+                backgroundColor: "white",
+                border: "1px solid #E2E8F0",
+              }}
             />
             <Legend />
-            <Bar dataKey="steps" fill="#4A90E2" name="Pas" radius={[8, 8, 0, 0]} />
+            <Bar
+              dataKey="steps"
+              fill="#4A90E2"
+              name="Pas"
+              radius={[8, 8, 0, 0]}
+            />
             <Bar
               dataKey="goal"
               fill="#5CC58C"

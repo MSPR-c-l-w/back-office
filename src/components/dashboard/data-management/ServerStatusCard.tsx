@@ -3,7 +3,7 @@ import { ServerStatusType } from "./mocks";
 import { Progress } from "@/components/ui/progress";
 
 interface Props {
-    server: ServerStatusType
+  server: ServerStatusType;
 }
 
 export const ServerStatusCard = ({ server }: Props) => {

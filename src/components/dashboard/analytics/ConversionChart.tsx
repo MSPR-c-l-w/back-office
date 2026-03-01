@@ -2,7 +2,7 @@ import { Cell, Pie, PieChart, Tooltip } from "recharts";
 import { ConversionType } from "./mocks";
 
 interface Props {
-    conversionData: ConversionType[]
+  conversionData: ConversionType[];
 }
 
 export const ConversionChart = ({ conversionData }: Props) => {

@@ -17,7 +17,8 @@ const UsersPage: NextPageWithLayout = () => {
   const [currentPage, setCurrentPage] = useState(1);
   const [searchQuery, setSearchQuery] = useState("");
   const [filterPlan, setFilterPlan] = useState<string>("all");
-  const [selectedUser, setSelectedUser] = useState<Parameters<typeof UserDetailModal>[0]["user"]>(null);
+  const [selectedUser, setSelectedUser] =
+    useState<Parameters<typeof UserDetailModal>[0]["user"]>(null);
 
   const filteredUsers = useMemo(() => {
     return allUsers.filter((user) => {
@@ -55,7 +56,10 @@ const UsersPage: NextPageWithLayout = () => {
         onSelectUser={setSelectedUser}
       />
 
-      <UserDetailModal user={selectedUser} onClose={() => setSelectedUser(null)} />
+      <UserDetailModal
+        user={selectedUser}
+        onClose={() => setSelectedUser(null)}
+      />
     </div>
   );
 };

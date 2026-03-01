@@ -45,8 +45,11 @@ export default function LoginPage() {
       }
       const res =
         err && typeof err === "object" && "response" in err
-          ? (err as { response?: { data?: { message?: string }; status?: number } })
-              .response
+          ? (
+              err as {
+                response?: { data?: { message?: string }; status?: number };
+              }
+            ).response
           : undefined;
       const message = res?.data?.message;
       if (res?.status === 401 || message === "INVALID_CREDENTIALS") {

@@ -63,12 +63,13 @@ export function useResolveAnomaly(params: ResolveAnomalyParams) {
 
     const resolvedAfterThis = [...resolvedAnomalies, currentAnomaly.id];
     setResolvedAnomalies(() => resolvedAfterThis);
-    setSelectedAnomalies((prev: number[]) => prev.filter((i) => i !== currentAnomaly.id));
+    setSelectedAnomalies((prev: number[]) =>
+      prev.filter((i) => i !== currentAnomaly.id)
+    );
 
     const datasetName = datasets.find((d) => d.id === selectedDataset)?.name;
     const currentDatasetAnomalies = anomalies.filter(
-      (a) =>
-        a.dataset === datasetName && !resolvedAfterThis.includes(a.id)
+      (a) => a.dataset === datasetName && !resolvedAfterThis.includes(a.id)
     );
 
     if (currentDatasetAnomalies.length > 0) {

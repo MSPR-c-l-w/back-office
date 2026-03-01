@@ -26,7 +26,10 @@ export function WeeklyCaloriesChart({ data }: Props) {
             <XAxis dataKey="week" stroke="#4A5568" />
             <YAxis stroke="#4A5568" />
             <Tooltip
-              contentStyle={{ backgroundColor: "white", border: "1px solid #E2E8F0" }}
+              contentStyle={{
+                backgroundColor: "white",
+                border: "1px solid #E2E8F0",
+              }}
             />
             <Legend />
             <Line

@@ -1,8 +1,16 @@
-import { CartesianGrid, Legend, Line, LineChart, Tooltip, XAxis, YAxis } from "recharts";
+import {
+  CartesianGrid,
+  Legend,
+  Line,
+  LineChart,
+  Tooltip,
+  XAxis,
+  YAxis,
+} from "recharts";
 import { DataQualityTrendType } from "./mocks";
 
 interface Props {
-    dataQualityTrend: DataQualityTrendType[]
+  dataQualityTrend: DataQualityTrendType[];
 }
 
 export const DataQualityTrend = ({ dataQualityTrend }: Props) => {

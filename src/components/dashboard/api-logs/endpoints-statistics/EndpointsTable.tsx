@@ -1,9 +1,16 @@
 import { Badge } from "@/components/ui/badge";
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
 import { EndpointType } from "../mocks";
 
 interface Props {
-    endpointsStats: EndpointType[]
+  endpointsStats: EndpointType[];
 }
 
 export const EndpointsTable = ({ endpointsStats }: Props) => {

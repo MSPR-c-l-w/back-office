@@ -3,7 +3,7 @@ import { EndpointsTable } from "./EndpointsTable";
 import { EndpointType } from "../mocks";
 
 interface Props {
-    endpointsStats: EndpointType[]
+  endpointsStats: EndpointType[];
 }
 
 export const EndpointsStatistics = ({ endpointsStats }: Props) => {
@@ -14,7 +14,7 @@ export const EndpointsStatistics = ({ endpointsStats }: Props) => {
       </CardHeader>
       <CardContent>
         <div className="rounded-md border">
-            <EndpointsTable endpointsStats={endpointsStats} />
+          <EndpointsTable endpointsStats={endpointsStats} />
         </div>
       </CardContent>
     </Card>

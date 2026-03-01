@@ -3,7 +3,7 @@ import { ServerType } from "../mocks";
 import { ServerCard } from "./ServerCard";
 
 interface Props {
-    servers: ServerType[],
+  servers: ServerType[];
 }
 
 export const ServersStatus = ({ servers }: Props) => {

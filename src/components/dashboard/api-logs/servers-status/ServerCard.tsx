@@ -5,14 +5,12 @@ import { Progress } from "@/components/ui/progress";
 import { CSSProperties } from "react";
 
 interface Props {
-    server: ServerType
+  server: ServerType;
 }
 
 export const ServerCard = ({ server }: Props) => {
   return (
-    <div
-      className="p-5 border border-gray-200 rounded-lg hover:shadow-sm transition-shadow"
-    >
+    <div className="p-5 border border-gray-200 rounded-lg hover:shadow-sm transition-shadow">
       <div className="flex items-start justify-between mb-4">
         <div className="flex items-center gap-3">
           <div className="flex items-center justify-center w-10 h-10 rounded-lg bg-[#4A90E2] bg-opacity-10">

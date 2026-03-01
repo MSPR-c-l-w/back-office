@@ -3,7 +3,7 @@ import { TrendingUp } from "lucide-react";
 import { KPIDataType } from "./mocks";
 
 interface Props {
-    kpi: KPIDataType
+  kpi: KPIDataType;
 }
 
 export const KpiCard = ({ kpi }: Props) => {

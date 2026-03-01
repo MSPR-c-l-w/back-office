@@ -41,7 +41,7 @@ export const DataQualityAnomalies = ({
 }: Props) => {
   const toggleAnomaly = (id: number) => {
     setSelectedAnomalies((prev: number[]) =>
-      prev.includes(id) ? prev.filter((i) => i !== id) : [...prev, id],
+      prev.includes(id) ? prev.filter((i) => i !== id) : [...prev, id]
     );
   };
 
@@ -102,7 +102,7 @@ export const DataQualityAnomalies = ({
                 .filter(
                   (a) =>
                     a.dataset ===
-                    datasets.find((d) => d.id === selectedDataset)?.name,
+                    datasets.find((d) => d.id === selectedDataset)?.name
                 )
                 .map((anomaly) => (
                   <TableRow key={anomaly.id}>
@@ -204,7 +204,5 @@ export const DataQualityAnomalies = ({
         )}
       </CardContent>
     </Card>
-
-    
   );
 };

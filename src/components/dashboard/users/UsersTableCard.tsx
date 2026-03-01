@@ -109,23 +109,35 @@ export function UsersTableCard({
             </TableHeader>
             <TableBody>
               {paginatedUsers.map((user) => (
-                <TableRow key={user.id} className="cursor-pointer hover:bg-gray-50">
+                <TableRow
+                  key={user.id}
+                  className="cursor-pointer hover:bg-gray-50"
+                >
                   <TableCell className="font-medium">
                     <div className="flex items-center gap-3">
                       <Avatar>
                         <AvatarImage src={user.avatar} />
                         <AvatarFallback className="bg-[#4A90E2] text-white">
-                          {user.name.split(" ").map((n) => n[0]).join("")}
+                          {user.name
+                            .split(" ")
+                            .map((n) => n[0])
+                            .join("")}
                         </AvatarFallback>
                       </Avatar>
                       <div>
-                        <div className="font-medium text-[#4A5568]">{user.name}</div>
-                        <div className="text-xs text-[#4A5568] opacity-70">ID: {user.id}</div>
+                        <div className="font-medium text-[#4A5568]">
+                          {user.name}
+                        </div>
+                        <div className="text-xs text-[#4A5568] opacity-70">
+                          ID: {user.id}
+                        </div>
                       </div>
                     </div>
                   </TableCell>
                   <TableCell className="text-[#4A5568]">{user.email}</TableCell>
-                  <TableCell className="text-[#4A5568]">{user.age} ans</TableCell>
+                  <TableCell className="text-[#4A5568]">
+                    {user.age} ans
+                  </TableCell>
                   <TableCell>
                     <Badge
                       variant="outline"
@@ -159,7 +171,9 @@ export function UsersTableCard({
                       {user.status === "active" ? "Actif" : "Inactif"}
                     </Badge>
                   </TableCell>
-                  <TableCell className="text-[#4A5568] text-sm">{user.lastActivity}</TableCell>
+                  <TableCell className="text-[#4A5568] text-sm">
+                    {user.lastActivity}
+                  </TableCell>
                   <TableCell className="text-right">
                     <Button
                       size="sm"
@@ -178,7 +192,8 @@ export function UsersTableCard({
 
         <div className="flex items-center justify-between mt-4">
           <p className="text-sm text-[#4A5568]">
-            Affichage {startIndex + 1}-{Math.min(startIndex + itemsPerPage, filteredCount)} sur{" "}
+            Affichage {startIndex + 1}-
+            {Math.min(startIndex + itemsPerPage, filteredCount)} sur{" "}
             {filteredCount} utilisateurs
           </p>
           <div className="flex items-center gap-2">
@@ -210,7 +225,9 @@ export function UsersTableCard({
                     size="sm"
                     onClick={() => onPageChange(pageNum)}
                     className={
-                      currentPage === pageNum ? "bg-[#4A90E2] hover:bg-[#4A90E2]/90" : ""
+                      currentPage === pageNum
+                        ? "bg-[#4A90E2] hover:bg-[#4A90E2]/90"
+                        : ""
                     }
                   >
                     {pageNum}
@@ -221,7 +238,9 @@ export function UsersTableCard({
             <Button
               variant="outline"
               size="sm"
-              onClick={() => onPageChange(Math.min(totalPages, currentPage + 1))}
+              onClick={() =>
+                onPageChange(Math.min(totalPages, currentPage + 1))
+              }
               disabled={currentPage === totalPages}
             >
               Suivant

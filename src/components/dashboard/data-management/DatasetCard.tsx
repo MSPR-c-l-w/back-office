@@ -39,7 +39,9 @@ export const DatasetCard = ({
             <div className="w-9 h-9 rounded-lg bg-[#4A90E2] bg-opacity-10 flex items-center justify-center flex-shrink-0">
               <Database className="w-4 h-4 text-[#4A90E2]" aria-hidden="true" />
             </div>
-            <h4 className="font-semibold text-[#4A5568] truncate">{dataset.name}</h4>
+            <h4 className="font-semibold text-[#4A5568] truncate">
+              {dataset.name}
+            </h4>
           </div>
           {dataset.status === "warning" && (
             <AlertCircle

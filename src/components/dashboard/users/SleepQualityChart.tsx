@@ -27,7 +27,10 @@ export function SleepQualityChart({ data }: Props) {
             <YAxis yAxisId="left" stroke="#4A5568" />
             <YAxis yAxisId="right" orientation="right" stroke="#4A5568" />
             <Tooltip
-              contentStyle={{ backgroundColor: "white", border: "1px solid #E2E8F0" }}
+              contentStyle={{
+                backgroundColor: "white",
+                border: "1px solid #E2E8F0",
+              }}
             />
             <Legend />
             <Line

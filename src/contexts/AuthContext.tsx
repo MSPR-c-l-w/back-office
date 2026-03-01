@@ -22,7 +22,7 @@ type Props = {
 };
 
 export const AuthContext = createContext<AuthContextType | undefined>(
-  undefined,
+  undefined
 );
 
 export const AuthProvider = ({ children }: Props) => {
@@ -83,10 +83,11 @@ export const AuthProvider = ({ children }: Props) => {
     clearTokens();
     setUser(null);
     if (typeof window !== "undefined") {
-      window.location.href = redirectPath.startsWith("/") ? redirectPath : `/${redirectPath}`;
+      window.location.href = redirectPath.startsWith("/")
+        ? redirectPath
+        : `/${redirectPath}`;
     }
   }, []);
-
 
   const refreshUser = useCallback(async () => {
     await fetchUser();
@@ -102,7 +103,7 @@ export const AuthProvider = ({ children }: Props) => {
         refreshUser,
       }}
     >
-        {children}
+      {children}
     </AuthContext.Provider>
-  )
+  );
 };

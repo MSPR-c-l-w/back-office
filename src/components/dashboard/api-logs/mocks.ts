@@ -1,4 +1,10 @@
-import { Activity, AlertTriangle, CheckCircle, Clock, LucideProps } from "lucide-react";
+import {
+  Activity,
+  AlertTriangle,
+  CheckCircle,
+  Clock,
+  LucideProps,
+} from "lucide-react";
 import { ForwardRefExoticComponent, RefAttributes } from "react";
 
 export type ApiCallType = {
@@ -36,12 +42,14 @@ export type RecentLogType = {
 };
 
 export type KPICardType = {
-    label: string,
-    value: string,
-    trend: string,
-    icon: ForwardRefExoticComponent<Omit<LucideProps, "ref"> & RefAttributes<SVGSVGElement>>,
-    color: string,
-}
+  label: string;
+  value: string;
+  trend: string;
+  icon: ForwardRefExoticComponent<
+    Omit<LucideProps, "ref"> & RefAttributes<SVGSVGElement>
+  >;
+  color: string;
+};
 
 export const apiCallsDat: ApiCallType[] = [
   { time: "00:00", calls: 234, errors: 2, latency: 145 },

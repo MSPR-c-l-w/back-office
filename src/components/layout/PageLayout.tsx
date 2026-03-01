@@ -56,7 +56,10 @@ export function PageLayout({ children, pageTitle }: Props) {
         aria-label="Fermer le menu"
         onClick={() => setSidebarOpen(false)}
         className="fixed inset-0 z-30 bg-black/50 transition-opacity lg:hidden"
-        style={{ opacity: sidebarOpen ? 1 : 0, pointerEvents: sidebarOpen ? "auto" : "none" }}
+        style={{
+          opacity: sidebarOpen ? 1 : 0,
+          pointerEvents: sidebarOpen ? "auto" : "none",
+        }}
       />
 
       {/* Sidebar */}

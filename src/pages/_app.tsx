@@ -20,7 +20,9 @@ export default function App({ Component, pageProps }: AppPropsWithLayout) {
   return (
     <AuthProvider>
       <BackOfficeGuard>
-        <div className={cn(geistSans.variable, geistMono.variable, "font-sans")}>
+        <div
+          className={cn(geistSans.variable, geistMono.variable, "font-sans")}
+        >
           {getLayout(<Component {...pageProps} />)}
         </div>
       </BackOfficeGuard>

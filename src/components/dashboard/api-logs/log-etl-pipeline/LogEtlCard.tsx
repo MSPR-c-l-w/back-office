@@ -2,7 +2,7 @@ import { Badge } from "@/components/ui/badge";
 import { RecentLogType } from "../mocks";
 
 interface Props {
-    log: RecentLogType
+  log: RecentLogType;
 }
 
 export const LogEtlCard = ({ log }: Props) => {

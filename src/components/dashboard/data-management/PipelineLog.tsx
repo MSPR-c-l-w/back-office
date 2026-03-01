@@ -5,8 +5,8 @@ import { Clock, Terminal } from "lucide-react";
 import { PipelineLogType } from "./mocks";
 
 interface Props {
-    pipelineStatus: string
-    pipelineLogs: PipelineLogType[]
+  pipelineStatus: string;
+  pipelineLogs: PipelineLogType[];
 }
 
 export const PipelineLog = ({ pipelineStatus, pipelineLogs }: Props) => {

@@ -33,7 +33,10 @@ export function UserDetailModal({ user, onClose }: Props) {
             <Avatar className="w-16 h-16">
               <AvatarImage src={user.avatar} />
               <AvatarFallback className="bg-[#4A90E2] text-white text-xl">
-                {user.name.split(" ").map((n) => n[0]).join("")}
+                {user.name
+                  .split(" ")
+                  .map((n) => n[0])
+                  .join("")}
               </AvatarFallback>
             </Avatar>
             <div>
@@ -50,19 +53,27 @@ export function UserDetailModal({ user, onClose }: Props) {
             <Card>
               <CardContent className="pt-6">
                 <div className="text-sm text-[#4A5568] opacity-70">Âge</div>
-                <div className="text-2xl font-bold text-[#4A5568] mt-1">{user.age} ans</div>
+                <div className="text-2xl font-bold text-[#4A5568] mt-1">
+                  {user.age} ans
+                </div>
               </CardContent>
             </Card>
             <Card>
               <CardContent className="pt-6">
-                <div className="text-sm text-[#4A5568] opacity-70">Objectif</div>
-                <div className="text-lg font-semibold text-[#4A5568] mt-1">{user.objective}</div>
+                <div className="text-sm text-[#4A5568] opacity-70">
+                  Objectif
+                </div>
+                <div className="text-lg font-semibold text-[#4A5568] mt-1">
+                  {user.objective}
+                </div>
               </CardContent>
             </Card>
             <Card>
               <CardContent className="pt-6">
                 <div className="text-sm text-[#4A5568] opacity-70">Plan</div>
-                <Badge className="mt-2 bg-[#5CC58C] hover:bg-[#5CC58C]">{user.plan}</Badge>
+                <Badge className="mt-2 bg-[#5CC58C] hover:bg-[#5CC58C]">
+                  {user.plan}
+                </Badge>
               </CardContent>
             </Card>
             <Card>

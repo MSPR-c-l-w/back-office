@@ -27,7 +27,9 @@ const DataPage: NextPageWithLayout = () => {
   const [selectedAnomalies, setSelectedAnomalies] = useState<number[]>([]);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [hasJsonChanged, setHasJsonChanged] = useState(false);
-  const [currentAnomaly, setCurrentAnomaly] = useState<AnomalieType | null>(null);
+  const [currentAnomaly, setCurrentAnomaly] = useState<AnomalieType | null>(
+    null
+  );
   const [jsonValue, setJsonValue] = useState("");
   const [originalJsonValue, setOriginalJsonValue] = useState("");
 
@@ -59,7 +61,9 @@ const DataPage: NextPageWithLayout = () => {
   return (
     <div className="space-y-6">
       <div className="flex items-center justify-between">
-        <h3 className="text-lg font-semibold text-[#4A5568]">Datasets Disponibles</h3>
+        <h3 className="text-lg font-semibold text-[#4A5568]">
+          Datasets Disponibles
+        </h3>
         <Button
           size="default"
           className="bg-[#FF887B] hover:bg-[#ff7066] text-white gap-2"
@@ -84,7 +88,10 @@ const DataPage: NextPageWithLayout = () => {
         </div>
       </section>
 
-      <PipelineLog pipelineStatus={pipelineStatus} pipelineLogs={pipelineLogs} />
+      <PipelineLog
+        pipelineStatus={pipelineStatus}
+        pipelineLogs={pipelineLogs}
+      />
 
       <DataQualityAnomalies
         datasets={datasets}

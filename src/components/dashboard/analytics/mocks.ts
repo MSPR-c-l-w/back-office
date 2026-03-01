@@ -2,39 +2,41 @@ import { Activity, Flame, LucideProps, Moon } from "lucide-react";
 import { ForwardRefExoticComponent, RefAttributes } from "react";
 
 export type EngagementType = {
-    date: string,
-    steps: number,
-    calories: number,
-    sleep: number,
-}
+  date: string;
+  steps: number;
+  calories: number;
+  sleep: number;
+};
 
 export type ProgressionType = {
-    week: string,
-    progression: number,
-    satisfaction: number,
-}
+  week: string;
+  progression: number;
+  satisfaction: number;
+};
 
 export type NutritionTrendType = {
-    profile: string,
-    users: number,
-    avgCalories: number,
-    avgProtein: number
-}
+  profile: string;
+  users: number;
+  avgCalories: number;
+  avgProtein: number;
+};
 
 export type ConversionType = {
-    name: string,
-    value: number,
-    color: string;
-}
+  name: string;
+  value: number;
+  color: string;
+};
 
 export type EngagementMetricType = {
-    label: string,
-    value: string,
-    unit: string,
-    trend: string,
-    icon: ForwardRefExoticComponent<Omit<LucideProps, "ref"> & RefAttributes<SVGSVGElement>>,
-    color: string,
-}
+  label: string;
+  value: string;
+  unit: string;
+  trend: string;
+  icon: ForwardRefExoticComponent<
+    Omit<LucideProps, "ref"> & RefAttributes<SVGSVGElement>
+  >;
+  color: string;
+};
 
 export const engagementData: EngagementType[] = [
   { date: "01/02", steps: 8234, calories: 2145, sleep: 7.2 },

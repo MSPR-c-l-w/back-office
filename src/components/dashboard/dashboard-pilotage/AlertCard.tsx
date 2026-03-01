@@ -2,10 +2,10 @@ import { AlertTriangle, CheckCircle, XCircle } from "lucide-react";
 import { AlertType } from "./mocks";
 
 interface Props {
-    alert: AlertType
+  alert: AlertType;
 }
 
-export const AlertCard = ({ alert }: Props) => {
+export const AlertCard = ({ alert }: Props) => {
   return (
     <li
       key={alert.id}

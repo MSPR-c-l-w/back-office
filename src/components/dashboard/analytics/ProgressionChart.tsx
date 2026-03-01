@@ -1,8 +1,16 @@
-import { CartesianGrid, Legend, Line, LineChart, Tooltip, XAxis, YAxis } from "recharts";
+import {
+  CartesianGrid,
+  Legend,
+  Line,
+  LineChart,
+  Tooltip,
+  XAxis,
+  YAxis,
+} from "recharts";
 import { ProgressionType } from "./mocks";
 
 interface Props {
-    progressionData: ProgressionType[]
+  progressionData: ProgressionType[];
 }
 
 export const ProgressionChart = ({ progressionData }: Props) => {

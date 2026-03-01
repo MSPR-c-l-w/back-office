@@ -18,7 +18,9 @@ export function UsersStatsCards({ allUsers }: Props) {
           </CardTitle>
         </CardHeader>
         <CardContent>
-          <div className="text-3xl font-bold text-[#4A5568]">{allUsers.length}</div>
+          <div className="text-3xl font-bold text-[#4A5568]">
+            {allUsers.length}
+          </div>
           <p className="text-sm text-[#5CC58C] flex items-center gap-1 mt-2">
             <TrendingUp className="w-4 h-4" />
             +12.5% ce mois
@@ -36,7 +38,10 @@ export function UsersStatsCards({ allUsers }: Props) {
           <div className="text-3xl font-bold text-[#4A5568]">{activeCount}</div>
           <p className="text-sm text-[#5CC58C] flex items-center gap-1 mt-2">
             <Activity className="w-4 h-4" />
-            {allUsers.length > 0 ? ((activeCount / allUsers.length) * 100).toFixed(1) : 0}% actifs
+            {allUsers.length > 0
+              ? ((activeCount / allUsers.length) * 100).toFixed(1)
+              : 0}
+            % actifs
           </p>
         </CardContent>
       </Card>
@@ -48,10 +53,15 @@ export function UsersStatsCards({ allUsers }: Props) {
           </CardTitle>
         </CardHeader>
         <CardContent>
-          <div className="text-3xl font-bold text-[#4A5568]">{premiumCount}</div>
+          <div className="text-3xl font-bold text-[#4A5568]">
+            {premiumCount}
+          </div>
           <p className="text-sm text-[#4A90E2] flex items-center gap-1 mt-2">
             <Target className="w-4 h-4" />
-            {allUsers.length > 0 ? ((premiumCount / allUsers.length) * 100).toFixed(1) : 0}% conversion
+            {allUsers.length > 0
+              ? ((premiumCount / allUsers.length) * 100).toFixed(1)
+              : 0}
+            % conversion
           </p>
         </CardContent>
       </Card>

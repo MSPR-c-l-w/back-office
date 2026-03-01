@@ -36,7 +36,9 @@ const AnalyticsPage: NextPageWithLayout = () => {
 
       <Card>
         <CardHeader>
-          <CardTitle>Évolution de l&apos;Engagement (7 derniers jours)</CardTitle>
+          <CardTitle>
+            Évolution de l&apos;Engagement (7 derniers jours)
+          </CardTitle>
         </CardHeader>
         <CardContent>
           <ResponsiveContainer width="100%" height={350}>
@@ -72,7 +74,9 @@ const AnalyticsPage: NextPageWithLayout = () => {
 
       <Card>
         <CardHeader>
-          <CardTitle>Tendances Nutritionnelles par Profil Utilisateur</CardTitle>
+          <CardTitle>
+            Tendances Nutritionnelles par Profil Utilisateur
+          </CardTitle>
         </CardHeader>
         <CardContent>
           <div className="rounded-md border">
