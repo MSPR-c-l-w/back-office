@@ -18,8 +18,8 @@ import { useEffect } from "react";
  * }
  *
  * @example
- * // Page accessible aux admins ou coachs (équivalent à ne rien mettre si c'est le défaut)
- * useRequireRole(["ADMIN", "COACH"]);
+ * // Page accessible aux admins uniquement
+ * useRequireRole("ADMIN");
  */
 export function useRequireRole(requiredRole: BackOfficeRole | BackOfficeRole[]): void {
   const { user, loading } = useAuth();

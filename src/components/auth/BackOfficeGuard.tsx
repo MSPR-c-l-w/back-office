@@ -9,8 +9,8 @@ type Props = { children: ReactNode };
 
 /**
  * Redirige vers la page de connexion si l'utilisateur connecté n'a pas
- * accès au back-office (rôle autre que ADMIN ou COACH). À placer dans
- * _app pour protéger toutes les pages (hors login).
+ * accès au back-office (rôle autre que ADMIN). À placer dans _app pour
+ * protéger toutes les pages (hors login).
  */
 export function BackOfficeGuard({ children }: Props) {
   const { user, loading, logout } = useAuth();

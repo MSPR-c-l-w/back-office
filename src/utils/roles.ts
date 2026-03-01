@@ -1,8 +1,8 @@
 /**
- * Rôles ayant accès au back-office. Les utilisateurs sans rôle ou avec un autre
- * rôle (ex. MEMBER) ne peuvent pas se connecter au back-office.
+ * Rôle ayant accès au back-office. Seuls les utilisateurs avec le rôle ADMIN
+ * peuvent se connecter au back-office.
  */
-export const BACK_OFFICE_ROLES = ["ADMIN", "COACH"] as const;
+export const BACK_OFFICE_ROLES = ["ADMIN"] as const;
 
 export type BackOfficeRole = (typeof BACK_OFFICE_ROLES)[number];
 

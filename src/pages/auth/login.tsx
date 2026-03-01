@@ -22,7 +22,7 @@ export default function LoginPage() {
   useEffect(() => {
     if (router.query.error === "forbidden") {
       setError(
-        "Accès refusé. Seuls les administrateurs et les coachs peuvent accéder au back-office."
+        "Accès refusé. Seuls les administrateurs peuvent accéder au back-office."
       );
       void router.replace("/auth/login", undefined, { shallow: true });
     }
@@ -39,7 +39,7 @@ export default function LoginPage() {
         err instanceof Error && err.message === "BACK_OFFICE_ACCESS_DENIED";
       if (isAccessDenied) {
         setError(
-          "Accès refusé. Seuls les administrateurs et les coachs peuvent accéder au back-office."
+          "Accès refusé. Seuls les administrateurs peuvent accéder au back-office."
         );
         return;
       }

@@ -20,7 +20,6 @@ const routes: Routes[] = [
     path: "/users",
     label: "Gestion Utilisateurs",
     icon: UsersIcon,
-    requiredRole: "ADMIN",
   },
   {
     path: "/data",
@@ -36,7 +35,6 @@ const routes: Routes[] = [
     path: "/api-logs",
     label: "API & Logs",
     icon: Server,
-    requiredRole: "ADMIN",
   },
 ];
 

@@ -16,6 +16,6 @@ export type Routes = {
   path: string;
   label: string;
   icon: ForwardRefExoticComponent<Omit<LucideProps, "ref"> & RefAttributes<SVGSVGElement>>;
-  /** Rôle requis pour voir ce lien. Absent = accessible à ADMIN et COACH. */
+  /** Rôle requis pour voir ce lien. Absent = accessible à tous les admins. */
   requiredRole?: BackOfficeRole;
 };
