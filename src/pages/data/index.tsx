@@ -96,13 +96,6 @@ const DataPage: NextPageWithLayout = () => {
         anomalies={anomalies}
         selectedAnomalies={selectedAnomalies}
         setSelectedAnomalies={setSelectedAnomalies}
-        setJsonValue={setJsonValue}
-        setHasJsonChanged={setHasJsonChanged}
-        originalJsonValue={originalJsonValue}
-        currentAnomaly={currentAnomaly}
-        setCurrentAnomaly={setCurrentAnomaly}
-        setOriginalJsonValue={setOriginalJsonValue}
-        closeModal={closeModal}
         openModal={openModal}
       />
 

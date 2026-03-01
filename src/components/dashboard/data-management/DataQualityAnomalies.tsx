@@ -21,7 +21,6 @@ import {
 } from "@/components/ui/select";
 import { Filter, Search } from "lucide-react";
 import { Input } from "@/components/ui/input";
-import { useState } from "react";
 
 interface Props {
   datasets: DatasetType[];
@@ -29,13 +28,6 @@ interface Props {
   anomalies: AnomalieType[];
   selectedAnomalies: any;
   setSelectedAnomalies: (prev: any) => void;
-  setJsonValue: (e: any) => void;
-  setHasJsonChanged: (e: any) => void;
-  originalJsonValue: string;
-  currentAnomaly: AnomalieType | null;
-  setCurrentAnomaly: (nextAnomaly: AnomalieType) => void;
-  setOriginalJsonValue: (json: any) => void;
-  closeModal: () => void;
   openModal: (anomaly: AnomalieType) => void;
 }
 
@@ -45,54 +37,12 @@ export const DataQualityAnomalies = ({
   anomalies,
   selectedAnomalies,
   setSelectedAnomalies,
-  setJsonValue,
-  setHasJsonChanged,
-  originalJsonValue,
-  currentAnomaly,
-  setCurrentAnomaly,
-  setOriginalJsonValue,
-  closeModal,
   openModal,
 }: Props) => {
-  const [resolvedAnomalies, setResolvedAnomalies] = useState<number[]>([]);
-
   const toggleAnomaly = (id: number) => {
     setSelectedAnomalies((prev: number[]) =>
       prev.includes(id) ? prev.filter((i) => i !== id) : [...prev, id],
     );
-  };
-
-  const handleJsonChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
-    setJsonValue(e.target.value);
-    setHasJsonChanged(e.target.value !== originalJsonValue);
-  };
-
-  const resolveAnomaly = () => {
-    if (!currentAnomaly) return;
-    
-    // Marquer l'anomalie comme résolue
-    setResolvedAnomalies(prev => [...prev, currentAnomaly.id]);
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    setSelectedAnomalies((prev: any[]) => prev.filter(i => i !== currentAnomaly.id));
-    
-    // Trouver l'anomalie suivante du même dataset
-    const currentDatasetAnomalies = anomalies.filter(
-      a => a.dataset === datasets.find(d => d.id === selectedDataset)?.name && 
-      !resolvedAnomalies.includes(a.id) && 
-      a.id !== currentAnomaly.id
-    );
-    
-    if (currentDatasetAnomalies.length > 0) {
-      // Passer à l'anomalie suivante
-      const nextAnomaly = currentDatasetAnomalies[0];
-      setCurrentAnomaly(nextAnomaly);
-      setJsonValue(JSON.stringify(nextAnomaly.jsonData, null, 2));
-      setOriginalJsonValue(JSON.stringify(nextAnomaly.jsonData, null, 2));
-      setHasJsonChanged(false);
-    } else {
-      // Plus d'anomalies, fermer la modale
-      closeModal();
-    }
   };
 
   return (

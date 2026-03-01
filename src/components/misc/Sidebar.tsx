@@ -62,7 +62,7 @@ export const Sidebar = ({ routes }: SidebarProps) => {
             </Avatar>
             <div className="flex-1">
               <p className="text-sm font-medium text-[#4A5568]">{user?.first_name} {user?.last_name}</p>
-              <p className="text-xs text-[#4A5568] opacity-70">{user?.role?.name}</p>
+              <p className="text-xs text-[#4A5568] opacity-70">{user?.role?.name || "MEMBER"}</p>
             </div>
           </div>
         </div>

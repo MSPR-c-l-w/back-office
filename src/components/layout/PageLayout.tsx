@@ -48,21 +48,24 @@ type Props = {
 export function PageLayout({ children, pageTitle }: Props) {
   return (
     <div className="flex min-h-screen w-full bg-[#F8FAFB]">
-        {/* Sidebar */}
-        <Sidebar routes={routes} />
+      {/* Sidebar */}
+      <Sidebar routes={routes} />
 
-        {/* Main Content */}
-        <div className="flex min-h-0 min-w-0 flex-1 flex-col overflow-hidden">
-          {/* Header */}
-          <Header
-            notifications_count={NOTIFICATIONS_COUNT}
-            pageTitle={pageTitle}
-          />
+      {/* Main Content */}
+      <div className="flex min-h-0 min-w-0 flex-1 flex-col overflow-hidden">
+        {/* Header */}
+        <Header
+          notifications_count={NOTIFICATIONS_COUNT}
+          pageTitle={pageTitle}
+        />
 
-          <main className="min-h-0 flex-1 overflow-auto p-8 ml-64 mt-[92px]" role="main">
-            {children}
-          </main>
-        </div>
+        <main
+          className="min-h-0 flex-1 overflow-auto p-8 ml-0 mt-0 lg:ml-64 lg:mt-[92px]"
+          role="main"
+        >
+          {children}
+        </main>
       </div>
+    </div>
   );
 }

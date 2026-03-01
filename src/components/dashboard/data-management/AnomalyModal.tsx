@@ -10,7 +10,10 @@ import {
 } from "@/components/ui/dialog";
 import { AlertCircle } from "lucide-react";
 import { AnomalieType, DatasetType } from "./mocks";
-import { useState } from "react";
+import {
+  useJsonChangeHandler,
+  useResolveAnomaly,
+} from "./useAnomalyResolution";
 
 interface Props {
   isModalOpen: boolean;
@@ -47,39 +50,24 @@ export const AnomalyModal = ({
   datasets,
   selectedDataset,
 }: Props) => {
-    const [resolvedAnomalies, setResolvedAnomalies] = useState<number[]>([]);
+  const handleJsonChange = useJsonChangeHandler(
+    originalJsonValue,
+    setJsonValue,
+    setHasJsonChanged
+  );
 
-  const handleJsonChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
-    setJsonValue(e.target.value);
-    setHasJsonChanged(e.target.value !== originalJsonValue);
-  };
-
-  const resolveAnomaly = () => {
-    if (!currentAnomaly) return;
-    
-    // Marquer l'anomalie comme résolue
-    setResolvedAnomalies(prev => [...prev, currentAnomaly.id]);
-    setSelectedAnomalies((prev: any[]) => prev.filter(i => i !== currentAnomaly.id));
-    
-    // Trouver l'anomalie suivante du même dataset
-    const currentDatasetAnomalies = anomalies.filter(
-      a => a.dataset === datasets.find(d => d.id === selectedDataset)?.name && 
-      !resolvedAnomalies.includes(a.id) && 
-      a.id !== currentAnomaly.id
-    );
-    
-    if (currentDatasetAnomalies.length > 0) {
-      // Passer à l'anomalie suivante
-      const nextAnomaly = currentDatasetAnomalies[0];
-      setCurrentAnomaly(nextAnomaly);
-      setJsonValue(JSON.stringify(nextAnomaly.jsonData, null, 2));
-      setOriginalJsonValue(JSON.stringify(nextAnomaly.jsonData, null, 2));
-      setHasJsonChanged(false);
-    } else {
-      // Plus d'anomalies, fermer la modale
-      closeModal();
-    }
-  };
+  const { resolveAnomaly } = useResolveAnomaly({
+    currentAnomaly,
+    setSelectedAnomalies,
+    anomalies,
+    datasets,
+    selectedDataset,
+    setCurrentAnomaly,
+    setJsonValue,
+    setOriginalJsonValue,
+    setHasJsonChanged,
+    closeModal,
+  });
 
   return (
     <Dialog open={isModalOpen} onOpenChange={setIsModalOpen}>

@@ -1,6 +1,10 @@
 import { Organization } from "./organization"
 import { Role } from "./role"
 
+/**
+ * Utilisateur tel que renvoyé par l’API (ex. GET /auth/me).
+ * L’organisation et le rôle sont des objets imbriqués ; pour l’id d’organisation, utiliser `user.organization?.id`.
+ */
 export interface User {
     id: number
     organization?: Organization

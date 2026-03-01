@@ -17,8 +17,12 @@ const api = axios.create({
   },
 });
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-api.interceptors.request.use((config: any) => {
+/** Type de la config passée à l'interceptor request (aligné sur les types axios) */
+type RequestInterceptorConfig = Parameters<
+  Parameters<typeof api.interceptors.request.use>[0]
+>[0];
+
+api.interceptors.request.use((config: RequestInterceptorConfig) => {
   const isRefresh = config.url?.includes(REFRESH_ENDPOINT);
   if (!isRefresh) {
     const token = getAccessToken();

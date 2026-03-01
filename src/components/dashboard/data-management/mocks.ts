@@ -34,6 +34,9 @@ export const datasets: DatasetType[] = [
   },
 ];
 
+/** Données JSON associées à une anomalie (champs concernés, valeurs, etc.) */
+export type AnomalyJsonData = Record<string, string | number | null>;
+
 export type AnomalieType = {
   id: number;
   type: string;
@@ -42,8 +45,7 @@ export type AnomalieType = {
   description: string;
   severity: string;
   count: number;
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  jsonData: any;
+  jsonData: AnomalyJsonData;
 };
 
 export const anomalies: AnomalieType[] = [
