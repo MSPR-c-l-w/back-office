@@ -17,7 +17,12 @@ const api = axios.create({
   },
 });
 
-api.interceptors.request.use((config) => {
+/** Type de la config passée à l'interceptor request (aligné sur les types axios) */
+type RequestInterceptorConfig = Parameters<
+  Parameters<typeof api.interceptors.request.use>[0]
+>[0];
+
+api.interceptors.request.use((config: RequestInterceptorConfig) => {
   const isRefresh = config.url?.includes(REFRESH_ENDPOINT);
   if (!isRefresh) {
     const token = getAccessToken();
@@ -35,12 +40,17 @@ let failedQueue: Array<{
 }> = [];
 
 function processQueue(error: unknown) {
-  failedQueue.forEach((prom) => (error != null ? prom.reject(error) : prom.resolve()));
+  failedQueue.forEach((prom) =>
+    error != null ? prom.reject(error) : prom.resolve()
+  );
   failedQueue = [];
 }
 
 function redirectToLogin() {
-  if (typeof window !== "undefined" && window.location.pathname !== LOGIN_PATH) {
+  if (
+    typeof window !== "undefined" &&
+    window.location.pathname !== LOGIN_PATH
+  ) {
     window.location.href = LOGIN_PATH;
   }
 }
@@ -49,7 +59,10 @@ type RetryableConfig = { url?: string; _retry?: boolean };
 
 api.interceptors.response.use(
   (response) => response,
-  async (error: { response?: { status?: number }; config?: RetryableConfig }) => {
+  async (error: {
+    response?: { status?: number };
+    config?: RetryableConfig;
+  }) => {
     const originalRequest = error.config;
 
     if (error.response?.status !== 401 || !originalRequest) {
@@ -85,10 +98,10 @@ api.interceptors.response.use(
         redirectToLogin();
         return Promise.reject(error);
       }
-      const { data } = await api.post<{ access_token: string; refresh_token: string }>(
-        REFRESH_ENDPOINT,
-        { refresh_token: refreshToken }
-      );
+      const { data } = await api.post<{
+        access_token: string;
+        refresh_token: string;
+      }>(REFRESH_ENDPOINT, { refresh_token: refreshToken });
       setAccessToken(data.access_token);
       setRefreshToken(data.refresh_token);
       processQueue(null);

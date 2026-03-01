@@ -1,4 +1,5 @@
 import { User } from "@/utils/interfaces/user";
+import { hasBackOfficeAccess } from "@/utils/roles";
 import React, { createContext, useCallback, useEffect, useState } from "react";
 import api from "@/utils/axios";
 import {
@@ -12,7 +13,7 @@ interface AuthContextType {
   user: User | null;
   loading: boolean;
   login: (email: string, password: string) => Promise<void>;
-  logout: () => Promise<void>;
+  logout: (redirectPath?: string) => Promise<void>;
   refreshUser: () => Promise<void>;
 }
 
@@ -21,23 +22,25 @@ type Props = {
 };
 
 export const AuthContext = createContext<AuthContextType | undefined>(
-  undefined,
+  undefined
 );
 
 export const AuthProvider = ({ children }: Props) => {
   const [user, setUser] = useState<User | null>(null);
   const [loading, setLoading] = useState<boolean>(true);
 
-  const fetchUser = useCallback(async () => {
+  const fetchUser = useCallback(async (): Promise<User | null> => {
     try {
       const { data, status } = await api.get<User>("/auth/me");
       if (status !== 200) {
         setUser(null);
-        return;
+        return null;
       }
       setUser(data);
+      return data;
     } catch {
       setUser(null);
+      return null;
     } finally {
       setLoading(false);
     }
@@ -55,7 +58,12 @@ export const AuthProvider = ({ children }: Props) => {
       }>("/auth/login", { email, password });
       setAccessToken(data.access_token);
       setRefreshToken(data.refresh_token);
-      await fetchUser();
+      const userData = await fetchUser();
+      if (!userData || !hasBackOfficeAccess(userData.role?.name)) {
+        clearTokens();
+        setUser(null);
+        throw new Error("BACK_OFFICE_ACCESS_DENIED");
+      }
       if (typeof window !== "undefined") {
         window.location.href = "/";
       }
@@ -63,7 +71,7 @@ export const AuthProvider = ({ children }: Props) => {
     [fetchUser]
   );
 
-  const logout = useCallback(async () => {
+  const logout = useCallback(async (redirectPath = "/auth/login") => {
     const refreshToken = getRefreshToken();
     if (refreshToken) {
       try {
@@ -75,10 +83,15 @@ export const AuthProvider = ({ children }: Props) => {
     clearTokens();
     setUser(null);
     if (typeof window !== "undefined") {
-      window.location.href = "/auth/login";
+      window.location.href = redirectPath.startsWith("/")
+        ? redirectPath
+        : `/${redirectPath}`;
     }
   }, []);
 
+  const refreshUser = useCallback(async () => {
+    await fetchUser();
+  }, [fetchUser]);
 
   return (
     <AuthContext.Provider
@@ -87,10 +100,10 @@ export const AuthProvider = ({ children }: Props) => {
         loading,
         login,
         logout,
-        refreshUser: fetchUser
+        refreshUser,
       }}
     >
-        {children}
+      {children}
     </AuthContext.Provider>
-  )
+  );
 };

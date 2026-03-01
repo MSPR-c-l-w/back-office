@@ -3,6 +3,7 @@ import type { AppPropsWithLayout } from "@/utils/types/globals";
 import { Geist, Geist_Mono } from "next/font/google";
 import { cn } from "@/lib/utils";
 import { AuthProvider } from "@/contexts/AuthContext";
+import { BackOfficeGuard } from "@/components/auth/BackOfficeGuard";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -18,9 +19,13 @@ export default function App({ Component, pageProps }: AppPropsWithLayout) {
   const getLayout = Component.getLayout ?? ((page) => page);
   return (
     <AuthProvider>
-      <div className={cn(geistSans.variable, geistMono.variable, "font-sans")}>
-        {getLayout(<Component {...pageProps} />)}
-      </div>
+      <BackOfficeGuard>
+        <div
+          className={cn(geistSans.variable, geistMono.variable, "font-sans")}
+        >
+          {getLayout(<Component {...pageProps} />)}
+        </div>
+      </BackOfficeGuard>
     </AuthProvider>
   );
 }

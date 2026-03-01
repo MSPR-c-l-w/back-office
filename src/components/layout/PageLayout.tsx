@@ -8,7 +8,7 @@ import {
 import { Sidebar } from "@/components/misc/Sidebar";
 import { Routes } from "@/utils/types/globals";
 import { Header } from "../misc/Header";
-import { ReactNode } from "react";
+import { ReactNode, useState } from "react";
 
 const routes: Routes[] = [
   {
@@ -46,23 +46,45 @@ type Props = {
 };
 
 export function PageLayout({ children, pageTitle }: Props) {
+  const [sidebarOpen, setSidebarOpen] = useState(false);
+
   return (
     <div className="flex min-h-screen w-full bg-[#F8FAFB]">
-        {/* Sidebar */}
-        <Sidebar routes={routes} />
+      {/* Backdrop mobile (sidebar ouvert) */}
+      <button
+        type="button"
+        aria-label="Fermer le menu"
+        onClick={() => setSidebarOpen(false)}
+        className="fixed inset-0 z-30 bg-black/50 transition-opacity lg:hidden"
+        style={{
+          opacity: sidebarOpen ? 1 : 0,
+          pointerEvents: sidebarOpen ? "auto" : "none",
+        }}
+      />
 
-        {/* Main Content */}
-        <div className="flex min-h-0 min-w-0 flex-1 flex-col overflow-hidden">
-          {/* Header */}
-          <Header
-            notifications_count={NOTIFICATIONS_COUNT}
-            pageTitle={pageTitle}
-          />
+      {/* Sidebar */}
+      <Sidebar
+        routes={routes}
+        open={sidebarOpen}
+        onClose={() => setSidebarOpen(false)}
+      />
 
-          <main className="min-h-0 flex-1 overflow-auto p-8" role="main">
-            {children}
-          </main>
-        </div>
+      {/* Main Content */}
+      <div className="flex min-h-0 min-w-0 flex-1 flex-col overflow-hidden w-full">
+        {/* Header */}
+        <Header
+          notifications_count={NOTIFICATIONS_COUNT}
+          pageTitle={pageTitle}
+          onMenuClick={() => setSidebarOpen((v) => !v)}
+        />
+
+        <main
+          className="min-h-0 flex-1 overflow-auto p-4 sm:p-6 lg:p-8 mt-[92px] lg:ml-64"
+          role="main"
+        >
+          {children}
+        </main>
       </div>
+    </div>
   );
 }
