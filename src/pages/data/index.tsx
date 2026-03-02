@@ -1,7 +1,7 @@
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Play } from "lucide-react";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { AnomalyModal } from "@/components/dashboard/data-management/AnomalyModal";
 import { DataQualityAnomalies } from "@/components/dashboard/data-management/DataQualityAnomalies";
 import { DatasetCard } from "@/components/dashboard/data-management/DatasetCard";
@@ -9,7 +9,6 @@ import {
   anomalies,
   AnomalieType,
   datasets,
-  pipelineLogs,
   serverStatus,
 } from "@/components/dashboard/data-management/mocks";
 import { PipelineLog } from "@/components/dashboard/data-management/PipelineLog";
@@ -17,12 +16,27 @@ import { ServerStatusCard } from "@/components/dashboard/data-management/ServerS
 import { PageLayout } from "@/components/layout/PageLayout";
 import { NextPageWithLayout } from "@/utils/types/globals";
 import { ReactElement } from "react";
+import { useEtlLogs, type PipelineId } from "@/hooks/useEtlLogs";
+import { useEtlPipelineRunning } from "@/contexts/EtlPipelineContext";
+import api from "@/utils/axios";
+
+const DATASET_TO_PIPELINE: Record<string, PipelineId> = {
+  nutrition: "nutrition",
+  exercises: "exercise",
+  biometry: "health-profile",
+};
+
+const PIPELINE_TO_API_PATH: Record<PipelineId, string> = {
+  nutrition: "/nutrition/import",
+  exercise: "/exercise/import",
+  "health-profile": "/health-profile/import",
+};
 
 const DataPage: NextPageWithLayout = () => {
   const [isLaunching, setIsLaunching] = useState(false);
   const [pipelineStatus, setPipelineStatus] = useState<
     "idle" | "running" | "success" | "error"
-  >("success");
+  >("idle");
   const [selectedDataset, setSelectedDataset] = useState("nutrition");
   const [selectedAnomalies, setSelectedAnomalies] = useState<number[]>([]);
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -32,6 +46,14 @@ const DataPage: NextPageWithLayout = () => {
   );
   const [jsonValue, setJsonValue] = useState("");
   const [originalJsonValue, setOriginalJsonValue] = useState("");
+
+  const { logs: pipelineLogs, clearLogs, subscribe, isConnected } = useEtlLogs();
+  const { isPipelineRunning, setPipelineRunning } = useEtlPipelineRunning();
+  const pipelineId = DATASET_TO_PIPELINE[selectedDataset] ?? "nutrition";
+
+  useEffect(() => {
+    subscribe(pipelineId);
+  }, [pipelineId, subscribe]);
 
   const openModal = (anomaly: AnomalieType) => {
     setCurrentAnomaly(anomaly);
@@ -49,13 +71,23 @@ const DataPage: NextPageWithLayout = () => {
     setHasJsonChanged(false);
   };
 
-  const handleLaunchPipeline = () => {
+  const handleLaunchPipeline = async () => {
+    if (isPipelineRunning) return;
+    clearLogs();
+    setPipelineRunning(true);
     setIsLaunching(true);
     setPipelineStatus("running");
-    setTimeout(() => {
-      setIsLaunching(false);
+    subscribe(pipelineId);
+    const path = PIPELINE_TO_API_PATH[pipelineId];
+    try {
+      await api.post(path);
       setPipelineStatus("success");
-    }, 2000);
+    } catch {
+      setPipelineStatus("error");
+    } finally {
+      setIsLaunching(false);
+      setPipelineRunning(false);
+    }
   };
 
   return (
@@ -68,7 +100,7 @@ const DataPage: NextPageWithLayout = () => {
           size="default"
           className="bg-[#FF887B] hover:bg-[#ff7066] text-white gap-2"
           onClick={handleLaunchPipeline}
-          disabled={isLaunching}
+          disabled={isPipelineRunning}
         >
           <Play className={`w-4 h-4 ${isLaunching ? "animate-spin" : ""}`} />
           {isLaunching ? "Lancement..." : "Lancer le Pipeline ETL"}
@@ -91,6 +123,8 @@ const DataPage: NextPageWithLayout = () => {
       <PipelineLog
         pipelineStatus={pipelineStatus}
         pipelineLogs={pipelineLogs}
+        onClear={clearLogs}
+        isConnected={isConnected}
       />
 
       <DataQualityAnomalies

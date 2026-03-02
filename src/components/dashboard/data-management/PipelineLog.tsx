@@ -2,14 +2,26 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Clock, Terminal } from "lucide-react";
-import { PipelineLogType } from "./mocks";
+
+export type PipelineLogEntry = {
+  timestamp: string;
+  level: string;
+  message: string;
+};
 
 interface Props {
   pipelineStatus: string;
-  pipelineLogs: PipelineLogType[];
+  pipelineLogs: PipelineLogEntry[];
+  onClear?: () => void;
+  isConnected?: boolean;
 }
 
-export const PipelineLog = ({ pipelineStatus, pipelineLogs }: Props) => {
+export const PipelineLog = ({
+  pipelineStatus,
+  pipelineLogs,
+  onClear,
+  isConnected,
+}: Props) => {
   return (
     <Card>
       <CardHeader>
@@ -26,7 +38,9 @@ export const PipelineLog = ({ pipelineStatus, pipelineLogs }: Props) => {
                   aria-hidden="true"
                 />
                 <p className="text-xs text-[#4A5568] opacity-70">
-                  Dernier lancement : Aujourd&apos;hui à 14:32
+                  {isConnected
+                    ? "Connecté — logs en temps réel"
+                    : "Connectez-vous et lancez un pipeline pour voir les logs"}
                 </p>
               </div>
             </div>
@@ -51,31 +65,37 @@ export const PipelineLog = ({ pipelineStatus, pipelineLogs }: Props) => {
         </div>
       </CardHeader>
       <CardContent>
-        <div className="bg-[#1e1e1e] rounded-lg p-4 font-mono text-sm max-h-80 overflow-y-auto">
-          {pipelineLogs.map((log, index) => (
-            <div
-              key={index}
-              className="flex items-start gap-3 py-1 hover:bg-white hover:bg-opacity-5 px-2 -mx-2 rounded"
-            >
-              <span className="text-[#858585] text-xs shrink-0 select-none">
-                {log.timestamp}
-              </span>
-              <span
-                className={`shrink-0 font-semibold text-xs ${
-                  log.level === "INFO"
-                    ? "text-[#4A90E2]"
-                    : log.level === "SUCCESS"
-                      ? "text-[#5CC58C]"
-                      : log.level === "WARNING"
-                        ? "text-[#FFB88C]"
-                        : "text-[#FF887B]"
-                }`}
+        <div className="bg-[#1e1e1e] rounded-lg p-4 font-mono text-sm h-80 min-h-80 max-h-80 overflow-y-auto flex flex-col">
+          {pipelineLogs.length === 0 ? (
+            <p className="text-[#858585] text-sm flex-1 flex items-center justify-center">
+              Aucun logs pour le moment
+            </p>
+          ) : (
+            pipelineLogs.map((log, index) => (
+              <div
+                key={index}
+                className="flex items-start gap-3 py-1 hover:bg-white hover:bg-opacity-5 px-2 -mx-2 rounded"
               >
-                [{log.level}]
-              </span>
-              <span className="text-[#d4d4d4] flex-1">{log.message}</span>
-            </div>
-          ))}
+                <span className="text-[#858585] text-xs shrink-0 select-none">
+                  {log.timestamp}
+                </span>
+                <span
+                  className={`shrink-0 font-semibold text-xs ${
+                    log.level === "INFO"
+                      ? "text-[#4A90E2]"
+                      : log.level === "SUCCESS"
+                        ? "text-[#5CC58C]"
+                        : log.level === "WARNING"
+                          ? "text-[#FFB88C]"
+                          : "text-[#FF887B]"
+                  }`}
+                >
+                  [{log.level}]
+                </span>
+                <span className="text-[#d4d4d4] flex-1">{log.message}</span>
+              </div>
+            ))
+          )}
         </div>
         <div className="flex items-center justify-between mt-4 pt-4 border-t border-gray-200">
           <p className="text-sm text-[#4A5568]">
@@ -86,7 +106,7 @@ export const PipelineLog = ({ pipelineStatus, pipelineLogs }: Props) => {
             <Button variant="outline" size="sm">
               Télécharger les logs
             </Button>
-            <Button variant="outline" size="sm">
+            <Button variant="outline" size="sm" onClick={onClear}>
               Effacer
             </Button>
           </div>
