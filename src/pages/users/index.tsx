@@ -22,21 +22,22 @@ const UsersPage: NextPageWithLayout = () => {
 
   useEffect(() => {
     let cancelled = false;
-    setUsersSummaryLoading(true);
-    setUsersSummaryError(null);
     getUsersSummary()
       .then((summary) => {
         if (cancelled) return;
         setUsersSummary(summary);
-        setUsersSummaryLoading(false);
+        setUsersSummaryError(null);
       })
       .catch((e: unknown) => {
         if (cancelled) return;
         setUsersSummary(null);
-        setUsersSummaryLoading(false);
         setUsersSummaryError(
           e instanceof Error ? e.message : "Impossible de charger les utilisateurs."
         );
+      })
+      .finally(() => {
+        if (cancelled) return;
+        setUsersSummaryLoading(false);
       });
     return () => {
       cancelled = true;
