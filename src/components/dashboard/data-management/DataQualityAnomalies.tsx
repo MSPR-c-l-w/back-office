@@ -19,8 +19,11 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { Filter, Search } from "lucide-react";
+import { ChevronLeft, ChevronRight, Filter, Search } from "lucide-react";
 import { Input } from "@/components/ui/input";
+import { useState, useMemo } from "react";
+
+const DEFAULT_PAGE_SIZE = 20;
 
 interface Props {
   datasets: DatasetType[];
@@ -39,10 +42,42 @@ export const DataQualityAnomalies = ({
   setSelectedAnomalies,
   openModal,
 }: Props) => {
+  const [page, setPage] = useState(1);
+  const limit = DEFAULT_PAGE_SIZE;
+
+  const filtered = useMemo(
+    () =>
+      anomalies.filter(
+        (a) =>
+          a.dataset === datasets.find((d) => d.id === selectedDataset)?.name
+      ),
+    [anomalies, datasets, selectedDataset]
+  );
+
+  const total = filtered.length;
+  const totalPages = Math.max(1, Math.ceil(total / limit));
+  const paginated = useMemo(
+    () => filtered.slice((page - 1) * limit, page * limit),
+    [filtered, page, limit]
+  );
+  const start = total === 0 ? 0 : (page - 1) * limit + 1;
+  const end = Math.min(page * limit, total);
+
   const toggleAnomaly = (id: number) => {
     setSelectedAnomalies((prev: number[]) =>
       prev.includes(id) ? prev.filter((i) => i !== id) : [...prev, id]
     );
+  };
+
+  const toggleAll = () => {
+    const allIds = filtered.map((a) => a.id);
+    const allSelected =
+      allIds.length > 0 && allIds.every((id) => selectedAnomalies.includes(id));
+    setSelectedAnomalies(allSelected ? [] : allIds);
+  };
+
+  const goToPage = (newPage: number) => {
+    setPage(Math.max(1, Math.min(totalPages, newPage)));
   };
 
   return (
@@ -87,7 +122,14 @@ export const DataQualityAnomalies = ({
             <TableHeader>
               <TableRow>
                 <TableHead className="w-12">
-                  <Checkbox aria-label="Sélectionner toutes les anomalies" />
+                  <Checkbox
+                    aria-label="Sélectionner toutes les anomalies (intégralité)"
+                    checked={
+                      total > 0 &&
+                      filtered.every((a) => selectedAnomalies.includes(a.id))
+                    }
+                    onCheckedChange={toggleAll}
+                  />
                 </TableHead>
                 <TableHead>Type</TableHead>
                 <TableHead>Dataset</TableHead>
@@ -98,13 +140,7 @@ export const DataQualityAnomalies = ({
               </TableRow>
             </TableHeader>
             <TableBody>
-              {anomalies
-                .filter(
-                  (a) =>
-                    a.dataset ===
-                    datasets.find((d) => d.id === selectedDataset)?.name
-                )
-                .map((anomaly) => (
+              {paginated.map((anomaly) => (
                   <TableRow key={anomaly.id}>
                     <TableCell>
                       <Checkbox
@@ -180,6 +216,41 @@ export const DataQualityAnomalies = ({
             </TableBody>
           </Table>
         </div>
+
+        {total > 0 && (
+          <div className="mt-4 flex items-center justify-between gap-4 flex-wrap">
+            <p className="text-sm text-[#4A5568]">
+              Lignes {start} – {end} sur {total}
+            </p>
+            <div className="flex items-center gap-2">
+              <Button
+                variant="outline"
+                size="sm"
+                className="border-slate-300 bg-white text-slate-800"
+                disabled={page <= 1}
+                onClick={() => goToPage(page - 1)}
+                aria-label="Page précédente"
+              >
+                <ChevronLeft className="w-4 h-4" />
+                Précédent
+              </Button>
+              <span className="text-sm text-[#4A5568] px-2">
+                Page {page} sur {totalPages}
+              </span>
+              <Button
+                variant="outline"
+                size="sm"
+                className="border-slate-300 bg-white text-slate-800"
+                disabled={page >= totalPages}
+                onClick={() => goToPage(page + 1)}
+                aria-label="Page suivante"
+              >
+                Suivant
+                <ChevronRight className="w-4 h-4" />
+              </Button>
+            </div>
+          </div>
+        )}
 
         {selectedAnomalies.length > 0 && (
           <div className="mt-4 p-4 bg-[#4A90E2] bg-opacity-10 rounded-lg flex items-center justify-between">

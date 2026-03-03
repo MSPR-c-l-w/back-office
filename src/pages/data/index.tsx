@@ -4,6 +4,7 @@ import { Play } from "lucide-react";
 import { useEffect, useState } from "react";
 import { AnomalyModal } from "@/components/dashboard/data-management/AnomalyModal";
 import { DataQualityAnomalies } from "@/components/dashboard/data-management/DataQualityAnomalies";
+import { DataQualityValidation } from "@/components/dashboard/data-management/DataQualityValidation";
 import { DatasetCard } from "@/components/dashboard/data-management/DatasetCard";
 import {
   anomalies,
@@ -128,12 +129,20 @@ const DataPage: NextPageWithLayout = () => {
       />
 
       <DataQualityAnomalies
+        key={selectedDataset}
         datasets={datasets}
         selectedDataset={selectedDataset}
         anomalies={anomalies}
         selectedAnomalies={selectedAnomalies}
         setSelectedAnomalies={setSelectedAnomalies}
         openModal={openModal}
+      />
+
+      <DataQualityValidation
+        pipeline={pipelineId}
+        pipelineLabel={
+          datasets.find((d) => d.id === selectedDataset)?.name ?? selectedDataset
+        }
       />
 
       <Card>
