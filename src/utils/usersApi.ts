@@ -14,7 +14,8 @@ export type UsersSummary = {
 };
 
 function parseDate(value: unknown): Date | null {
-  if (value instanceof Date) return Number.isNaN(value.getTime()) ? null : value;
+  if (value instanceof Date)
+    return Number.isNaN(value.getTime()) ? null : value;
   if (typeof value === "string" || typeof value === "number") {
     const d = new Date(value);
     return Number.isNaN(d.getTime()) ? null : d;
@@ -42,11 +43,15 @@ export async function getUsersSummary(): Promise<UsersSummary> {
   const now = new Date();
   const startOfThisMonth = new Date(now.getFullYear(), now.getMonth(), 1);
   const prevTotal = users.filter((u) => {
-    const createdAt = parseDate((u as unknown as { created_at?: unknown }).created_at);
+    const createdAt = parseDate(
+      (u as unknown as { created_at?: unknown }).created_at
+    );
     return createdAt ? createdAt < startOfThisMonth : false;
   }).length;
   const newThisMonth = users.filter((u) => {
-    const createdAt = parseDate((u as unknown as { created_at?: unknown }).created_at);
+    const createdAt = parseDate(
+      (u as unknown as { created_at?: unknown }).created_at
+    );
     return createdAt ? createdAt >= startOfThisMonth : false;
   }).length;
 
@@ -55,4 +60,3 @@ export async function getUsersSummary(): Promise<UsersSummary> {
 
   return { total, active, totalGrowthPctThisMonth };
 }
-

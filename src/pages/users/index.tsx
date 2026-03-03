@@ -18,7 +18,9 @@ const UsersPage: NextPageWithLayout = () => {
 
   const [usersSummary, setUsersSummary] = useState<UsersSummary | null>(null);
   const [usersSummaryLoading, setUsersSummaryLoading] = useState(true);
-  const [usersSummaryError, setUsersSummaryError] = useState<string | null>(null);
+  const [usersSummaryError, setUsersSummaryError] = useState<string | null>(
+    null
+  );
 
   useEffect(() => {
     let cancelled = false;
@@ -32,7 +34,9 @@ const UsersPage: NextPageWithLayout = () => {
         if (cancelled) return;
         setUsersSummary(null);
         setUsersSummaryError(
-          e instanceof Error ? e.message : "Impossible de charger les utilisateurs."
+          e instanceof Error
+            ? e.message
+            : "Impossible de charger les utilisateurs."
         );
       })
       .finally(() => {

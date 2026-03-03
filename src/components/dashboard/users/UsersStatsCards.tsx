@@ -38,7 +38,8 @@ export function UsersStatsCards({
   const extrasTotal = allUsersForExtras?.length ?? 0;
   const premiumCount =
     allUsersForExtras?.filter((u) => u.plan === "Premium").length ?? 0;
-  const b2bCount = allUsersForExtras?.filter((u) => u.plan === "B2B").length ?? 0;
+  const b2bCount =
+    allUsersForExtras?.filter((u) => u.plan === "B2B").length ?? 0;
 
   return (
     <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
@@ -67,7 +68,11 @@ export function UsersStatsCards({
         </CardHeader>
         <CardContent>
           <div className="text-3xl font-bold text-[#4A5568]">
-            {loading ? "…" : summary ? activeCount.toLocaleString("fr-FR") : "—"}
+            {loading
+              ? "…"
+              : summary
+                ? activeCount.toLocaleString("fr-FR")
+                : "—"}
           </div>
           <p className="text-sm text-[#5CC58C] flex items-center gap-1 mt-2">
             <Activity className="w-4 h-4" />
