@@ -141,78 +141,78 @@ export const DataQualityAnomalies = ({
             </TableHeader>
             <TableBody>
               {paginated.map((anomaly) => (
-                  <TableRow key={anomaly.id}>
-                    <TableCell>
-                      <Checkbox
-                        checked={selectedAnomalies.includes(anomaly.id)}
-                        onCheckedChange={() => toggleAnomaly(anomaly.id)}
-                        aria-label={`Sélectionner l'anomalie ${anomaly.id}`}
-                      />
-                    </TableCell>
-                    <TableCell>
-                      <Badge
-                        variant="outline"
-                        className="bg-[#4A90E2] bg-opacity-10 text-[#4A90E2] border-[#4A90E2]"
+                <TableRow key={anomaly.id}>
+                  <TableCell>
+                    <Checkbox
+                      checked={selectedAnomalies.includes(anomaly.id)}
+                      onCheckedChange={() => toggleAnomaly(anomaly.id)}
+                      aria-label={`Sélectionner l'anomalie ${anomaly.id}`}
+                    />
+                  </TableCell>
+                  <TableCell>
+                    <Badge
+                      variant="outline"
+                      className="bg-[#4A90E2] bg-opacity-10 text-[#4A90E2] border-[#4A90E2]"
+                    >
+                      {anomaly.type === "duplicate" && "Doublon"}
+                      {anomaly.type === "missing" && "Manquant"}
+                      {anomaly.type === "outlier" && "Aberrant"}
+                      {anomaly.type === "format" && "Format"}
+                    </Badge>
+                  </TableCell>
+                  <TableCell className="text-[#4A5568]">
+                    {anomaly.dataset}
+                  </TableCell>
+                  <TableCell>
+                    <code className="text-sm font-mono text-[#4A5568] bg-gray-100 px-2 py-1 rounded">
+                      {anomaly.field}
+                    </code>
+                  </TableCell>
+                  <TableCell className="text-[#4A5568]">
+                    {anomaly.description}
+                    <span className="ml-2 text-xs text-[#4A5568] opacity-70">
+                      ({anomaly.count} occurrence
+                      {anomaly.count > 1 ? "s" : ""})
+                    </span>
+                  </TableCell>
+                  <TableCell>
+                    <Badge
+                      variant="outline"
+                      className={
+                        anomaly.severity === "high"
+                          ? "bg-[#FF887B] bg-opacity-10 text-[#FF887B] border-[#FF887B]"
+                          : anomaly.severity === "medium"
+                            ? "bg-[#FFB88C] bg-opacity-10 text-[#FFB88C] border-[#FFB88C]"
+                            : "bg-[#7FD8BE] bg-opacity-10 text-[#7FD8BE] border-[#7FD8BE]"
+                      }
+                    >
+                      {anomaly.severity === "high" && "Élevée"}
+                      {anomaly.severity === "medium" && "Moyenne"}
+                      {anomaly.severity === "low" && "Faible"}
+                    </Badge>
+                  </TableCell>
+                  <TableCell className="text-right">
+                    <div className="flex items-center justify-end gap-2">
+                      <Button
+                        size="sm"
+                        className="bg-[#5CC58C] hover:bg-[#4db57a]"
+                        aria-label={`Résoudre l'anomalie ${anomaly.id}`}
+                        onClick={() => openModal(anomaly)}
                       >
-                        {anomaly.type === "duplicate" && "Doublon"}
-                        {anomaly.type === "missing" && "Manquant"}
-                        {anomaly.type === "outlier" && "Aberrant"}
-                        {anomaly.type === "format" && "Format"}
-                      </Badge>
-                    </TableCell>
-                    <TableCell className="text-[#4A5568]">
-                      {anomaly.dataset}
-                    </TableCell>
-                    <TableCell>
-                      <code className="text-sm font-mono text-[#4A5568] bg-gray-100 px-2 py-1 rounded">
-                        {anomaly.field}
-                      </code>
-                    </TableCell>
-                    <TableCell className="text-[#4A5568]">
-                      {anomaly.description}
-                      <span className="ml-2 text-xs text-[#4A5568] opacity-70">
-                        ({anomaly.count} occurrence
-                        {anomaly.count > 1 ? "s" : ""})
-                      </span>
-                    </TableCell>
-                    <TableCell>
-                      <Badge
-                        variant="outline"
-                        className={
-                          anomaly.severity === "high"
-                            ? "bg-[#FF887B] bg-opacity-10 text-[#FF887B] border-[#FF887B]"
-                            : anomaly.severity === "medium"
-                              ? "bg-[#FFB88C] bg-opacity-10 text-[#FFB88C] border-[#FFB88C]"
-                              : "bg-[#7FD8BE] bg-opacity-10 text-[#7FD8BE] border-[#7FD8BE]"
-                        }
+                        Résoudre
+                      </Button>
+                      <Button
+                        size="sm"
+                        variant="destructive"
+                        className="bg-[#FF887B] hover:bg-[#ff7066]"
+                        aria-label={`Rejeter l'anomalie ${anomaly.id}`}
                       >
-                        {anomaly.severity === "high" && "Élevée"}
-                        {anomaly.severity === "medium" && "Moyenne"}
-                        {anomaly.severity === "low" && "Faible"}
-                      </Badge>
-                    </TableCell>
-                    <TableCell className="text-right">
-                      <div className="flex items-center justify-end gap-2">
-                        <Button
-                          size="sm"
-                          className="bg-[#5CC58C] hover:bg-[#4db57a]"
-                          aria-label={`Résoudre l'anomalie ${anomaly.id}`}
-                          onClick={() => openModal(anomaly)}
-                        >
-                          Résoudre
-                        </Button>
-                        <Button
-                          size="sm"
-                          variant="destructive"
-                          className="bg-[#FF887B] hover:bg-[#ff7066]"
-                          aria-label={`Rejeter l'anomalie ${anomaly.id}`}
-                        >
-                          Rejeter
-                        </Button>
-                      </div>
-                    </TableCell>
-                  </TableRow>
-                ))}
+                        Rejeter
+                      </Button>
+                    </div>
+                  </TableCell>
+                </TableRow>
+              ))}
             </TableBody>
           </Table>
         </div>

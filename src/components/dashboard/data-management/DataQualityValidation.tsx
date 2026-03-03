@@ -51,10 +51,7 @@ function formatCleanedDataSummary(data: Record<string, unknown>): string {
   return parts.join(" · ");
 }
 
-export const DataQualityValidation = ({
-  pipeline,
-  pipelineLabel,
-}: Props) => {
+export const DataQualityValidation = ({ pipeline, pipelineLabel }: Props) => {
   const [rows, setRows] = useState<StagingRowDto[]>([]);
   const [total, setTotal] = useState(0);
   const [page, setPage] = useState(1);
@@ -148,7 +145,10 @@ export const DataQualityValidation = ({
     }
   };
 
-  const updateStatus = async (ids: string[], status: "APPROVED" | "REJECTED") => {
+  const updateStatus = async (
+    ids: string[],
+    status: "APPROVED" | "REJECTED"
+  ) => {
     if (ids.length === 0) return;
     setActionLoading(true);
     try {
@@ -268,9 +268,7 @@ export const DataQualityValidation = ({
                               className="bg-[#5CC58C] hover:bg-[#4db57a]"
                               aria-label={`Accepter la ligne ${row.id}`}
                               disabled={actionLoading}
-                              onClick={() =>
-                                updateStatus([row.id], "APPROVED")
-                              }
+                              onClick={() => updateStatus([row.id], "APPROVED")}
                             >
                               Accepter
                             </Button>
@@ -280,9 +278,7 @@ export const DataQualityValidation = ({
                               className="bg-[#FF887B] hover:bg-[#ff7066]"
                               aria-label={`Rejeter la ligne ${row.id}`}
                               disabled={actionLoading}
-                              onClick={() =>
-                                updateStatus([row.id], "REJECTED")
-                              }
+                              onClick={() => updateStatus([row.id], "REJECTED")}
                             >
                               Rejeter
                             </Button>
@@ -333,7 +329,8 @@ export const DataQualityValidation = ({
             {selectedIds.size > 0 && (
               <div className="mt-4 p-4 bg-[#4A90E2] bg-opacity-10 rounded-lg flex items-center justify-between flex-wrap gap-3">
                 <p className="text-sm text-[#4A5568]">
-                  <span className="font-semibold">{selectedIds.size}</span> ligne
+                  <span className="font-semibold">{selectedIds.size}</span>{" "}
+                  ligne
                   {selectedIds.size > 1 ? "s" : ""} sélectionnée
                   {selectedIds.size > 1 ? "s" : ""}
                 </p>
@@ -360,10 +357,15 @@ export const DataQualityValidation = ({
         )}
       </CardContent>
 
-      <Dialog open={!!detailRow} onOpenChange={(open) => !open && setDetailRow(null)}>
+      <Dialog
+        open={!!detailRow}
+        onOpenChange={(open) => !open && setDetailRow(null)}
+      >
         <DialogContent className="max-w-3xl max-h-[85vh] flex flex-col bg-white">
           <DialogHeader>
-            <DialogTitle className="text-slate-900">Détail de la ligne</DialogTitle>
+            <DialogTitle className="text-slate-900">
+              Détail de la ligne
+            </DialogTitle>
           </DialogHeader>
           {detailRow && (
             <pre className="text-sm font-mono text-slate-800 bg-slate-100 border border-slate-200 rounded-lg p-4 overflow-auto flex-1 min-h-0 text-left whitespace-pre-wrap break-words">

@@ -33,7 +33,7 @@ export function useEtlLogs() {
 
   const socketUrl =
     typeof window !== "undefined"
-      ? process.env.NEXT_PUBLIC_API_URL ?? ""
+      ? (process.env.NEXT_PUBLIC_API_URL ?? "")
       : "";
 
   const subscribe = useCallback(
@@ -54,16 +54,19 @@ export function useEtlLogs() {
         socket.on("disconnect", () => {
           setIsConnected(false);
         });
-        socket.on("etl:log", (payload: { timestamp: string; level: string; message: string }) => {
-          setLogs((prev) => [
-            ...prev,
-            {
-              timestamp: formatTimestamp(payload.timestamp),
-              level: payload.level ?? "INFO",
-              message: payload.message ?? "",
-            },
-          ]);
-        });
+        socket.on(
+          "etl:log",
+          (payload: { timestamp: string; level: string; message: string }) => {
+            setLogs((prev) => [
+              ...prev,
+              {
+                timestamp: formatTimestamp(payload.timestamp),
+                level: payload.level ?? "INFO",
+                message: payload.message ?? "",
+              },
+            ]);
+          }
+        );
       }
 
       const socket = socketRef.current;

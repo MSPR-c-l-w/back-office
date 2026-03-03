@@ -29,11 +29,11 @@ Le back-office est l’interface d’administration qui consomme l’**API du ba
 
 ### 1.4 Commandes utiles
 
-| Commande | Rôle |
-|----------|------|
-| `npm run build` | Build Next.js |
-| `npm run lint` | Vérification ESLint |
-| `npm run format` | Application Prettier (write) |
+| Commande               | Rôle                               |
+| ---------------------- | ---------------------------------- |
+| `npm run build`        | Build Next.js                      |
+| `npm run lint`         | Vérification ESLint                |
+| `npm run format`       | Application Prettier (write)       |
 | `npm run format:check` | Vérification Prettier (check only) |
 
 ---

@@ -48,7 +48,12 @@ const DataPage: NextPageWithLayout = () => {
   const [jsonValue, setJsonValue] = useState("");
   const [originalJsonValue, setOriginalJsonValue] = useState("");
 
-  const { logs: pipelineLogs, clearLogs, subscribe, isConnected } = useEtlLogs();
+  const {
+    logs: pipelineLogs,
+    clearLogs,
+    subscribe,
+    isConnected,
+  } = useEtlLogs();
   const { isPipelineRunning, setPipelineRunning } = useEtlPipelineRunning();
   const pipelineId = DATASET_TO_PIPELINE[selectedDataset] ?? "nutrition";
 
@@ -141,7 +146,8 @@ const DataPage: NextPageWithLayout = () => {
       <DataQualityValidation
         pipeline={pipelineId}
         pipelineLabel={
-          datasets.find((d) => d.id === selectedDataset)?.name ?? selectedDataset
+          datasets.find((d) => d.id === selectedDataset)?.name ??
+          selectedDataset
         }
       />
 

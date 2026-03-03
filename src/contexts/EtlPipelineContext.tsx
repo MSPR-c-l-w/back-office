@@ -32,7 +32,9 @@ export function EtlPipelineProvider({ children }: { children: ReactNode }) {
 export function useEtlPipelineRunning() {
   const ctx = useContext(EtlPipelineContext);
   if (!ctx) {
-    throw new Error("useEtlPipelineRunning must be used within EtlPipelineProvider");
+    throw new Error(
+      "useEtlPipelineRunning must be used within EtlPipelineProvider"
+    );
   }
   return ctx;
 }
