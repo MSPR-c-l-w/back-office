@@ -6,13 +6,42 @@ import {
 } from "@/components/dashboard/users";
 import { PageLayout } from "@/components/layout/PageLayout";
 import { useRequireRole } from "@/hooks/useRequireRole";
+import { getUsersSummary } from "@/utils/usersApi";
+import type { UsersSummary } from "@/utils/usersApi";
 import { NextPageWithLayout } from "@/utils/types/globals";
-import { ReactElement, useState, useMemo } from "react";
+import { ReactElement, useEffect, useMemo, useState } from "react";
 
 const ITEMS_PER_PAGE = 10;
 
 const UsersPage: NextPageWithLayout = () => {
   useRequireRole("ADMIN");
+
+  const [usersSummary, setUsersSummary] = useState<UsersSummary | null>(null);
+  const [usersSummaryLoading, setUsersSummaryLoading] = useState(true);
+  const [usersSummaryError, setUsersSummaryError] = useState<string | null>(null);
+
+  useEffect(() => {
+    let cancelled = false;
+    setUsersSummaryLoading(true);
+    setUsersSummaryError(null);
+    getUsersSummary()
+      .then((summary) => {
+        if (cancelled) return;
+        setUsersSummary(summary);
+        setUsersSummaryLoading(false);
+      })
+      .catch((e: unknown) => {
+        if (cancelled) return;
+        setUsersSummary(null);
+        setUsersSummaryLoading(false);
+        setUsersSummaryError(
+          e instanceof Error ? e.message : "Impossible de charger les utilisateurs."
+        );
+      });
+    return () => {
+      cancelled = true;
+    };
+  }, []);
 
   const [currentPage, setCurrentPage] = useState(1);
   const [searchQuery, setSearchQuery] = useState("");
@@ -39,7 +68,12 @@ const UsersPage: NextPageWithLayout = () => {
 
   return (
     <div className="space-y-6">
-      <UsersStatsCards allUsers={allUsers} />
+      <UsersStatsCards
+        summary={usersSummary}
+        loading={usersSummaryLoading}
+        error={usersSummaryError}
+        allUsersForExtras={allUsers}
+      />
 
       <UsersTableCard
         searchQuery={searchQuery}

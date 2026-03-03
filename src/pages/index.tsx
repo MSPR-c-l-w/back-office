@@ -16,23 +16,30 @@ import {
 import { ObjectivesDataChart } from "@/components/dashboard/dashboard-pilotage/ObjectivesDataChart";
 import { PageLayout } from "@/components/layout/PageLayout";
 import { getUsersSummary } from "@/utils/usersApi";
+import type { UsersSummary } from "@/utils/usersApi";
 
 const DashboardPage: NextPageWithLayout = () => {
-  const [usersSummary, setUsersSummary] = useState<{
-    total: number;
-    active: number;
-  } | null>(null);
+  const [usersSummary, setUsersSummary] = useState<UsersSummary | null>(null);
+  const [usersSummaryLoading, setUsersSummaryLoading] = useState(true);
+  const [usersSummaryError, setUsersSummaryError] = useState<string | null>(null);
 
   useEffect(() => {
     let cancelled = false;
+    setUsersSummaryLoading(true);
+    setUsersSummaryError(null);
     getUsersSummary()
       .then((summary) => {
         if (cancelled) return;
         setUsersSummary(summary);
+        setUsersSummaryLoading(false);
       })
-      .catch(() => {
+      .catch((e: unknown) => {
         if (cancelled) return;
         setUsersSummary(null);
+        setUsersSummaryLoading(false);
+        setUsersSummaryError(
+          e instanceof Error ? e.message : "Impossible de charger les utilisateurs."
+        );
       });
     return () => {
       cancelled = true;
@@ -43,11 +50,23 @@ const DashboardPage: NextPageWithLayout = () => {
     return kpiData.map((kpi) => {
       if (kpi.label !== "Utilisateurs Actifs") return kpi;
 
+      if (usersSummaryLoading) {
+        return {
+          ...kpi,
+          value: "…",
+          trend: "Chargement",
+        };
+      }
+
       if (!usersSummary) {
         return {
           ...kpi,
           value: "—",
-          trend: "—",
+          trend: usersSummaryError
+            ? usersSummaryError.includes("USERS_API_MISCONFIGURED")
+              ? "Config API"
+              : "API indispo"
+            : "API indispo",
         };
       }
 
@@ -62,7 +81,7 @@ const DashboardPage: NextPageWithLayout = () => {
         trend: `${pctActive}% actifs`,
       };
     });
-  }, [usersSummary]);
+  }, [usersSummary, usersSummaryLoading, usersSummaryError]);
 
   return (
     <div className="space-y-6">

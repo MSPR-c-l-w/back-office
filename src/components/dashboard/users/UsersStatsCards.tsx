@@ -1,13 +1,44 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Activity, Clock, Target, TrendingUp } from "lucide-react";
+import type { UsersSummary } from "@/utils/usersApi";
 import type { UserListItem } from "./mocks";
 
-type Props = { allUsers: UserListItem[] };
+type Props = {
+  summary: UsersSummary | null;
+  loading: boolean;
+  error: string | null;
+  /**
+   * Données optionnelles pour conserver les cartes "Premium" / "B2B" (actuellement mockées).
+   * À remplacer par un endpoint backend quand il existera.
+   */
+  allUsersForExtras?: UserListItem[];
+};
 
-export function UsersStatsCards({ allUsers }: Props) {
-  const activeCount = allUsers.filter((u) => u.status === "active").length;
-  const premiumCount = allUsers.filter((u) => u.plan === "Premium").length;
-  const b2bCount = allUsers.filter((u) => u.plan === "B2B").length;
+function getKpiHint(error: string | null) {
+  if (!error) return "—";
+  if (error.includes("USERS_API_MISCONFIGURED")) return "Config API";
+  return "API indispo";
+}
+
+export function UsersStatsCards({
+  summary,
+  loading,
+  error,
+  allUsersForExtras,
+}: Props) {
+  const total = summary?.total ?? 0;
+  const activeCount = summary?.active ?? 0;
+  const totalTrend =
+    summary?.totalGrowthPctThisMonth == null
+      ? "Pas encore de données pour ce mois-ci"
+      : `+${summary.totalGrowthPctThisMonth.toFixed(1)}% ce mois`;
+  const pctActive =
+    summary && total > 0 ? ((activeCount / total) * 100).toFixed(1) : "0.0";
+
+  const extrasTotal = allUsersForExtras?.length ?? 0;
+  const premiumCount =
+    allUsersForExtras?.filter((u) => u.plan === "Premium").length ?? 0;
+  const b2bCount = allUsersForExtras?.filter((u) => u.plan === "B2B").length ?? 0;
 
   return (
     <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
@@ -19,11 +50,11 @@ export function UsersStatsCards({ allUsers }: Props) {
         </CardHeader>
         <CardContent>
           <div className="text-3xl font-bold text-[#4A5568]">
-            {allUsers.length}
+            {loading ? "…" : summary ? total.toLocaleString("fr-FR") : "—"}
           </div>
           <p className="text-sm text-[#5CC58C] flex items-center gap-1 mt-2">
             <TrendingUp className="w-4 h-4" />
-            +12.5% ce mois
+            {loading ? "Chargement" : summary ? totalTrend : getKpiHint(error)}
           </p>
         </CardContent>
       </Card>
@@ -35,13 +66,16 @@ export function UsersStatsCards({ allUsers }: Props) {
           </CardTitle>
         </CardHeader>
         <CardContent>
-          <div className="text-3xl font-bold text-[#4A5568]">{activeCount}</div>
+          <div className="text-3xl font-bold text-[#4A5568]">
+            {loading ? "…" : summary ? activeCount.toLocaleString("fr-FR") : "—"}
+          </div>
           <p className="text-sm text-[#5CC58C] flex items-center gap-1 mt-2">
             <Activity className="w-4 h-4" />
-            {allUsers.length > 0
-              ? ((activeCount / allUsers.length) * 100).toFixed(1)
-              : 0}
-            % actifs
+            {loading
+              ? "Chargement"
+              : summary
+                ? `${pctActive}% actifs`
+                : getKpiHint(error)}
           </p>
         </CardContent>
       </Card>
@@ -54,14 +88,13 @@ export function UsersStatsCards({ allUsers }: Props) {
         </CardHeader>
         <CardContent>
           <div className="text-3xl font-bold text-[#4A5568]">
-            {premiumCount}
+            {allUsersForExtras ? premiumCount.toLocaleString("fr-FR") : "—"}
           </div>
           <p className="text-sm text-[#4A90E2] flex items-center gap-1 mt-2">
             <Target className="w-4 h-4" />
-            {allUsers.length > 0
-              ? ((premiumCount / allUsers.length) * 100).toFixed(1)
-              : 0}
-            % conversion
+            {allUsersForExtras
+              ? `${extrasTotal > 0 ? ((premiumCount / extrasTotal) * 100).toFixed(1) : "0.0"}% conversion`
+              : "—"}
           </p>
         </CardContent>
       </Card>
@@ -73,10 +106,12 @@ export function UsersStatsCards({ allUsers }: Props) {
           </CardTitle>
         </CardHeader>
         <CardContent>
-          <div className="text-3xl font-bold text-[#4A5568]">{b2bCount}</div>
+          <div className="text-3xl font-bold text-[#4A5568]">
+            {allUsersForExtras ? b2bCount.toLocaleString("fr-FR") : "—"}
+          </div>
           <p className="text-sm text-[#7FD8BE] flex items-center gap-1 mt-2">
             <Clock className="w-4 h-4" />
-            Entreprises clientes
+            {allUsersForExtras ? "Entreprises clientes" : "—"}
           </p>
         </CardContent>
       </Card>
