@@ -26,7 +26,14 @@ function formatTimestamp(iso: string): string {
 }
 
 export function useEtlLogs() {
-  const [logs, setLogs] = useState<EtlLogEntry[]>([]);
+  const [logsByPipeline, setLogsByPipeline] = useState<
+    Record<PipelineId, EtlLogEntry[]>
+  >({
+    nutrition: [],
+    exercise: [],
+    "health-profile": [],
+  });
+  const [activePipeline, setActivePipeline] = useState<PipelineId>("nutrition");
   const [isConnected, setIsConnected] = useState(false);
   const socketRef = useRef<Socket | null>(null);
   const subscribedPipelineRef = useRef<PipelineId | null>(null);
@@ -56,21 +63,43 @@ export function useEtlLogs() {
         });
         socket.on(
           "etl:log",
-          (payload: { timestamp: string; level: string; message: string }) => {
-            setLogs((prev) => [
+          (payload: {
+            pipelineId?: PipelineId;
+            timestamp: string;
+            level: string;
+            message: string;
+          }) => {
+            const pipelineId = payload.pipelineId;
+            if (
+              pipelineId !== "nutrition" &&
+              pipelineId !== "exercise" &&
+              pipelineId !== "health-profile"
+            ) {
+              return;
+            }
+            setLogsByPipeline((prev) => ({
               ...prev,
-              {
-                timestamp: formatTimestamp(payload.timestamp),
-                level: payload.level ?? "INFO",
-                message: payload.message ?? "",
-              },
-            ]);
+              [pipelineId]: [
+                ...prev[pipelineId],
+                {
+                  timestamp: formatTimestamp(payload.timestamp),
+                  level: payload.level ?? "INFO",
+                  message: payload.message ?? "",
+                },
+              ],
+            }));
           }
         );
       }
 
       const socket = socketRef.current;
+      setActivePipeline(pipelineId);
       if (subscribedPipelineRef.current !== pipelineId) {
+        if (subscribedPipelineRef.current) {
+          socket.emit("unsubscribe", {
+            pipeline: subscribedPipelineRef.current,
+          });
+        }
         subscribedPipelineRef.current = pipelineId;
         socket.emit("subscribe", { pipeline: pipelineId });
       }
@@ -78,9 +107,16 @@ export function useEtlLogs() {
     [socketUrl]
   );
 
-  const clearLogs = useCallback(() => {
-    setLogs([]);
-  }, []);
+  const clearLogs = useCallback(
+    (pipelineId?: PipelineId) => {
+      const target = pipelineId ?? activePipeline;
+      setLogsByPipeline((prev) => ({
+        ...prev,
+        [target]: [],
+      }));
+    },
+    [activePipeline]
+  );
 
   useEffect(() => {
     return () => {
@@ -92,5 +128,11 @@ export function useEtlLogs() {
     };
   }, []);
 
-  return { logs, clearLogs, subscribe, isConnected };
+  return {
+    logs: logsByPipeline[activePipeline] ?? [],
+    clearLogs,
+    subscribe,
+    isConnected,
+    activePipeline,
+  };
 }

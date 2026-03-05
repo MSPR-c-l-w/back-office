@@ -1,7 +1,15 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { AnomalieType, DatasetType } from "./mocks";
+import { useCallback, useEffect, useMemo, useState } from "react";
+import api from "@/utils/axios";
+import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
+import { Input } from "@/components/ui/input";
 import {
   Table,
   TableBody,
@@ -10,270 +18,348 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { Badge } from "@/components/ui/badge";
-import { Checkbox } from "@/components/ui/checkbox";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
-import { ChevronLeft, ChevronRight, Filter, Search } from "lucide-react";
-import { Input } from "@/components/ui/input";
-import { useState, useMemo } from "react";
+import { ChevronLeft, ChevronRight, Search } from "lucide-react";
+import type { PipelineId, StagingRowDto } from "./DataQualityValidation";
 
 const DEFAULT_PAGE_SIZE = 20;
 
+type StagingAnomaly = {
+  field?: string;
+  code?: string;
+  message?: string;
+  severity?: string;
+};
+
 interface Props {
-  datasets: DatasetType[];
-  selectedDataset: string;
-  anomalies: AnomalieType[];
-  selectedAnomalies: any;
-  setSelectedAnomalies: (prev: any) => void;
-  openModal: (anomaly: AnomalieType) => void;
+  pipeline: PipelineId;
+  pipelineLabel: string;
+  refreshSignal?: number;
+  onDataChanged?: () => void;
+}
+
+function asAnomalyList(value: unknown): StagingAnomaly[] {
+  if (!Array.isArray(value)) return [];
+  return value.filter((item) => item && typeof item === "object");
+}
+
+function formatAnomalyBadgeSeverity(severity?: string): string {
+  const s = (severity ?? "").toUpperCase();
+  if (s === "HIGH")
+    return "bg-[#FF887B] bg-opacity-10 text-[#FF887B] border-[#FF887B]";
+  if (s === "MEDIUM")
+    return "bg-[#FFB88C] bg-opacity-10 text-[#FFB88C] border-[#FFB88C]";
+  return "bg-[#7FD8BE] bg-opacity-10 text-[#7FD8BE] border-[#7FD8BE]";
 }
 
 export const DataQualityAnomalies = ({
-  datasets,
-  selectedDataset,
-  anomalies,
-  selectedAnomalies,
-  setSelectedAnomalies,
-  openModal,
+  pipeline,
+  pipelineLabel,
+  refreshSignal,
+  onDataChanged,
 }: Props) => {
+  const [rows, setRows] = useState<StagingRowDto[]>([]);
+  const [total, setTotal] = useState(0);
   const [page, setPage] = useState(1);
+  const [loading, setLoading] = useState(true);
+  const [actionLoading, setActionLoading] = useState(false);
+  const [searchInput, setSearchInput] = useState("");
+  const [search, setSearch] = useState("");
+  const [error, setError] = useState<string | null>(null);
+  const [editingRow, setEditingRow] = useState<StagingRowDto | null>(null);
+  const [editedJson, setEditedJson] = useState("");
+  const [jsonError, setJsonError] = useState<string | null>(null);
+
   const limit = DEFAULT_PAGE_SIZE;
-
-  const filtered = useMemo(
-    () =>
-      anomalies.filter(
-        (a) =>
-          a.dataset === datasets.find((d) => d.id === selectedDataset)?.name
-      ),
-    [anomalies, datasets, selectedDataset]
-  );
-
-  const total = filtered.length;
   const totalPages = Math.max(1, Math.ceil(total / limit));
-  const paginated = useMemo(
-    () => filtered.slice((page - 1) * limit, page * limit),
-    [filtered, page, limit]
-  );
   const start = total === 0 ? 0 : (page - 1) * limit + 1;
   const end = Math.min(page * limit, total);
 
-  const toggleAnomaly = (id: number) => {
-    setSelectedAnomalies((prev: number[]) =>
-      prev.includes(id) ? prev.filter((i) => i !== id) : [...prev, id]
-    );
+  const fetchRows = useCallback(async () => {
+    setLoading(true);
+    setError(null);
+    try {
+      const params = new URLSearchParams({
+        pipeline,
+        page: String(page),
+        limit: String(limit),
+      });
+      if (search.trim()) params.set("search", search.trim());
+      const { data } = await api.get<{ items: StagingRowDto[]; total: number }>(
+        `/etl/staging/anomalies?${params.toString()}`
+      );
+      setRows(Array.isArray(data?.items) ? data.items : []);
+      setTotal(typeof data?.total === "number" ? data.total : 0);
+    } catch (e) {
+      setError(
+        e instanceof Error
+          ? e.message
+          : "Erreur lors du chargement des anomalies"
+      );
+      setRows([]);
+      setTotal(0);
+    } finally {
+      setLoading(false);
+    }
+  }, [pipeline, page, search, limit]);
+
+  useEffect(() => {
+    fetchRows();
+  }, [fetchRows, refreshSignal]);
+
+  useEffect(() => {
+    setPage(1);
+  }, [pipeline]);
+
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setSearch(searchInput);
+      setPage(1);
+    }, 300);
+    return () => clearTimeout(timer);
+  }, [searchInput]);
+
+  const rowAnomalyCount = useMemo(
+    () =>
+      rows.reduce(
+        (acc, row) => acc + asAnomalyList(row.anomalies ?? []).length,
+        0
+      ),
+    [rows]
+  );
+
+  const openEditor = (row: StagingRowDto) => {
+    setEditingRow(row);
+    setEditedJson(JSON.stringify(row.cleaned_data, null, 2));
+    setJsonError(null);
   };
 
-  const toggleAll = () => {
-    const allIds = filtered.map((a) => a.id);
-    const allSelected =
-      allIds.length > 0 && allIds.every((id) => selectedAnomalies.includes(id));
-    setSelectedAnomalies(allSelected ? [] : allIds);
+  const rejectRow = async (rowId: string) => {
+    setActionLoading(true);
+    try {
+      await api.patch("/etl/staging/status", {
+        pipeline,
+        ids: [rowId],
+        status: "REJECTED",
+      });
+      await fetchRows();
+      onDataChanged?.();
+    } finally {
+      setActionLoading(false);
+    }
   };
 
-  const goToPage = (newPage: number) => {
-    setPage(Math.max(1, Math.min(totalPages, newPage)));
+  const saveEditedJson = async () => {
+    if (!editingRow) return;
+    let parsed: unknown;
+    try {
+      parsed = JSON.parse(editedJson);
+      setJsonError(null);
+    } catch {
+      setJsonError("JSON invalide : corrige la syntaxe avant de valider.");
+      return;
+    }
+
+    setActionLoading(true);
+    try {
+      await api.patch("/etl/staging/cleaned-data", {
+        pipeline,
+        id: editingRow.id,
+        cleaned_data: parsed,
+      });
+      setEditingRow(null);
+      setEditedJson("");
+      await fetchRows();
+      onDataChanged?.();
+    } catch (e) {
+      setJsonError(
+        e instanceof Error
+          ? e.message
+          : "Erreur lors de la sauvegarde et revalidation"
+      );
+    } finally {
+      setActionLoading(false);
+    }
   };
 
   return (
     <Card>
       <CardHeader>
         <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
-          <CardTitle>
-            Gestion des Anomalies -{" "}
-            {datasets.find((d) => d.id === selectedDataset)?.name}
-          </CardTitle>
-          <div className="flex items-center gap-3">
-            <div className="relative">
-              <Search
-                className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-[#4A5568] opacity-50"
-                aria-hidden="true"
-              />
-              <Input
-                type="search"
-                placeholder="Rechercher une anomalie..."
-                className="pl-10 w-64"
-                aria-label="Rechercher une anomalie"
-              />
-            </div>
-            <Select defaultValue="all">
-              <SelectTrigger className="w-40">
-                <Filter className="w-4 h-4 mr-2" />
-                <SelectValue placeholder="Filtrer" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="all">Tous types</SelectItem>
-                <SelectItem value="duplicate">Doublons</SelectItem>
-                <SelectItem value="missing">Manquants</SelectItem>
-                <SelectItem value="outlier">Aberrants</SelectItem>
-              </SelectContent>
-            </Select>
+          <CardTitle>Gestion des anomalies — {pipelineLabel}</CardTitle>
+          <div className="relative">
+            <Search
+              className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-[#4A5568] opacity-50"
+              aria-hidden="true"
+            />
+            <Input
+              type="search"
+              placeholder="Rechercher une ligne..."
+              className="pl-10 w-64"
+              aria-label="Rechercher une ligne en anomalie"
+              value={searchInput}
+              onChange={(e) => setSearchInput(e.target.value)}
+            />
           </div>
         </div>
       </CardHeader>
       <CardContent>
-        <div className="rounded-md border">
-          <Table>
-            <TableHeader>
-              <TableRow>
-                <TableHead className="w-12">
-                  <Checkbox
-                    aria-label="Sélectionner toutes les anomalies (intégralité)"
-                    checked={
-                      total > 0 &&
-                      filtered.every((a) => selectedAnomalies.includes(a.id))
-                    }
-                    onCheckedChange={toggleAll}
-                  />
-                </TableHead>
-                <TableHead>Type</TableHead>
-                <TableHead>Dataset</TableHead>
-                <TableHead>Champ</TableHead>
-                <TableHead>Description</TableHead>
-                <TableHead>Sévérité</TableHead>
-                <TableHead className="text-right">Actions</TableHead>
-              </TableRow>
-            </TableHeader>
-            <TableBody>
-              {paginated.map((anomaly) => (
-                <TableRow key={anomaly.id}>
-                  <TableCell>
-                    <Checkbox
-                      checked={selectedAnomalies.includes(anomaly.id)}
-                      onCheckedChange={() => toggleAnomaly(anomaly.id)}
-                      aria-label={`Sélectionner l'anomalie ${anomaly.id}`}
-                    />
-                  </TableCell>
-                  <TableCell>
-                    <Badge
-                      variant="outline"
-                      className="bg-[#4A90E2] bg-opacity-10 text-[#4A90E2] border-[#4A90E2]"
-                    >
-                      {anomaly.type === "duplicate" && "Doublon"}
-                      {anomaly.type === "missing" && "Manquant"}
-                      {anomaly.type === "outlier" && "Aberrant"}
-                      {anomaly.type === "format" && "Format"}
-                    </Badge>
-                  </TableCell>
-                  <TableCell className="text-[#4A5568]">
-                    {anomaly.dataset}
-                  </TableCell>
-                  <TableCell>
-                    <code className="text-sm font-mono text-[#4A5568] bg-gray-100 px-2 py-1 rounded">
-                      {anomaly.field}
-                    </code>
-                  </TableCell>
-                  <TableCell className="text-[#4A5568]">
-                    {anomaly.description}
-                    <span className="ml-2 text-xs text-[#4A5568] opacity-70">
-                      ({anomaly.count} occurrence
-                      {anomaly.count > 1 ? "s" : ""})
-                    </span>
-                  </TableCell>
-                  <TableCell>
-                    <Badge
-                      variant="outline"
-                      className={
-                        anomaly.severity === "high"
-                          ? "bg-[#FF887B] bg-opacity-10 text-[#FF887B] border-[#FF887B]"
-                          : anomaly.severity === "medium"
-                            ? "bg-[#FFB88C] bg-opacity-10 text-[#FFB88C] border-[#FFB88C]"
-                            : "bg-[#7FD8BE] bg-opacity-10 text-[#7FD8BE] border-[#7FD8BE]"
-                      }
-                    >
-                      {anomaly.severity === "high" && "Élevée"}
-                      {anomaly.severity === "medium" && "Moyenne"}
-                      {anomaly.severity === "low" && "Faible"}
-                    </Badge>
-                  </TableCell>
-                  <TableCell className="text-right">
-                    <div className="flex items-center justify-end gap-2">
-                      <Button
-                        size="sm"
-                        className="bg-[#5CC58C] hover:bg-[#4db57a]"
-                        aria-label={`Résoudre l'anomalie ${anomaly.id}`}
-                        onClick={() => openModal(anomaly)}
-                      >
-                        Résoudre
-                      </Button>
-                      <Button
-                        size="sm"
-                        variant="destructive"
-                        className="bg-[#FF887B] hover:bg-[#ff7066]"
-                        aria-label={`Rejeter l'anomalie ${anomaly.id}`}
-                      >
-                        Rejeter
-                      </Button>
-                    </div>
-                  </TableCell>
-                </TableRow>
-              ))}
-            </TableBody>
-          </Table>
-        </div>
-
-        {total > 0 && (
-          <div className="mt-4 flex items-center justify-between gap-4 flex-wrap">
-            <p className="text-sm text-[#4A5568]">
-              Lignes {start} – {end} sur {total}
-            </p>
-            <div className="flex items-center gap-2">
-              <Button
-                variant="outline"
-                size="sm"
-                className="border-slate-300 bg-white text-slate-800"
-                disabled={page <= 1}
-                onClick={() => goToPage(page - 1)}
-                aria-label="Page précédente"
-              >
-                <ChevronLeft className="w-4 h-4" />
-                Précédent
-              </Button>
-              <span className="text-sm text-[#4A5568] px-2">
-                Page {page} sur {totalPages}
-              </span>
-              <Button
-                variant="outline"
-                size="sm"
-                className="border-slate-300 bg-white text-slate-800"
-                disabled={page >= totalPages}
-                onClick={() => goToPage(page + 1)}
-                aria-label="Page suivante"
-              >
-                Suivant
-                <ChevronRight className="w-4 h-4" />
-              </Button>
-            </div>
-          </div>
+        {error && (
+          <p className="text-sm text-red-600 mb-4" role="alert">
+            {error}
+          </p>
         )}
-
-        {selectedAnomalies.length > 0 && (
-          <div className="mt-4 p-4 bg-[#4A90E2] bg-opacity-10 rounded-lg flex items-center justify-between">
-            <p className="text-sm text-[#4A5568]">
-              <span className="font-semibold">{selectedAnomalies.length}</span>{" "}
-              anomalie{selectedAnomalies.length > 1 ? "s" : ""} sélectionnée
-              {selectedAnomalies.length > 1 ? "s" : ""}
-            </p>
-            <div className="flex items-center gap-3">
-              <Button className="bg-[#5CC58C] hover:bg-[#4db57a]">
-                Valider la sélection
-              </Button>
-              <Button
-                variant="destructive"
-                className="bg-[#FF887B] hover:bg-[#ff7066]"
-              >
-                Rejeter la sélection
-              </Button>
-              <Button variant="outline">Corriger automatiquement</Button>
+        {loading ? (
+          <p className="text-sm text-[#4A5568]">Chargement...</p>
+        ) : (
+          <>
+            <div className="rounded-md border">
+              <Table>
+                <TableHeader>
+                  <TableRow>
+                    <TableHead>Ligne</TableHead>
+                    <TableHead>Anomalies</TableHead>
+                    <TableHead className="text-right">Actions</TableHead>
+                  </TableRow>
+                </TableHeader>
+                <TableBody>
+                  {rows.length === 0 ? (
+                    <TableRow>
+                      <TableCell
+                        colSpan={3}
+                        className="text-center text-[#4A5568] py-8"
+                      >
+                        Aucune anomalie détectée.
+                      </TableCell>
+                    </TableRow>
+                  ) : (
+                    rows.map((row) => {
+                      const anomalies = asAnomalyList(row.anomalies ?? []);
+                      return (
+                        <TableRow key={row.id}>
+                          <TableCell className="text-[#4A5568]">
+                            <code className="text-sm font-mono bg-gray-100 px-2 py-1 rounded">
+                              {JSON.stringify(row.cleaned_data).slice(0, 90)}
+                            </code>
+                          </TableCell>
+                          <TableCell>
+                            <div className="flex flex-wrap gap-2">
+                              {anomalies.map((anomaly, index) => (
+                                <Badge
+                                  key={`${row.id}-${index}`}
+                                  variant="outline"
+                                  className={formatAnomalyBadgeSeverity(
+                                    anomaly.severity
+                                  )}
+                                >
+                                  {anomaly.field ?? "champ?"}:{" "}
+                                  {anomaly.code ?? "ANOMALY"}
+                                </Badge>
+                              ))}
+                            </div>
+                          </TableCell>
+                          <TableCell className="text-right">
+                            <div className="flex items-center justify-end gap-2">
+                              <Button
+                                size="sm"
+                                variant="outline"
+                                className="border-slate-300 bg-slate-100 text-slate-800 hover:bg-slate-200 hover:text-slate-900"
+                                onClick={() => openEditor(row)}
+                              >
+                                Corriger JSON
+                              </Button>
+                              <Button
+                                size="sm"
+                                variant="destructive"
+                                className="bg-[#FF887B] hover:bg-[#ff7066]"
+                                disabled={actionLoading}
+                                onClick={() => rejectRow(row.id)}
+                              >
+                                Rejeter
+                              </Button>
+                            </div>
+                          </TableCell>
+                        </TableRow>
+                      );
+                    })
+                  )}
+                </TableBody>
+              </Table>
             </div>
-          </div>
+
+            {total > 0 && (
+              <div className="mt-4 flex items-center justify-between gap-4 flex-wrap">
+                <p className="text-sm text-slate-600">
+                  Lignes {start} – {end} sur {total} (anomalies visibles:{" "}
+                  {rowAnomalyCount})
+                </p>
+                <div className="flex items-center gap-2">
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    className="border-slate-300 bg-white text-slate-800"
+                    disabled={page <= 1}
+                    onClick={() => setPage((p) => Math.max(1, p - 1))}
+                    aria-label="Page précédente"
+                  >
+                    <ChevronLeft className="w-4 h-4" />
+                    Précédent
+                  </Button>
+                  <span className="text-sm text-slate-600 px-2">
+                    Page {page} sur {totalPages}
+                  </span>
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    className="border-slate-300 bg-white text-slate-800"
+                    disabled={page >= totalPages}
+                    onClick={() => setPage((p) => Math.min(totalPages, p + 1))}
+                    aria-label="Page suivante"
+                  >
+                    Suivant
+                    <ChevronRight className="w-4 h-4" />
+                  </Button>
+                </div>
+              </div>
+            )}
+          </>
         )}
       </CardContent>
+
+      <Dialog
+        open={!!editingRow}
+        onOpenChange={(open) => !open && setEditingRow(null)}
+      >
+        <DialogContent className="max-w-3xl max-h-[85vh] flex flex-col bg-white">
+          <DialogHeader>
+            <DialogTitle className="text-slate-900">
+              Corriger la donnée JSON puis relancer les détecteurs
+            </DialogTitle>
+          </DialogHeader>
+          <textarea
+            value={editedJson}
+            onChange={(e) => setEditedJson(e.target.value)}
+            className="w-full h-72 p-4 bg-[#1e1e1e] text-[#d4d4d4] rounded-lg font-mono text-sm border-2 border-gray-300 focus:border-[#4A90E2] focus:outline-none resize-none transition-colors"
+            spellCheck={false}
+          />
+          {jsonError && (
+            <p className="text-sm text-red-600" role="alert">
+              {jsonError}
+            </p>
+          )}
+          <div className="flex items-center justify-end gap-3">
+            <Button variant="outline" onClick={() => setEditingRow(null)}>
+              Annuler
+            </Button>
+            <Button
+              className="bg-[#5CC58C] hover:bg-[#4db57a] text-white"
+              disabled={actionLoading}
+              onClick={saveEditedJson}
+            >
+              Sauvegarder et revalider
+            </Button>
+          </div>
+        </DialogContent>
+      </Dialog>
     </Card>
   );
 };

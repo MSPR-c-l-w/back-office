@@ -1,14 +1,11 @@
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Play } from "lucide-react";
-import { useEffect, useState } from "react";
-import { AnomalyModal } from "@/components/dashboard/data-management/AnomalyModal";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import { DataQualityAnomalies } from "@/components/dashboard/data-management/DataQualityAnomalies";
 import { DataQualityValidation } from "@/components/dashboard/data-management/DataQualityValidation";
 import { DatasetCard } from "@/components/dashboard/data-management/DatasetCard";
 import {
-  anomalies,
-  AnomalieType,
   datasets,
   serverStatus,
 } from "@/components/dashboard/data-management/mocks";
@@ -18,7 +15,6 @@ import { PageLayout } from "@/components/layout/PageLayout";
 import { NextPageWithLayout } from "@/utils/types/globals";
 import { ReactElement } from "react";
 import { useEtlLogs, type PipelineId } from "@/hooks/useEtlLogs";
-import { useEtlPipelineRunning } from "@/contexts/EtlPipelineContext";
 import api from "@/utils/axios";
 
 const DATASET_TO_PIPELINE: Record<string, PipelineId> = {
@@ -33,20 +29,32 @@ const PIPELINE_TO_API_PATH: Record<PipelineId, string> = {
   "health-profile": "/health-profile/import",
 };
 
+type PipelineDisplayStatus = "idle" | "running" | "success" | "error";
+
 const DataPage: NextPageWithLayout = () => {
-  const [isLaunching, setIsLaunching] = useState(false);
-  const [pipelineStatus, setPipelineStatus] = useState<
-    "idle" | "running" | "success" | "error"
-  >("idle");
+  const [launchingByPipeline, setLaunchingByPipeline] = useState<
+    Record<PipelineId, boolean>
+  >({
+    nutrition: false,
+    exercise: false,
+    "health-profile": false,
+  });
+  const [runningByPipeline, setRunningByPipeline] = useState<
+    Record<PipelineId, boolean>
+  >({
+    nutrition: false,
+    exercise: false,
+    "health-profile": false,
+  });
+  const [statusByPipeline, setStatusByPipeline] = useState<
+    Record<PipelineId, PipelineDisplayStatus>
+  >({
+    nutrition: "idle",
+    exercise: "idle",
+    "health-profile": "idle",
+  });
   const [selectedDataset, setSelectedDataset] = useState("nutrition");
-  const [selectedAnomalies, setSelectedAnomalies] = useState<number[]>([]);
-  const [isModalOpen, setIsModalOpen] = useState(false);
-  const [hasJsonChanged, setHasJsonChanged] = useState(false);
-  const [currentAnomaly, setCurrentAnomaly] = useState<AnomalieType | null>(
-    null
-  );
-  const [jsonValue, setJsonValue] = useState("");
-  const [originalJsonValue, setOriginalJsonValue] = useState("");
+  const [refreshSignal, setRefreshSignal] = useState(0);
 
   const {
     logs: pipelineLogs,
@@ -54,45 +62,68 @@ const DataPage: NextPageWithLayout = () => {
     subscribe,
     isConnected,
   } = useEtlLogs();
-  const { isPipelineRunning, setPipelineRunning } = useEtlPipelineRunning();
   const pipelineId = DATASET_TO_PIPELINE[selectedDataset] ?? "nutrition";
+  const isCurrentPipelineRunning = runningByPipeline[pipelineId];
+  const isCurrentPipelineLaunching = launchingByPipeline[pipelineId];
+  const pipelineStatus = useMemo<PipelineDisplayStatus>(() => {
+    if (isCurrentPipelineRunning || isCurrentPipelineLaunching)
+      return "running";
+    return statusByPipeline[pipelineId];
+  }, [
+    isCurrentPipelineRunning,
+    isCurrentPipelineLaunching,
+    pipelineId,
+    statusByPipeline,
+  ]);
 
   useEffect(() => {
     subscribe(pipelineId);
   }, [pipelineId, subscribe]);
 
-  const openModal = (anomaly: AnomalieType) => {
-    setCurrentAnomaly(anomaly);
-    setJsonValue(JSON.stringify(anomaly.jsonData, null, 2));
-    setOriginalJsonValue(JSON.stringify(anomaly.jsonData, null, 2));
-    setHasJsonChanged(false);
-    setIsModalOpen(true);
-  };
+  const refreshPipelineStatuses = useCallback(async () => {
+    try {
+      const { data } = await api.get<Record<PipelineId, boolean>>(
+        "/etl/pipelines/status"
+      );
+      setRunningByPipeline({
+        nutrition: !!data?.nutrition,
+        exercise: !!data?.exercise,
+        "health-profile": !!data?.["health-profile"],
+      });
+    } catch {
+      // Pas bloquant pour l'UI: on garde le dernier état connu.
+    }
+  }, []);
 
-  const closeModal = () => {
-    setIsModalOpen(false);
-    setCurrentAnomaly(null);
-    setJsonValue("");
-    setOriginalJsonValue("");
-    setHasJsonChanged(false);
-  };
+  useEffect(() => {
+    refreshPipelineStatuses();
+    const timer = setInterval(refreshPipelineStatuses, 2500);
+    return () => clearInterval(timer);
+  }, [refreshPipelineStatuses]);
 
   const handleLaunchPipeline = async () => {
-    if (isPipelineRunning) return;
-    clearLogs();
-    setPipelineRunning(true);
-    setIsLaunching(true);
-    setPipelineStatus("running");
-    subscribe(pipelineId);
-    const path = PIPELINE_TO_API_PATH[pipelineId];
+    const targetPipeline = pipelineId;
+    if (
+      runningByPipeline[targetPipeline] ||
+      launchingByPipeline[targetPipeline]
+    ) {
+      return;
+    }
+    clearLogs(targetPipeline);
+    setLaunchingByPipeline((prev) => ({ ...prev, [targetPipeline]: true }));
+    setStatusByPipeline((prev) => ({ ...prev, [targetPipeline]: "running" }));
+    setRunningByPipeline((prev) => ({ ...prev, [targetPipeline]: true }));
+    subscribe(targetPipeline);
+    const path = PIPELINE_TO_API_PATH[targetPipeline];
     try {
       await api.post(path);
-      setPipelineStatus("success");
+      setStatusByPipeline((prev) => ({ ...prev, [targetPipeline]: "success" }));
     } catch {
-      setPipelineStatus("error");
+      setStatusByPipeline((prev) => ({ ...prev, [targetPipeline]: "error" }));
     } finally {
-      setIsLaunching(false);
-      setPipelineRunning(false);
+      setLaunchingByPipeline((prev) => ({ ...prev, [targetPipeline]: false }));
+      await refreshPipelineStatuses();
+      setRefreshSignal((value) => value + 1);
     }
   };
 
@@ -106,10 +137,18 @@ const DataPage: NextPageWithLayout = () => {
           size="default"
           className="bg-[#FF887B] hover:bg-[#ff7066] text-white gap-2"
           onClick={handleLaunchPipeline}
-          disabled={isPipelineRunning}
+          disabled={isCurrentPipelineRunning || isCurrentPipelineLaunching}
         >
-          <Play className={`w-4 h-4 ${isLaunching ? "animate-spin" : ""}`} />
-          {isLaunching ? "Lancement..." : "Lancer le Pipeline ETL"}
+          <Play
+            className={`w-4 h-4 ${
+              isCurrentPipelineLaunching ? "animate-spin" : ""
+            }`}
+          />
+          {isCurrentPipelineRunning
+            ? "Pipeline déjà en cours..."
+            : isCurrentPipelineLaunching
+              ? "Lancement..."
+              : "Lancer le Pipeline ETL"}
         </Button>
       </div>
 
@@ -134,13 +173,13 @@ const DataPage: NextPageWithLayout = () => {
       />
 
       <DataQualityAnomalies
-        key={selectedDataset}
-        datasets={datasets}
-        selectedDataset={selectedDataset}
-        anomalies={anomalies}
-        selectedAnomalies={selectedAnomalies}
-        setSelectedAnomalies={setSelectedAnomalies}
-        openModal={openModal}
+        pipeline={pipelineId}
+        pipelineLabel={
+          datasets.find((d) => d.id === selectedDataset)?.name ??
+          selectedDataset
+        }
+        refreshSignal={refreshSignal}
+        onDataChanged={() => setRefreshSignal((value) => value + 1)}
       />
 
       <DataQualityValidation
@@ -149,6 +188,8 @@ const DataPage: NextPageWithLayout = () => {
           datasets.find((d) => d.id === selectedDataset)?.name ??
           selectedDataset
         }
+        refreshSignal={refreshSignal}
+        onDataChanged={() => setRefreshSignal((value) => value + 1)}
       />
 
       <Card>
@@ -163,24 +204,6 @@ const DataPage: NextPageWithLayout = () => {
           </div>
         </CardContent>
       </Card>
-
-      <AnomalyModal
-        isModalOpen={isModalOpen}
-        setIsModalOpen={setIsModalOpen}
-        currentAnomaly={currentAnomaly}
-        setCurrentAnomaly={setCurrentAnomaly}
-        hasJsonChanged={hasJsonChanged}
-        jsonValue={jsonValue}
-        setOriginalJsonValue={setOriginalJsonValue}
-        setJsonValue={setJsonValue}
-        setHasJsonChanged={setHasJsonChanged}
-        originalJsonValue={originalJsonValue}
-        closeModal={closeModal}
-        setSelectedAnomalies={setSelectedAnomalies}
-        anomalies={anomalies}
-        datasets={datasets}
-        selectedDataset={selectedDataset}
-      />
     </div>
   );
 };

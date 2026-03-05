@@ -29,6 +29,7 @@ export type PipelineId = "nutrition" | "exercise" | "health-profile";
 export interface StagingRowDto {
   id: string;
   cleaned_data: Record<string, unknown>;
+  anomalies?: unknown[];
   status: string;
   created_at: string;
   updated_at: string;
@@ -37,6 +38,8 @@ export interface StagingRowDto {
 interface Props {
   pipeline: PipelineId;
   pipelineLabel: string;
+  refreshSignal?: number;
+  onDataChanged?: () => void;
 }
 
 function formatCleanedDataSummary(data: Record<string, unknown>): string {
@@ -51,7 +54,12 @@ function formatCleanedDataSummary(data: Record<string, unknown>): string {
   return parts.join(" · ");
 }
 
-export const DataQualityValidation = ({ pipeline, pipelineLabel }: Props) => {
+export const DataQualityValidation = ({
+  pipeline,
+  pipelineLabel,
+  refreshSignal,
+  onDataChanged,
+}: Props) => {
   const [rows, setRows] = useState<StagingRowDto[]>([]);
   const [total, setTotal] = useState(0);
   const [page, setPage] = useState(1);
@@ -96,7 +104,7 @@ export const DataQualityValidation = ({ pipeline, pipelineLabel }: Props) => {
 
   useEffect(() => {
     fetchRows();
-  }, [fetchRows]);
+  }, [fetchRows, refreshSignal]);
 
   useEffect(() => {
     setPage(1);
@@ -159,6 +167,7 @@ export const DataQualityValidation = ({ pipeline, pipelineLabel }: Props) => {
         return next;
       });
       await fetchRows();
+      onDataChanged?.();
     } finally {
       setActionLoading(false);
     }

@@ -2,6 +2,7 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Clock, Terminal } from "lucide-react";
+import { useEffect, useRef } from "react";
 
 export type PipelineLogEntry = {
   timestamp: string;
@@ -22,6 +23,33 @@ export const PipelineLog = ({
   onClear,
   isConnected,
 }: Props) => {
+  const logContainerRef = useRef<HTMLDivElement | null>(null);
+
+  useEffect(() => {
+    if (!logContainerRef.current) return;
+    logContainerRef.current.scrollTo({
+      top: logContainerRef.current.scrollHeight,
+      behavior: "smooth",
+    });
+  }, [pipelineLogs]);
+
+  const handleDownloadLogs = () => {
+    if (pipelineLogs.length === 0) return;
+    const content = pipelineLogs
+      .map((log) => `[${log.timestamp}] [${log.level}] ${log.message}`)
+      .join("\n");
+    const blob = new Blob([content], { type: "text/plain;charset=utf-8" });
+    const url = URL.createObjectURL(blob);
+    const date = new Date().toISOString().replace(/[:.]/g, "-");
+    const anchor = document.createElement("a");
+    anchor.href = url;
+    anchor.download = `etl-logs-${date}.txt`;
+    document.body.appendChild(anchor);
+    anchor.click();
+    anchor.remove();
+    URL.revokeObjectURL(url);
+  };
+
   return (
     <Card>
       <CardHeader>
@@ -65,7 +93,10 @@ export const PipelineLog = ({
         </div>
       </CardHeader>
       <CardContent>
-        <div className="bg-[#1e1e1e] rounded-lg p-4 font-mono text-sm h-80 min-h-80 max-h-80 overflow-y-auto flex flex-col">
+        <div
+          ref={logContainerRef}
+          className="bg-[#1e1e1e] rounded-lg p-4 font-mono text-sm h-80 min-h-80 max-h-80 overflow-y-auto flex flex-col"
+        >
           {pipelineLogs.length === 0 ? (
             <p className="text-[#858585] text-sm flex-1 flex items-center justify-center">
               Aucun logs pour le moment
@@ -103,10 +134,22 @@ export const PipelineLog = ({
             de logs affichées
           </p>
           <div className="flex items-center gap-2">
-            <Button variant="outline" size="sm">
+            <Button
+              variant="outline"
+              size="sm"
+              className="border-slate-300 bg-white text-black hover:bg-slate-100 hover:text-black"
+              onClick={handleDownloadLogs}
+              disabled={pipelineLogs.length === 0}
+            >
               Télécharger les logs
             </Button>
-            <Button variant="outline" size="sm" onClick={onClear}>
+            <Button
+              variant="outline"
+              size="sm"
+              className="border-slate-300 bg-white text-black hover:bg-slate-100 hover:text-black"
+              onClick={() => onClear?.()}
+              disabled={pipelineLogs.length === 0}
+            >
               Effacer
             </Button>
           </div>
