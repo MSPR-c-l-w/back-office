@@ -2,6 +2,7 @@
 
 import { useCallback, useEffect, useRef, useState } from "react";
 import { io, type Socket } from "socket.io-client";
+import { getAccessToken } from "@/utils/tokenStorage";
 
 export type PipelineId = "nutrition" | "exercise" | "health-profile";
 
@@ -37,6 +38,7 @@ export function useEtlLogs() {
   const [isConnected, setIsConnected] = useState(false);
   const socketRef = useRef<Socket | null>(null);
   const subscribedPipelineRef = useRef<PipelineId | null>(null);
+  const socketTokenRef = useRef<string | null>(null);
 
   const socketUrl =
     typeof window !== "undefined"
@@ -46,19 +48,33 @@ export function useEtlLogs() {
   const subscribe = useCallback(
     (pipelineId: PipelineId) => {
       if (!socketUrl) return;
+      const accessToken = getAccessToken();
+
+      // WS ETL est sécurisé côté backend: sans token, on ne tente pas la connexion.
+      if (!accessToken) {
+        setIsConnected(false);
+        return;
+      }
 
       if (!socketRef.current) {
         const socket = io(socketUrl, {
           path: "/socket.io",
           transports: ["websocket", "polling"],
           autoConnect: true,
+          auth: {
+            token: `Bearer ${accessToken}`,
+          },
         });
         socketRef.current = socket;
+        socketTokenRef.current = accessToken;
 
         socket.on("connect", () => {
           setIsConnected(true);
         });
         socket.on("disconnect", () => {
+          setIsConnected(false);
+        });
+        socket.on("connect_error", () => {
           setIsConnected(false);
         });
         socket.on(
@@ -93,6 +109,15 @@ export function useEtlLogs() {
       }
 
       const socket = socketRef.current;
+      if (socketTokenRef.current !== accessToken) {
+        socket.auth = {
+          token: `Bearer ${accessToken}`,
+        };
+        socketTokenRef.current = accessToken;
+      }
+      if (!socket.connected) {
+        socket.connect();
+      }
       setActivePipeline(pipelineId);
       if (subscribedPipelineRef.current !== pipelineId) {
         if (subscribedPipelineRef.current) {
@@ -123,6 +148,7 @@ export function useEtlLogs() {
       if (socketRef.current) {
         socketRef.current.disconnect();
         socketRef.current = null;
+        socketTokenRef.current = null;
         subscribedPipelineRef.current = null;
       }
     };
