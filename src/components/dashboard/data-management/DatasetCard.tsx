@@ -58,7 +58,7 @@ export const DatasetCard = ({
         </div>
         <div className="flex items-center justify-between text-sm">
           <span className="text-[#4A5568] opacity-70">Anomalies</span>
-          <Badge variant={dataset.issues > 5 ? "destructive" : "secondary"}>
+          <Badge variant={dataset.issues > 0 ? "destructive" : "secondary"}>
             {dataset.issues}
           </Badge>
         </div>

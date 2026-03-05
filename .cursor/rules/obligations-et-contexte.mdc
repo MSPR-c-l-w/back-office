@@ -1,0 +1,32 @@
+---
+description: Obligations et contexte pour les agents IA (lint, format, build)
+alwaysApply: true
+---
+
+# Back-office — Obligations et contexte pour l’agent IA
+
+## Référence
+
+Voir **AGENTS.md** à la racine du projet pour le contexte complet (Next.js, dashboard, API, commandes).
+
+## Obligations à chaque réponse
+
+Après toute modification de code, l’agent **doit** :
+
+1. **Lint** : exécuter `npm run lint` et corriger les erreurs (et les warnings non voulus).
+2. **Format** : s’assurer que le code est formaté (ex. `npm run format:check` ou `npm run format`).
+3. **Build** : exécuter `npm run build` et corriger les erreurs TypeScript / Next.js.
+4. **API** : en cas de changement d’appels au backend, vérifier la cohérence avec l’API (voir projet **backend** et son AGENTS.md).
+
+## Ordres principaux
+
+- **Nouvelle feature / modification** : implémenter → vérifier lint, format, build.
+- **Bugfix** : corriger → vérifier lint, format, build.
+- **Refactoring / UI** : ne pas casser le comportement attendu → relancer les vérifications.
+- **Intégration API** : adapter les appels en cohérence avec le backend → vérifier tout.
+
+## Conventions
+
+- TypeScript typé (props, state, API) ; éviter `any` sans justification.
+- Composants fonctionnels React ; Tailwind pour les styles.
+- Libellés et textes en français quand c’est le standard du projet.
