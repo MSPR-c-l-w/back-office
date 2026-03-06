@@ -19,7 +19,14 @@ import {
 } from "@/components/ui/table";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import type { Organization } from "@/utils/interfaces/organization";
-import { ChevronLeft, ChevronRight, Filter, Plus, Search, Trash2 } from "lucide-react";
+import {
+  ChevronLeft,
+  ChevronRight,
+  Filter,
+  Plus,
+  Search,
+  Trash2,
+} from "lucide-react";
 
 function formatDate(value: unknown) {
   const d = value instanceof Date ? value : new Date(String(value));
@@ -108,7 +115,7 @@ export function OrganizationsTableCard({
               className="bg-[#4A90E2] hover:bg-[#4A90E2]/90 text-white gap-2"
             >
               <Plus className="w-4 h-4" />
-              Nouvelle organisation 
+              Nouvelle organisation
             </Button>
           </div>
         </div>
@@ -168,9 +175,7 @@ export function OrganizationsTableCard({
                               backgroundColor: primaryColor ?? "transparent",
                             }}
                           />
-                          <span className="text-xs">
-                            {primaryColor ?? "—"}
-                          </span>
+                          <span className="text-xs">{primaryColor ?? "—"}</span>
                         </div>
                         {logoUrl ? (
                           <a
@@ -293,7 +298,9 @@ export function OrganizationsTableCard({
             <Button
               variant="outline"
               size="sm"
-              onClick={() => onPageChange(Math.min(totalPages, currentPage + 1))}
+              onClick={() =>
+                onPageChange(Math.min(totalPages, currentPage + 1))
+              }
               disabled={currentPage === totalPages || totalPages === 0}
               className="bg-white"
             >
@@ -306,4 +313,3 @@ export function OrganizationsTableCard({
     </Card>
   );
 }
-

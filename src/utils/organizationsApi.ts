@@ -1,5 +1,8 @@
 import api from "@/utils/axios";
-import type { BrandingConfig, Organization } from "@/utils/interfaces/organization";
+import type {
+  BrandingConfig,
+  Organization,
+} from "@/utils/interfaces/organization";
 
 export type CreateOrganizationInput = {
   name: string;
@@ -49,4 +52,3 @@ export async function updateOrganization(
 export async function deleteOrganization(id: number): Promise<void> {
   await api.delete(`/organizations/${id}`);
 }
-

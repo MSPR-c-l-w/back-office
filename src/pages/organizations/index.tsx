@@ -8,7 +8,10 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { ConfirmDialog } from "@/components/ui/confirm-dialog";
 import { useRequireRole } from "@/hooks/useRequireRole";
 import type { Organization } from "@/utils/interfaces/organization";
-import { deleteOrganization, listOrganizations } from "@/utils/organizationsApi";
+import {
+  deleteOrganization,
+  listOrganizations,
+} from "@/utils/organizationsApi";
 import type { NextPageWithLayout } from "@/utils/types/globals";
 import { ReactElement, useEffect, useMemo, useState } from "react";
 
@@ -26,9 +29,8 @@ const OrganizationsPage: NextPageWithLayout = () => {
   const [filterType, setFilterType] = useState<string>("all");
 
   const [modalOpen, setModalOpen] = useState(false);
-  const [modalOrganization, setModalOrganization] = useState<Organization | null>(
-    null
-  );
+  const [modalOrganization, setModalOrganization] =
+    useState<Organization | null>(null);
   const [deleteConfirmOpen, setDeleteConfirmOpen] = useState(false);
   const [organizationToDelete, setOrganizationToDelete] =
     useState<Organization | null>(null);
@@ -66,7 +68,8 @@ const OrganizationsPage: NextPageWithLayout = () => {
     return organizations.filter((org) => {
       const q = searchQuery.toLowerCase();
       const matchesSearch =
-        org.name.toLowerCase().includes(q) || org.type.toLowerCase().includes(q);
+        org.name.toLowerCase().includes(q) ||
+        org.type.toLowerCase().includes(q);
       const matchesType = filterType === "all" || org.type === filterType;
       return matchesSearch && matchesType;
     });
@@ -75,8 +78,7 @@ const OrganizationsPage: NextPageWithLayout = () => {
   const totalPages = Math.ceil(filteredOrganizations.length / ITEMS_PER_PAGE);
   const startIndex = (currentPage - 1) * ITEMS_PER_PAGE;
   const paginatedOrganizations = useMemo(
-    () =>
-      filteredOrganizations.slice(startIndex, startIndex + ITEMS_PER_PAGE),
+    () => filteredOrganizations.slice(startIndex, startIndex + ITEMS_PER_PAGE),
     [filteredOrganizations, startIndex]
   );
 
@@ -210,4 +212,3 @@ OrganizationsPage.getLayout = function (page: ReactElement) {
 };
 
 export default OrganizationsPage;
-

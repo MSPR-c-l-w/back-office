@@ -261,184 +261,188 @@ export function OrganizationUpsertModal({
             </div>
           </DialogHeader>
 
-        {!isCreate && !isEditing && organization && (
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mt-4">
-            <Card className="bg-white">
-              <CardContent className="pt-6">
-                <div className="text-sm text-[#4A5568] opacity-70">Type</div>
-                <div className="text-lg font-semibold text-[#4A5568] mt-1">
-                  {organization.type}
-                </div>
-              </CardContent>
-            </Card>
-            <Card className="bg-white">
-              <CardContent className="pt-6">
-                <div className="text-sm text-[#4A5568] opacity-70">Statut</div>
-                <Badge
-                  variant="outline"
-                  className={
-                    organization.is_active
-                      ? "mt-2 bg-[#5CC58C] bg-opacity-10 text-[#5CC58C] border-[#5CC58C]"
-                      : "mt-2 bg-gray-200 text-gray-600 border-gray-300"
-                  }
-                >
-                  {organization.is_active ? "Active" : "Inactive"}
-                </Badge>
-              </CardContent>
-            </Card>
-            <Card className="bg-white">
-              <CardContent className="pt-6">
-                <div className="text-sm text-[#4A5568] opacity-70">Branding</div>
-                <div className="text-sm text-[#4A5568] mt-2 space-y-2">
-                  <div>
-                    <span className="opacity-70">Couleur:</span>{" "}
-                    {organization.branding_config?.primaryColor ?? "—"}
+          {!isCreate && !isEditing && organization && (
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mt-4">
+              <Card className="bg-white">
+                <CardContent className="pt-6">
+                  <div className="text-sm text-[#4A5568] opacity-70">Type</div>
+                  <div className="text-lg font-semibold text-[#4A5568] mt-1">
+                    {organization.type}
                   </div>
-                  {organization.branding_config?.logoUrl ? (
-                    <>
-                      <Image
-                        src={organization.branding_config.logoUrl}
-                      alt={`Logo ${organization.name}`}
-                      width={192}
-                      height={64}
-                      unoptimized
-                      className="h-14 w-auto rounded-md border bg-white object-contain"
-                      />
-                      {organization.branding_config.logoUrl.startsWith(
-                        "data:"
-                      ) ? (
-                        <span className="text-xs text-[#4A5568]/70">
-                          Logo intégré
-                        </span>
-                      ) : (
-                        <a
-                          href={organization.branding_config.logoUrl}
-                          target="_blank"
-                          rel="noreferrer"
-                          title={organization.branding_config.logoUrl}
-                          className="text-xs text-[#4A90E2] hover:underline"
-                        >
-                          Ouvrir le logo
-                        </a>
-                      )}
-                    </>
-                  ) : (
-                    <div className="opacity-70">Logo: —</div>
-                  )}
-                </div>
-              </CardContent>
-            </Card>
-          </div>
-        )}
-
-        {(isCreate || isEditing) && (
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-4">
-            <div className="space-y-2">
-              <label className="text-sm text-[#4A5568]">Nom</label>
-              <Input
-                value={name}
-                onChange={(e) => setName(e.target.value)}
-                placeholder="ACME"
-                className="bg-white"
-              />
+                </CardContent>
+              </Card>
+              <Card className="bg-white">
+                <CardContent className="pt-6">
+                  <div className="text-sm text-[#4A5568] opacity-70">
+                    Statut
+                  </div>
+                  <Badge
+                    variant="outline"
+                    className={
+                      organization.is_active
+                        ? "mt-2 bg-[#5CC58C] bg-opacity-10 text-[#5CC58C] border-[#5CC58C]"
+                        : "mt-2 bg-gray-200 text-gray-600 border-gray-300"
+                    }
+                  >
+                    {organization.is_active ? "Active" : "Inactive"}
+                  </Badge>
+                </CardContent>
+              </Card>
+              <Card className="bg-white">
+                <CardContent className="pt-6">
+                  <div className="text-sm text-[#4A5568] opacity-70">
+                    Branding
+                  </div>
+                  <div className="text-sm text-[#4A5568] mt-2 space-y-2">
+                    <div>
+                      <span className="opacity-70">Couleur:</span>{" "}
+                      {organization.branding_config?.primaryColor ?? "—"}
+                    </div>
+                    {organization.branding_config?.logoUrl ? (
+                      <>
+                        <Image
+                          src={organization.branding_config.logoUrl}
+                          alt={`Logo ${organization.name}`}
+                          width={192}
+                          height={64}
+                          unoptimized
+                          className="h-14 w-auto rounded-md border bg-white object-contain"
+                        />
+                        {organization.branding_config.logoUrl.startsWith(
+                          "data:"
+                        ) ? (
+                          <span className="text-xs text-[#4A5568]/70">
+                            Logo intégré
+                          </span>
+                        ) : (
+                          <a
+                            href={organization.branding_config.logoUrl}
+                            target="_blank"
+                            rel="noreferrer"
+                            title={organization.branding_config.logoUrl}
+                            className="text-xs text-[#4A90E2] hover:underline"
+                          >
+                            Ouvrir le logo
+                          </a>
+                        )}
+                      </>
+                    ) : (
+                      <div className="opacity-70">Logo: —</div>
+                    )}
+                  </div>
+                </CardContent>
+              </Card>
             </div>
-            <div className="space-y-2">
-              <label className="text-sm text-[#4A5568]">Type</label>
-              <Input
-                value={type}
-                onChange={(e) => setType(e.target.value)}
-                placeholder="gym"
-                className="bg-white"
-              />
-            </div>
-            <div className="space-y-2">
-              <label className="text-sm text-[#4A5568]">
-                Couleur primaire (hex)
-              </label>
-              <Input
-                value={primaryColor}
-                onChange={(e) => setPrimaryColor(e.target.value)}
-                placeholder="#111827"
-                className="bg-white"
-              />
-            </div>
-            <div className="space-y-2">
-              <label className="text-sm text-[#4A5568]">Logo URL</label>
-              <Input
-                value={logoUrl}
-                onChange={(e) => setLogoUrl(e.target.value)}
-                placeholder="https://example.com/logo.png"
-                className="bg-white"
-              />
-            </div>
-            <div className="flex items-center gap-2 md:col-span-2 pt-2">
-              <Checkbox
-                checked={isActive}
-                onCheckedChange={(v) => setIsActive(v === true)}
-                id="org-active"
-              />
-              <label htmlFor="org-active" className="text-sm text-[#4A5568]">
-                Organisation active
-              </label>
-            </div>
-          </div>
-        )}
-
-        {info && (
-          <p className="text-sm text-[#4A90E2] mt-2" role="status">
-            {info}
-          </p>
-        )}
-        {error && (
-          <p className="text-sm text-[#FF887B] mt-2" role="alert">
-            {error}
-          </p>
-        )}
-
-        <DialogFooter className="mt-6 flex flex-row justify-end gap-2">
-          {!isCreate && !isEditing && (
-            <Button
-              variant="outline"
-              onClick={() => setIsEditing(true)}
-              className="bg-white text-[#4A90E2] border-[#4A90E2] hover:bg-[#4A90E2] hover:text-white"
-            >
-              Modifier
-            </Button>
           )}
-          {!isCreate && isEditing && (
-            <Button
-              variant="outline"
-              onClick={goBackToDetails}
-              disabled={loading}
-              className="bg-white"
-            >
-              Précédent
-            </Button>
-          )}
-          {!isCreate && (
-            <Button
-              variant="outline"
-              onClick={() => setDeleteConfirmOpen(true)}
-              disabled={loading}
-              className="bg-white text-[#FF887B] border-[#FF887B] hover:bg-[#FF887B] hover:text-white"
-            >
-              <Trash2 className="w-4 h-4 mr-2" />
-              Supprimer
-            </Button>
-          )}
+
           {(isCreate || isEditing) && (
-            <Button
-              onClick={handleSave}
-              disabled={loading}
-              className="bg-[#4A90E2] hover:bg-[#4A90E2]/90 text-white"
-            >
-              <Save className="w-4 h-4 mr-2" />
-              Enregistrer
-            </Button>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-4">
+              <div className="space-y-2">
+                <label className="text-sm text-[#4A5568]">Nom</label>
+                <Input
+                  value={name}
+                  onChange={(e) => setName(e.target.value)}
+                  placeholder="ACME"
+                  className="bg-white"
+                />
+              </div>
+              <div className="space-y-2">
+                <label className="text-sm text-[#4A5568]">Type</label>
+                <Input
+                  value={type}
+                  onChange={(e) => setType(e.target.value)}
+                  placeholder="gym"
+                  className="bg-white"
+                />
+              </div>
+              <div className="space-y-2">
+                <label className="text-sm text-[#4A5568]">
+                  Couleur primaire (hex)
+                </label>
+                <Input
+                  value={primaryColor}
+                  onChange={(e) => setPrimaryColor(e.target.value)}
+                  placeholder="#111827"
+                  className="bg-white"
+                />
+              </div>
+              <div className="space-y-2">
+                <label className="text-sm text-[#4A5568]">Logo URL</label>
+                <Input
+                  value={logoUrl}
+                  onChange={(e) => setLogoUrl(e.target.value)}
+                  placeholder="https://example.com/logo.png"
+                  className="bg-white"
+                />
+              </div>
+              <div className="flex items-center gap-2 md:col-span-2 pt-2">
+                <Checkbox
+                  checked={isActive}
+                  onCheckedChange={(v) => setIsActive(v === true)}
+                  id="org-active"
+                />
+                <label htmlFor="org-active" className="text-sm text-[#4A5568]">
+                  Organisation active
+                </label>
+              </div>
+            </div>
           )}
-        </DialogFooter>
-      </DialogContent>
-    </Dialog>
+
+          {info && (
+            <p className="text-sm text-[#4A90E2] mt-2" role="status">
+              {info}
+            </p>
+          )}
+          {error && (
+            <p className="text-sm text-[#FF887B] mt-2" role="alert">
+              {error}
+            </p>
+          )}
+
+          <DialogFooter className="mt-6 flex flex-row justify-end gap-2">
+            {!isCreate && !isEditing && (
+              <Button
+                variant="outline"
+                onClick={() => setIsEditing(true)}
+                className="bg-white text-[#4A90E2] border-[#4A90E2] hover:bg-[#4A90E2] hover:text-white"
+              >
+                Modifier
+              </Button>
+            )}
+            {!isCreate && isEditing && (
+              <Button
+                variant="outline"
+                onClick={goBackToDetails}
+                disabled={loading}
+                className="bg-white"
+              >
+                Précédent
+              </Button>
+            )}
+            {!isCreate && (
+              <Button
+                variant="outline"
+                onClick={() => setDeleteConfirmOpen(true)}
+                disabled={loading}
+                className="bg-white text-[#FF887B] border-[#FF887B] hover:bg-[#FF887B] hover:text-white"
+              >
+                <Trash2 className="w-4 h-4 mr-2" />
+                Supprimer
+              </Button>
+            )}
+            {(isCreate || isEditing) && (
+              <Button
+                onClick={handleSave}
+                disabled={loading}
+                className="bg-[#4A90E2] hover:bg-[#4A90E2]/90 text-white"
+              >
+                <Save className="w-4 h-4 mr-2" />
+                Enregistrer
+              </Button>
+            )}
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
 
       <ConfirmDialog
         open={deleteConfirmOpen}
@@ -458,4 +462,3 @@ export function OrganizationUpsertModal({
     </>
   );
 }
-
