@@ -4,6 +4,7 @@ import {
   BarChart3,
   Server,
   Users as UsersIcon,
+  CreditCard,
 } from "lucide-react";
 import { Sidebar } from "@/components/misc/Sidebar";
 import { Routes } from "@/utils/types/globals";
@@ -20,6 +21,11 @@ const routes: Routes[] = [
     path: "/users",
     label: "Gestion Utilisateurs",
     icon: UsersIcon,
+  },
+  {
+    path: "/plans",
+    label: "Gestion Plans",
+    icon: CreditCard,
   },
   {
     path: "/data",
