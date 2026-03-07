@@ -187,4 +187,3 @@ PlansPage.getLayout = function (page: ReactElement) {
 };
 
 export default PlansPage;
-

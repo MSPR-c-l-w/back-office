@@ -25,7 +25,10 @@ export async function createPlan(payload: CreatePlanInput): Promise<Plan> {
   return data;
 }
 
-export async function updatePlan(id: number, payload: UpdatePlanInput): Promise<Plan> {
+export async function updatePlan(
+  id: number,
+  payload: UpdatePlanInput
+): Promise<Plan> {
   const { data } = await api.put<Plan>(`/plan/${id}`, payload);
   return data;
 }
@@ -33,4 +36,3 @@ export async function updatePlan(id: number, payload: UpdatePlanInput): Promise<
 export async function deletePlan(id: number): Promise<void> {
   await api.delete(`/plan/${id}`);
 }
-

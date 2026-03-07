@@ -164,7 +164,9 @@ export function PlanUpsertModal({
                   </div>
                   <div className="flex flex-wrap gap-2 mt-2">
                     {plan.features.length === 0 ? (
-                      <span className="text-sm text-[#4A5568] opacity-70">—</span>
+                      <span className="text-sm text-[#4A5568] opacity-70">
+                        —
+                      </span>
                     ) : (
                       plan.features.map((f, idx) => (
                         <Badge
@@ -210,7 +212,9 @@ export function PlanUpsertModal({
                 <textarea
                   value={featuresText}
                   onChange={(e) => setFeaturesText(e.target.value)}
-                  placeholder={"Accès illimité\nProgrammes personnalisés\nSupport coach"}
+                  placeholder={
+                    "Accès illimité\nProgrammes personnalisés\nSupport coach"
+                  }
                   className="w-full min-h-28 rounded-md border border-input bg-white px-3 py-2 text-sm shadow-xs outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px]"
                 />
               </div>
@@ -272,7 +276,9 @@ export function PlanUpsertModal({
         open={deleteConfirmOpen}
         onOpenChange={setDeleteConfirmOpen}
         title="Supprimer le plan"
-        description={plan ? `Confirmer la suppression du plan “${plan.name}” ?` : undefined}
+        description={
+          plan ? `Confirmer la suppression du plan “${plan.name}” ?` : undefined
+        }
         confirmLabel="Supprimer"
         cancelLabel="Annuler"
         confirmVariant="destructive"
@@ -282,4 +288,3 @@ export function PlanUpsertModal({
     </>
   );
 }
-

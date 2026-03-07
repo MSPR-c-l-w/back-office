@@ -15,7 +15,12 @@ type Props = {
   description?: string;
   confirmLabel?: string;
   cancelLabel?: string;
-  confirmVariant?: "default" | "destructive" | "outline" | "secondary" | "ghost";
+  confirmVariant?:
+    | "default"
+    | "destructive"
+    | "outline"
+    | "secondary"
+    | "ghost";
   loading?: boolean;
   onConfirm: () => void;
 };
@@ -52,7 +57,11 @@ export function ConfirmDialog({
           >
             {cancelLabel}
           </Button>
-          <Button variant={confirmVariant} onClick={onConfirm} disabled={loading}>
+          <Button
+            variant={confirmVariant}
+            onClick={onConfirm}
+            disabled={loading}
+          >
             {confirmLabel}
           </Button>
         </DialogFooter>

@@ -11,13 +11,7 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import type { Plan } from "@/utils/interfaces/plan";
-import {
-  ChevronLeft,
-  ChevronRight,
-  Plus,
-  Search,
-  Trash2,
-} from "lucide-react";
+import { ChevronLeft, ChevronRight, Plus, Search, Trash2 } from "lucide-react";
 
 function formatPrice(price: number) {
   return price.toLocaleString("fr-FR", {
@@ -230,7 +224,9 @@ export function PlansTableCard({
             <Button
               variant="outline"
               size="sm"
-              onClick={() => onPageChange(Math.min(totalPages, currentPage + 1))}
+              onClick={() =>
+                onPageChange(Math.min(totalPages, currentPage + 1))
+              }
               disabled={currentPage === totalPages || totalPages === 0}
               className="bg-white"
             >
@@ -243,4 +239,3 @@ export function PlansTableCard({
     </Card>
   );
 }
-
