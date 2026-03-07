@@ -19,7 +19,7 @@ import {
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Input } from "@/components/ui/input";
 import { Filter, Search, ChevronLeft, ChevronRight } from "lucide-react";
-import type { UserListItem } from "./mocks";
+import type { UserListItem } from "@/utils/types/users";
 
 type Props = {
   searchQuery: string;
@@ -34,6 +34,9 @@ type Props = {
   itemsPerPage: number;
   onPageChange: (page: number) => void;
   onSelectUser: (user: UserListItem) => void;
+  loading?: boolean;
+  error?: string | null;
+  onRetry?: () => void;
 };
 
 export function UsersTableCard({
@@ -49,6 +52,9 @@ export function UsersTableCard({
   itemsPerPage,
   onPageChange,
   onSelectUser,
+  loading,
+  error,
+  onRetry,
 }: Props) {
   return (
     <Card>
@@ -93,6 +99,16 @@ export function UsersTableCard({
         </div>
       </CardHeader>
       <CardContent>
+        {error && (
+          <div className="rounded-md border border-red-200 bg-red-50 px-4 py-3 mb-4 flex items-center justify-between">
+            <p className="text-sm text-red-800">{error}</p>
+            {onRetry && (
+              <Button variant="outline" size="sm" onClick={onRetry}>
+                Réessayer
+              </Button>
+            )}
+          </div>
+        )}
         <div className="rounded-md border">
           <Table>
             <TableHeader>
@@ -108,84 +124,117 @@ export function UsersTableCard({
               </TableRow>
             </TableHeader>
             <TableBody>
-              {paginatedUsers.map((user) => (
-                <TableRow
-                  key={user.id}
-                  className="cursor-pointer hover:bg-gray-50"
-                >
-                  <TableCell className="font-medium">
-                    <div className="flex items-center gap-3">
-                      <Avatar>
-                        <AvatarImage src={user.avatar} />
-                        <AvatarFallback className="bg-[#4A90E2] text-white">
-                          {user.name
-                            .split(" ")
-                            .map((n) => n[0])
-                            .join("")}
-                        </AvatarFallback>
-                      </Avatar>
-                      <div>
-                        <div className="font-medium text-[#4A5568]">
-                          {user.name}
-                        </div>
-                        <div className="text-xs text-[#4A5568] opacity-70">
-                          ID: {user.id}
+              {loading ? (
+                Array.from({ length: 5 }).map((_, i) => (
+                  <TableRow key={`skeleton-${i}`}>
+                    <TableCell>
+                      <div className="h-5 w-24 bg-gray-200 rounded animate-pulse" />
+                    </TableCell>
+                    <TableCell>
+                      <div className="h-5 w-16 bg-gray-200 rounded animate-pulse" />
+                    </TableCell>
+                    <TableCell>
+                      <div className="h-5 w-32 bg-gray-200 rounded animate-pulse" />
+                    </TableCell>
+                    <TableCell>
+                      <div className="h-5 w-12 bg-gray-200 rounded animate-pulse" />
+                    </TableCell>
+                    <TableCell>
+                      <div className="h-5 w-20 bg-gray-200 rounded animate-pulse" />
+                    </TableCell>
+                    <TableCell>
+                      <div className="h-5 w-16 bg-gray-200 rounded animate-pulse" />
+                    </TableCell>
+                    <TableCell>
+                      <div className="h-5 w-24 bg-gray-200 rounded animate-pulse" />
+                    </TableCell>
+                    <TableCell>
+                      <div className="h-5 w-24 bg-gray-200 rounded animate-pulse" />
+                    </TableCell>
+                  </TableRow>
+                ))
+              ) : (
+                paginatedUsers.map((user) => (
+                  <TableRow
+                    key={user.id}
+                    className="cursor-pointer hover:bg-gray-50"
+                  >
+                    <TableCell className="font-medium">
+                      <div className="flex items-center gap-3">
+                        <Avatar>
+                          <AvatarImage src={user.avatar} />
+                          <AvatarFallback className="bg-[#4A90E2] text-white">
+                            {user.name
+                              .split(" ")
+                              .map((n) => n[0])
+                              .join("")}
+                          </AvatarFallback>
+                        </Avatar>
+                        <div>
+                          <div className="font-medium text-[#4A5568]">
+                            {user.name}
+                          </div>
+                          <div className="text-xs text-[#4A5568] opacity-70">
+                            ID: {user.id}
+                          </div>
                         </div>
                       </div>
-                    </div>
-                  </TableCell>
-                  <TableCell className="text-[#4A5568]">{user.email}</TableCell>
-                  <TableCell className="text-[#4A5568]">
-                    {user.age} ans
-                  </TableCell>
-                  <TableCell>
-                    <Badge
-                      variant="outline"
-                      className="bg-[#4A90E2] bg-opacity-10 text-[#4A90E2] border-[#4A90E2]"
-                    >
-                      {user.objective}
-                    </Badge>
-                  </TableCell>
-                  <TableCell>
-                    <Badge
-                      className={
-                        user.plan === "Premium"
-                          ? "bg-[#5CC58C] hover:bg-[#5CC58C]"
-                          : user.plan === "B2B"
-                            ? "bg-[#7FD8BE] hover:bg-[#7FD8BE]"
-                            : "bg-gray-400 hover:bg-gray-400"
-                      }
-                    >
-                      {user.plan}
-                    </Badge>
-                  </TableCell>
-                  <TableCell>
-                    <Badge
-                      variant="outline"
-                      className={
-                        user.status === "active"
-                          ? "bg-[#5CC58C] bg-opacity-10 text-[#5CC58C] border-[#5CC58C]"
-                          : "bg-gray-200 text-gray-600 border-gray-300"
-                      }
-                    >
-                      {user.status === "active" ? "Actif" : "Inactif"}
-                    </Badge>
-                  </TableCell>
-                  <TableCell className="text-[#4A5568] text-sm">
-                    {user.lastActivity}
-                  </TableCell>
-                  <TableCell className="text-right">
-                    <Button
-                      size="sm"
-                      variant="outline"
-                      onClick={() => onSelectUser(user)}
-                      className="text-[#4A90E2] border-[#4A90E2] hover:bg-[#4A90E2] hover:text-white"
-                    >
-                      Voir détails
-                    </Button>
-                  </TableCell>
-                </TableRow>
-              ))}
+                    </TableCell>
+                    <TableCell className="text-[#4A5568]">
+                      {user.email}
+                    </TableCell>
+                    <TableCell className="text-[#4A5568]">
+                      {user.age} ans
+                    </TableCell>
+                    <TableCell>
+                      <Badge
+                        variant="outline"
+                        className="bg-[#4A90E2] bg-opacity-10 text-[#4A90E2] border-[#4A90E2]"
+                      >
+                        {user.objective}
+                      </Badge>
+                    </TableCell>
+                    <TableCell>
+                      <Badge
+                        className={
+                          user.plan === "Premium"
+                            ? "bg-[#5CC58C] hover:bg-[#5CC58C]"
+                            : user.plan === "B2B"
+                              ? "bg-[#7FD8BE] hover:bg-[#7FD8BE]"
+                              : "bg-gray-400 hover:bg-gray-400"
+                        }
+                      >
+                        {user.plan}
+                      </Badge>
+                    </TableCell>
+                    <TableCell>
+                      <Badge
+                        variant="outline"
+                        className={
+                          user.status === "active"
+                            ? "bg-[#5CC58C] bg-opacity-10 text-[#5CC58C] border-[#5CC58C]"
+                            : "bg-gray-200 text-gray-600 border-gray-300"
+                        }
+                      >
+                        {user.status === "active" ? "Actif" : "Inactif"}
+                      </Badge>
+                    </TableCell>
+                    <TableCell className="text-[#4A5568] text-sm">
+                      {user.lastActivity}
+                    </TableCell>
+                    <TableCell className="text-right">
+                      <Button
+                        size="sm"
+                        variant="outline"
+                        onClick={() => onSelectUser(user)}
+                        className="text-[#4A90E2] border-[#4A90E2] hover:bg-[#4A90E2] hover:text-white"
+                      >
+                        Voir détails
+                      </Button>
+                    </TableCell>
+                  </TableRow>
+                ))
+              )}
             </TableBody>
           </Table>
         </div>
