@@ -1,7 +1,7 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { ResponsiveContainer } from "recharts";
 import { NextPageWithLayout } from "@/utils/types/globals";
-import { ReactElement } from "react";
+import { ReactElement, useEffect, useMemo, useState } from "react";
 import { AgeDistribution } from "@/components/dashboard/dashboard-pilotage/AgeDistribution";
 import { AlertCard } from "@/components/dashboard/dashboard-pilotage/AlertCard";
 import { DataQualityTrend } from "@/components/dashboard/dashboard-pilotage/DataQualityTrend";
@@ -15,8 +15,79 @@ import {
 } from "@/components/dashboard/dashboard-pilotage/mocks";
 import { ObjectivesDataChart } from "@/components/dashboard/dashboard-pilotage/ObjectivesDataChart";
 import { PageLayout } from "@/components/layout/PageLayout";
+import { getUsersSummary } from "@/utils/usersApi";
+import type { UsersSummary } from "@/utils/usersApi";
 
 const DashboardPage: NextPageWithLayout = () => {
+  const [usersSummary, setUsersSummary] = useState<UsersSummary | null>(null);
+  const [usersSummaryLoading, setUsersSummaryLoading] = useState(true);
+  const [usersSummaryError, setUsersSummaryError] = useState<string | null>(
+    null
+  );
+
+  useEffect(() => {
+    let cancelled = false;
+    getUsersSummary()
+      .then((summary) => {
+        if (cancelled) return;
+        setUsersSummary(summary);
+        setUsersSummaryError(null);
+      })
+      .catch((e: unknown) => {
+        if (cancelled) return;
+        setUsersSummary(null);
+        setUsersSummaryError(
+          e instanceof Error
+            ? e.message
+            : "Impossible de charger les utilisateurs."
+        );
+      })
+      .finally(() => {
+        if (cancelled) return;
+        setUsersSummaryLoading(false);
+      });
+    return () => {
+      cancelled = true;
+    };
+  }, []);
+
+  const kpis = useMemo(() => {
+    return kpiData.map((kpi) => {
+      if (kpi.label !== "Utilisateurs Actifs") return kpi;
+
+      if (usersSummaryLoading) {
+        return {
+          ...kpi,
+          value: "…",
+          trend: "Chargement",
+        };
+      }
+
+      if (!usersSummary) {
+        return {
+          ...kpi,
+          value: "—",
+          trend: usersSummaryError
+            ? usersSummaryError.includes("USERS_API_MISCONFIGURED")
+              ? "Config API"
+              : "API indispo"
+            : "API indispo",
+        };
+      }
+
+      const pctActive =
+        usersSummary.total > 0
+          ? Math.round((usersSummary.active / usersSummary.total) * 100)
+          : 0;
+
+      return {
+        ...kpi,
+        value: usersSummary.active.toLocaleString("fr-FR"),
+        trend: `${pctActive}% actifs`,
+      };
+    });
+  }, [usersSummary, usersSummaryLoading, usersSummaryError]);
+
   return (
     <div className="space-y-6">
       <section aria-labelledby="kpi-section">
@@ -24,7 +95,7 @@ const DashboardPage: NextPageWithLayout = () => {
           Indicateurs clés de performance
         </h3>
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-          {kpiData.map((kpi) => (
+          {kpis.map((kpi) => (
             <KpiCard key={kpi.label} kpi={kpi} />
           ))}
         </div>
