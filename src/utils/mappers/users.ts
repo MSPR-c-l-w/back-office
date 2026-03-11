@@ -1,5 +1,5 @@
-import type { UserApiItem } from '@/utils/types/users';
-import type { UserListItem } from '@/utils/types/users';
+import type { UserApiItem } from "@/utils/types/users";
+import type { UserListItem } from "@/utils/types/users";
 
 function computeAge(dateOfBirth: string | null): number {
   if (!dateOfBirth) return 0;
@@ -14,7 +14,7 @@ function computeAge(dateOfBirth: string | null): number {
 
 function formatLastActivity(updatedAt: string): string {
   const date = new Date(updatedAt);
-  if (Number.isNaN(date.getTime())) return '—';
+  if (Number.isNaN(date.getTime())) return "—";
   const diffMs = Date.now() - date.getTime();
   const diffMin = Math.floor(diffMs / 60_000);
   const diffH = Math.floor(diffMin / 60);
@@ -25,19 +25,20 @@ function formatLastActivity(updatedAt: string): string {
 }
 
 export function mapUserApiItemToListItem(item: UserApiItem): UserListItem {
-  const name = [item.first_name, item.last_name].filter(Boolean).join(' ') || '—';
+  const name =
+    [item.first_name, item.last_name].filter(Boolean).join(" ") || "—";
   const joinDate = item.created_at
-    ? new Date(item.created_at).toLocaleDateString('fr-FR')
-    : '—';
+    ? new Date(item.created_at).toLocaleDateString("fr-FR")
+    : "—";
   return {
     id: item.id,
     name,
     email: item.email,
     age: computeAge(item.date_of_birth),
-    gender: item.gender ?? '—',
-    objective: '—',
-    plan: 'Freemium',
-    status: item.is_active ? 'active' : 'inactive',
+    gender: item.gender ?? "—",
+    objective: "—",
+    plan: "Freemium",
+    status: item.is_active ? "active" : "inactive",
     joinDate,
     lastActivity: formatLastActivity(item.updated_at),
   };

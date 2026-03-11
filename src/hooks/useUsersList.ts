@@ -1,9 +1,9 @@
 "use client";
 
-import { useCallback, useEffect, useState } from 'react';
-import api from '@/utils/axios';
-import type { UsersListApiResponse, UserListItem } from '@/utils/types/users';
-import { mapUserApiItemToListItem } from '@/utils/mappers/users';
+import { useCallback, useEffect, useState } from "react";
+import api from "@/utils/axios";
+import type { UsersListApiResponse, UserListItem } from "@/utils/types/users";
+import { mapUserApiItemToListItem } from "@/utils/mappers/users";
 
 type UseUsersListParams = {
   page: number;
@@ -31,13 +31,14 @@ export function useUsersList({
     setLoading(true);
     setError(null);
     try {
-      const { data: response } = await api.get<UsersListApiResponse>('/users', {
+      const { data: response } = await api.get<UsersListApiResponse>("/users", {
         params: { page, limit },
       });
       setData(response.data.map(mapUserApiItemToListItem));
       setTotal(response.total);
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
     } catch (err) {
-      setError('Impossible de charger la liste des utilisateurs.');
+      setError("Impossible de charger la liste des utilisateurs.");
       setData([]);
       setTotal(0);
     } finally {

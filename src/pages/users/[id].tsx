@@ -1,11 +1,11 @@
-import { PageLayout } from '@/components/layout/PageLayout';
-import { useRequireRole } from '@/hooks/useRequireRole';
-import { NextPageWithLayout } from '@/utils/types/globals';
-import { useRouter } from 'next/router';
-import { ReactElement, useCallback, useEffect, useState } from 'react';
-import api from '@/utils/axios';
-import type { User } from '@/utils/interfaces/user';
-import { UserDetailView } from '@/components/dashboard/users/UserDetailView';
+import { PageLayout } from "@/components/layout/PageLayout";
+import { useRequireRole } from "@/hooks/useRequireRole";
+import { NextPageWithLayout } from "@/utils/types/globals";
+import { useRouter } from "next/router";
+import { ReactElement, useCallback, useEffect, useState } from "react";
+import api from "@/utils/axios";
+import type { User } from "@/utils/interfaces/user";
+import { UserDetailView } from "@/components/dashboard/users/UserDetailView";
 
 type DetailUser = {
   id: number;
@@ -14,15 +14,16 @@ type DetailUser = {
   age: number;
   gender: string;
   objective: string;
-  plan: 'Freemium' | 'Premium' | 'B2B';
-  status: 'active' | 'inactive';
+  plan: "Freemium" | "Premium" | "B2B";
+  status: "active" | "inactive";
   joinDate: string;
   lastActivity: string;
   avatar?: string;
 };
 
 function mapApiUserToDetailUser(apiUser: User): DetailUser {
-  const name = [apiUser.first_name, apiUser.last_name].filter(Boolean).join(' ') || '—';
+  const name =
+    [apiUser.first_name, apiUser.last_name].filter(Boolean).join(" ") || "—";
   let age = 0;
   if (apiUser.date_of_birth) {
     const birth = new Date(apiUser.date_of_birth);
@@ -36,8 +37,10 @@ function mapApiUserToDetailUser(apiUser: User): DetailUser {
   }
   const joinDate =
     apiUser.created_at instanceof Date
-      ? apiUser.created_at.toLocaleDateString('fr-FR')
-      : new Date((apiUser as unknown as { created_at: string }).created_at).toLocaleDateString('fr-FR');
+      ? apiUser.created_at.toLocaleDateString("fr-FR")
+      : new Date(
+          (apiUser as unknown as { created_at: string }).created_at
+        ).toLocaleDateString("fr-FR");
   const updatedAt =
     apiUser.updated_at instanceof Date
       ? apiUser.updated_at
@@ -53,17 +56,17 @@ function mapApiUserToDetailUser(apiUser: User): DetailUser {
     name,
     email: apiUser.email,
     age,
-    gender: apiUser.gender ?? '—',
-    objective: '—',
-    plan: 'Freemium',
-    status: apiUser.is_active ? 'active' : 'inactive',
+    gender: apiUser.gender ?? "—",
+    objective: "—",
+    plan: "Freemium",
+    status: apiUser.is_active ? "active" : "inactive",
     joinDate,
     lastActivity,
   };
 }
 
 const UserDetailPage: NextPageWithLayout = () => {
-  useRequireRole('ADMIN');
+  useRequireRole("ADMIN");
   const router = useRouter();
   const id = router.query.id as string | undefined;
   const [user, setUser] = useState<DetailUser | null>(null);
@@ -82,26 +85,29 @@ const UserDetailPage: NextPageWithLayout = () => {
       setUser(mapApiUserToDetailUser(apiUser));
     } catch (err: unknown) {
       const status =
-        err && typeof err === 'object' && 'response' in err
-          ? (err as { response?: { status?: number; data?: { message?: string } } })
-              .response?.status
+        err && typeof err === "object" && "response" in err
+          ? (
+              err as {
+                response?: { status?: number; data?: { message?: string } };
+              }
+            ).response?.status
           : undefined;
       const apiMessage =
-        err && typeof err === 'object' && 'response' in err
-          ? (err as { response?: { data?: { message?: string } } }).response?.data
-              ?.message
+        err && typeof err === "object" && "response" in err
+          ? (err as { response?: { data?: { message?: string } } }).response
+              ?.data?.message
           : undefined;
 
       if (status === 403) {
         setError(
-          apiMessage === 'YOU_MUST_BE_AN_COACH'
-            ? 'Vous devez être un coach pour accéder à cette page.'
-            : 'Accès refusé.'
+          apiMessage === "YOU_MUST_BE_AN_COACH"
+            ? "Vous devez être un coach pour accéder à cette page."
+            : "Accès refusé."
         );
       } else if (status === 404) {
-        setError('Utilisateur introuvable.');
+        setError("Utilisateur introuvable.");
       } else {
-        setError('Une erreur est survenue. Réessayez.');
+        setError("Une erreur est survenue. Réessayez.");
       }
       setUser(null);
     } finally {
@@ -114,7 +120,7 @@ const UserDetailPage: NextPageWithLayout = () => {
   }, [fetchUser]);
 
   const handleBack = () => {
-    router.push('/users');
+    router.push("/users");
   };
 
   if (loading) {
@@ -128,7 +134,7 @@ const UserDetailPage: NextPageWithLayout = () => {
   if (error || !user) {
     return (
       <div className="space-y-4">
-        <p className="text-red-600">{error ?? 'Utilisateur introuvable.'}</p>
+        <p className="text-red-600">{error ?? "Utilisateur introuvable."}</p>
         <button
           type="button"
           onClick={handleBack}
