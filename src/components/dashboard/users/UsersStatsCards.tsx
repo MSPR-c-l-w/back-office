@@ -1,7 +1,11 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Activity, Clock, Target, TrendingUp } from "lucide-react";
+<<<<<<< SCRUM-115-back-office-card-utilisateurs-actifs
 import type { UsersSummary } from "@/utils/usersApi";
 import type { UserListItem } from "./mocks";
+=======
+import type { UserListItem } from "@/utils/types/users";
+>>>>>>> main
 
 type Props = {
   summary: UsersSummary | null;

@@ -9,7 +9,7 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 import { getUserMetrics } from "./mocks";
-import type { UserListItem } from "./mocks";
+import type { UserListItem } from "@/utils/types/users";
 import { DailyStepsChart } from "./DailyStepsChart";
 import { SleepQualityChart } from "./SleepQualityChart";
 import { UserMetricsSummary } from "./UserMetricsSummary";

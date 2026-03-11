@@ -1,5 +1,6 @@
-export { allUsers, getUserMetrics } from "./mocks";
-export type { UserListItem, UserMetrics } from "./mocks";
+export { getUserMetrics } from "./mocks";
+export type { UserListItem } from "@/utils/types/users";
+export type { UserMetrics } from "./mocks";
 export { UsersStatsCards } from "./UsersStatsCards";
 export { UsersTableCard } from "./UsersTableCard";
 export { UserDetailModal } from "./UserDetailModal";

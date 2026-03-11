@@ -1,20 +1,26 @@
-import {
-  allUsers,
-  UserDetailModal,
-  UsersStatsCards,
-  UsersTableCard,
-} from "@/components/dashboard/users";
+import { UsersTableCard } from "@/components/dashboard/users/UsersTableCard";
 import { PageLayout } from "@/components/layout/PageLayout";
+import { useUsersList } from "@/hooks/useUsersList";
 import { useRequireRole } from "@/hooks/useRequireRole";
 import { getUsersSummary } from "@/utils/usersApi";
 import type { UsersSummary } from "@/utils/usersApi";
 import { NextPageWithLayout } from "@/utils/types/globals";
 import { ReactElement, useEffect, useMemo, useState } from "react";
+import { useRouter } from "next/router";
 
-const ITEMS_PER_PAGE = 10;
+const DEFAULT_PAGE = 1;
+const DEFAULT_LIMIT = 20;
 
 const UsersPage: NextPageWithLayout = () => {
   useRequireRole("ADMIN");
+  const router = useRouter();
+  const page = Number(router.query.page) || DEFAULT_PAGE;
+  const limit = Number(router.query.limit) || DEFAULT_LIMIT;
+
+  const { data, total, loading, error, refetch } = useUsersList({
+    page,
+    limit,
+  });
 
   const [usersSummary, setUsersSummary] = useState<UsersSummary | null>(null);
   const [usersSummaryLoading, setUsersSummaryLoading] = useState(true);
@@ -51,25 +57,35 @@ const UsersPage: NextPageWithLayout = () => {
   const [currentPage, setCurrentPage] = useState(1);
   const [searchQuery, setSearchQuery] = useState("");
   const [filterPlan, setFilterPlan] = useState<string>("all");
-  const [selectedUser, setSelectedUser] =
-    useState<Parameters<typeof UserDetailModal>[0]["user"]>(null);
 
-  const filteredUsers = useMemo(() => {
-    return allUsers.filter((user) => {
+  const filteredRows = useMemo(() => {
+    return data.filter((user) => {
       const matchesSearch =
         user.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
         user.email.toLowerCase().includes(searchQuery.toLowerCase());
       const matchesPlan = filterPlan === "all" || user.plan === filterPlan;
       return matchesSearch && matchesPlan;
     });
-  }, [searchQuery, filterPlan]);
+  }, [data, searchQuery, filterPlan]);
 
-  const totalPages = Math.ceil(filteredUsers.length / ITEMS_PER_PAGE);
-  const startIndex = (currentPage - 1) * ITEMS_PER_PAGE;
-  const paginatedUsers = useMemo(
-    () => filteredUsers.slice(startIndex, startIndex + ITEMS_PER_PAGE),
-    [filteredUsers, startIndex]
-  );
+  const hasActiveFilter = searchQuery.trim() !== "" || filterPlan !== "all";
+  const totalPages = hasActiveFilter
+    ? 1
+    : Math.max(1, Math.ceil(total / limit));
+  const startIndex = total === 0 ? 0 : hasActiveFilter ? 0 : (page - 1) * limit;
+  const filteredCount = hasActiveFilter ? filteredRows.length : total;
+
+  const handlePageChange = (newPage: number) => {
+    router.push(
+      { pathname: "/users", query: { ...router.query, page: newPage, limit } },
+      undefined,
+      { shallow: true }
+    );
+  };
+
+  const handleSelectUser = (user: { id: number }) => {
+    router.push(`/users/${user.id}`);
+  };
 
   return (
     <div className="space-y-6">
@@ -85,19 +101,17 @@ const UsersPage: NextPageWithLayout = () => {
         onSearchChange={setSearchQuery}
         filterPlan={filterPlan}
         onFilterPlanChange={setFilterPlan}
-        paginatedUsers={paginatedUsers}
-        filteredCount={filteredUsers.length}
-        currentPage={currentPage}
+        paginatedUsers={filteredRows}
+        filteredCount={filteredCount}
+        currentPage={hasActiveFilter ? 1 : page}
         totalPages={totalPages}
         startIndex={startIndex}
-        itemsPerPage={ITEMS_PER_PAGE}
-        onPageChange={setCurrentPage}
-        onSelectUser={setSelectedUser}
-      />
-
-      <UserDetailModal
-        user={selectedUser}
-        onClose={() => setSelectedUser(null)}
+        itemsPerPage={limit}
+        onPageChange={handlePageChange}
+        onSelectUser={handleSelectUser}
+        loading={loading}
+        error={error}
+        onRetry={refetch}
       />
     </div>
   );
