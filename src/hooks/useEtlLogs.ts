@@ -39,6 +39,7 @@ export function useEtlLogs() {
   const socketRef = useRef<Socket | null>(null);
   const subscribedPipelineRef = useRef<PipelineId | null>(null);
   const socketTokenRef = useRef<string | null>(null);
+  const lastRequestedPipelineRef = useRef<PipelineId | null>(null);
 
   const socketUrl =
     typeof window !== "undefined"
@@ -56,6 +57,8 @@ export function useEtlLogs() {
         return;
       }
 
+      lastRequestedPipelineRef.current = pipelineId;
+
       if (!socketRef.current) {
         const socket = io(socketUrl, {
           path: "/socket.io",
@@ -70,6 +73,11 @@ export function useEtlLogs() {
 
         socket.on("connect", () => {
           setIsConnected(true);
+          const requested = lastRequestedPipelineRef.current;
+          if (requested) {
+            socket.emit("subscribe", { pipeline: requested });
+            subscribedPipelineRef.current = requested;
+          }
         });
         socket.on("disconnect", () => {
           setIsConnected(false);
@@ -119,7 +127,7 @@ export function useEtlLogs() {
         socket.connect();
       }
       setActivePipeline(pipelineId);
-      if (subscribedPipelineRef.current !== pipelineId) {
+      if (socket.connected && subscribedPipelineRef.current !== pipelineId) {
         if (subscribedPipelineRef.current) {
           socket.emit("unsubscribe", {
             pipeline: subscribedPipelineRef.current,

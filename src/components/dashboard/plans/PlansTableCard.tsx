@@ -26,6 +26,8 @@ type Props = {
   onSearchChange: (value: string) => void;
   paginatedPlans: Plan[];
   filteredCount: number;
+  /** True s'il existe au moins un plan en base (avant filtres) */
+  hasAnyPlan: boolean;
   currentPage: number;
   totalPages: number;
   startIndex: number;
@@ -41,6 +43,7 @@ export function PlansTableCard({
   onSearchChange,
   paginatedPlans,
   filteredCount,
+  hasAnyPlan,
   currentPage,
   totalPages,
   startIndex,
@@ -163,7 +166,9 @@ export function PlansTableCard({
               {paginatedPlans.length === 0 && (
                 <TableRow>
                   <TableCell colSpan={4} className="text-center text-[#4A5568]">
-                    Aucun plan trouvé.
+                    {hasAnyPlan
+                      ? "Aucun plan ne correspond à vos filtres."
+                      : "Aucun plan créé."}
                   </TableCell>
                 </TableRow>
               )}

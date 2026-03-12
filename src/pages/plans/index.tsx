@@ -140,6 +140,7 @@ const PlansPage: NextPageWithLayout = () => {
             onSearchChange={setSearchQuery}
             paginatedPlans={paginatedPlans}
             filteredCount={filteredPlans.length}
+            hasAnyPlan={plans.length > 0}
             currentPage={currentPage}
             totalPages={totalPages}
             startIndex={startIndex}
