@@ -70,40 +70,42 @@ export function ExercisesTableCard({
       <CardHeader>
         <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
           <CardTitle className="text-lg font-semibold text-[#4A5568]">
-            Gestion Exercices
+            Liste des Exercices
           </CardTitle>
-          <div className="w-full md:w-auto">
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-3">
-              <div className="relative">
-                <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-[#4A5568] opacity-50" />
-                <Input
-                  placeholder="Nom (ex: sit-up)"
-                  value={filters.name}
-                  onChange={(e) => {
-                    onFiltersChange({ ...filters, name: e.target.value });
-                    onPageChange(1);
-                  }}
-                  className="pl-10"
-                />
-              </div>
-              <div className="relative">
-                <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-[#4A5568] opacity-50" />
-                <Input
-                  placeholder="Muscle (ex: biceps)"
-                  value={filters.muscle}
-                  list="exercise-muscle-options"
-                  onChange={(e) => {
-                    onFiltersChange({ ...filters, muscle: e.target.value });
-                    onPageChange(1);
-                  }}
-                  className="pl-10"
-                />
-                <datalist id="exercise-muscle-options">
-                  {options.muscles.map((m) => (
-                    <option key={m} value={m} />
-                  ))}
-                </datalist>
-              </div>
+          <div className="flex flex-col sm:flex-row flex-wrap items-stretch sm:items-center gap-3 w-full md:w-auto">
+            <div className="relative flex-1 sm:flex-initial sm:w-56">
+              <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-[#4A5568] opacity-50" />
+              <Input
+                placeholder="Nom (ex: sit-up)"
+                value={filters.name}
+                onChange={(e) => {
+                  onFiltersChange({ ...filters, name: e.target.value });
+                  onPageChange(1);
+                }}
+                className="pl-10"
+              />
+            </div>
+
+            <div className="relative flex-1 sm:flex-initial sm:w-56">
+              <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-[#4A5568] opacity-50" />
+              <Input
+                placeholder="Muscle (ex: biceps)"
+                value={filters.muscle}
+                list="exercise-muscle-options"
+                onChange={(e) => {
+                  onFiltersChange({ ...filters, muscle: e.target.value });
+                  onPageChange(1);
+                }}
+                className="pl-10"
+              />
+              <datalist id="exercise-muscle-options">
+                {options.muscles.map((m) => (
+                  <option key={m} value={m} />
+                ))}
+              </datalist>
+            </div>
+
+            <div className="flex-1 sm:flex-initial sm:w-48">
               <Input
                 placeholder="Niveau (ex: débutant)"
                 value={filters.level}
@@ -118,20 +120,9 @@ export function ExercisesTableCard({
                   <option key={v} value={v} />
                 ))}
               </datalist>
-              <Input
-                placeholder="Équipement (ex: barre)"
-                value={filters.equipment}
-                list="exercise-equipment-options"
-                onChange={(e) => {
-                  onFiltersChange({ ...filters, equipment: e.target.value });
-                  onPageChange(1);
-                }}
-              />
-              <datalist id="exercise-equipment-options">
-                {options.equipments.map((v) => (
-                  <option key={v} value={v} />
-                ))}
-              </datalist>
+            </div>
+
+            <div className="flex-1 sm:flex-initial sm:w-52">
               <Input
                 placeholder="Catégorie (ex: force)"
                 value={filters.category}
@@ -147,6 +138,12 @@ export function ExercisesTableCard({
                 ))}
               </datalist>
             </div>
+
+            <datalist id="exercise-equipment-options">
+              {options.equipments.map((v) => (
+                <option key={v} value={v} />
+              ))}
+            </datalist>
             {isFetching && (
               <div className="mt-2 text-xs text-[#4A5568]/70">Chargement…</div>
             )}
