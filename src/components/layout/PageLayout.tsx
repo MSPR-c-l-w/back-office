@@ -4,6 +4,7 @@ import {
   BarChart3,
   Server,
   Users as UsersIcon,
+  CreditCard,
   Building2,
 } from "lucide-react";
 import { Sidebar } from "@/components/misc/Sidebar";
@@ -21,6 +22,11 @@ const routes: Routes[] = [
     path: "/users",
     label: "Gestion Utilisateurs",
     icon: UsersIcon,
+  },
+  {
+    path: "/plans",
+    label: "Gestion Plans",
+    icon: CreditCard,
   },
   {
     path: "/organizations",
