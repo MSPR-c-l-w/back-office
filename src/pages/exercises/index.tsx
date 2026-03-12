@@ -52,7 +52,9 @@ const ExercisesPage: NextPageWithLayout = () => {
   const [modalExercise, setModalExercise] = useState<Exercise | null>(null);
 
   const [deleteConfirmOpen, setDeleteConfirmOpen] = useState(false);
-  const [exerciseToDelete, setExerciseToDelete] = useState<Exercise | null>(null);
+  const [exerciseToDelete, setExerciseToDelete] = useState<Exercise | null>(
+    null
+  );
   const [deleteLoading, setDeleteLoading] = useState(false);
 
   const startIndex = (currentPage - 1) * ITEMS_PER_PAGE;
@@ -99,11 +101,7 @@ const ExercisesPage: NextPageWithLayout = () => {
           let backendPage = 1;
           let hasNext = true;
 
-          while (
-            hasNext &&
-            backendPage <= SCAN_MAX_PAGES &&
-            !cancelled
-          ) {
+          while (hasNext && backendPage <= SCAN_MAX_PAGES && !cancelled) {
             const res = await fetchPage(backendPage, SCAN_PAGE_SIZE);
 
             for (const ex of res.items) {
@@ -181,7 +179,9 @@ const ExercisesPage: NextPageWithLayout = () => {
 
           setTotalCount(hasNext ? -1 : total);
           setTotalPages(
-            hasNext ? Math.max(res.meta.totalPages, currentPage + 1) : Math.ceil(total / ITEMS_PER_PAGE)
+            hasNext
+              ? Math.max(res.meta.totalPages, currentPage + 1)
+              : Math.ceil(total / ITEMS_PER_PAGE)
           );
         }
 
@@ -213,7 +213,10 @@ const ExercisesPage: NextPageWithLayout = () => {
         setItems([]);
         setTotalPages(0);
         setTotalCount(0);
-        setBanner({ kind: "error", text: "Impossible de charger les exercices." });
+        setBanner({
+          kind: "error",
+          text: "Impossible de charger les exercices.",
+        });
       } finally {
         if (cancelled) return;
         setIsFetching(false);
@@ -338,4 +341,3 @@ ExercisesPage.getLayout = function (page: ReactElement) {
 };
 
 export default ExercisesPage;
-

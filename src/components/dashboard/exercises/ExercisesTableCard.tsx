@@ -11,12 +11,7 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import type { Exercise } from "@/utils/interfaces/exercise";
-import {
-  ChevronLeft,
-  ChevronRight,
-  Search,
-  Trash2,
-} from "lucide-react";
+import { ChevronLeft, ChevronRight, Search, Trash2 } from "lucide-react";
 
 type Banner = { kind: "success" | "error" | "info"; text: string } | null;
 
@@ -206,7 +201,9 @@ export function ExercisesTableCard({
                     </div>
                   </TableCell>
                   <TableCell className="text-[#4A5568]">{ex.level}</TableCell>
-                  <TableCell className="text-[#4A5568]">{ex.category}</TableCell>
+                  <TableCell className="text-[#4A5568]">
+                    {ex.category}
+                  </TableCell>
                   <TableCell>
                     <div className="flex flex-wrap gap-2">
                       {(ex.primary_muscles ?? []).slice(0, 2).map((m) => (
@@ -347,7 +344,9 @@ export function ExercisesTableCard({
             <Button
               variant="outline"
               size="sm"
-              onClick={() => onPageChange(Math.min(totalPages, currentPage + 1))}
+              onClick={() =>
+                onPageChange(Math.min(totalPages, currentPage + 1))
+              }
               disabled={currentPage === totalPages || totalPages === 0}
               className="bg-white"
             >
@@ -360,4 +359,3 @@ export function ExercisesTableCard({
     </Card>
   );
 }
-

@@ -48,12 +48,14 @@ function pickArray(obj: unknown): unknown[] | null {
   if (Array.isArray(obj)) return obj;
   if (!isRecord(obj)) return null;
 
-  const direct = obj.data ?? obj.items ?? obj.results ?? obj.exercises ?? obj.rows;
+  const direct =
+    obj.data ?? obj.items ?? obj.results ?? obj.exercises ?? obj.rows;
   if (Array.isArray(direct)) return direct;
 
   // Parfois: { data: { items: [...] } }
   if (isRecord(obj.data)) {
-    const nested = (obj.data as Record<string, unknown>).items ??
+    const nested =
+      (obj.data as Record<string, unknown>).items ??
       (obj.data as Record<string, unknown>).data ??
       (obj.data as Record<string, unknown>).results ??
       (obj.data as Record<string, unknown>).exercises ??
@@ -74,7 +76,8 @@ function pickMetaLike(obj: unknown): unknown {
   if (isRecord(meta)) return meta;
   // Parfois: { data: { meta: {...} } }
   if (isRecord(obj.data)) {
-    const nested = (obj.data as Record<string, unknown>).meta ??
+    const nested =
+      (obj.data as Record<string, unknown>).meta ??
       (obj.data as Record<string, unknown>).pagination ??
       (obj.data as Record<string, unknown>).pageable ??
       (obj.data as Record<string, unknown>).paging;
@@ -147,7 +150,15 @@ function extractPaginated<T>(
       "items_count",
       "nbItems",
       "nb_items",
-    ]) ?? readNumber(data, ["total", "totalItems", "total_items", "totalCount", "total_count", "count"]);
+    ]) ??
+    readNumber(data, [
+      "total",
+      "totalItems",
+      "total_items",
+      "totalCount",
+      "total_count",
+      "count",
+    ]);
 
   const totalPagesFromPayload =
     readNumber(metaLike, [
@@ -160,7 +171,16 @@ function extractPaginated<T>(
       "pages",
       "lastPage",
       "last_page",
-    ]) ?? readNumber(data, ["totalPages", "total_pages", "pageCount", "page_count", "pages", "lastPage", "last_page"]);
+    ]) ??
+    readNumber(data, [
+      "totalPages",
+      "total_pages",
+      "pageCount",
+      "page_count",
+      "pages",
+      "lastPage",
+      "last_page",
+    ]);
 
   const total =
     totalFromPayload ??
@@ -193,18 +213,24 @@ function normalizeExercise(raw: unknown): Exercise {
   return {
     id: Number(r.id ?? 0),
     name: String(r.name ?? ""),
-    primary_muscles: Array.isArray(r.primary_muscles) ? (r.primary_muscles as string[]) : [],
+    primary_muscles: Array.isArray(r.primary_muscles)
+      ? (r.primary_muscles as string[])
+      : [],
     secondary_muscles: Array.isArray(r.secondary_muscles)
       ? (r.secondary_muscles as string[])
       : [],
     level: String(r.level ?? ""),
     mechanic: (r.mechanic == null ? null : String(r.mechanic)) as string | null,
-    equipment: (r.equipment == null ? null : String(r.equipment)) as string | null,
+    equipment: (r.equipment == null ? null : String(r.equipment)) as
+      | string
+      | null,
     category: String(r.category ?? ""),
     instructions: Array.isArray(instructionsCandidate)
       ? (instructionsCandidate as string[])
       : [],
-    images_urls: Array.isArray(imagesCandidate) ? (imagesCandidate as string[]) : [],
+    images_urls: Array.isArray(imagesCandidate)
+      ? (imagesCandidate as string[])
+      : [],
     exercise_type: String(r.exercise_type ?? r.type ?? ""),
   };
 }
@@ -213,9 +239,12 @@ export async function listExercises(params: {
   page: number;
   limit: number;
 }): Promise<Paginated<Exercise>> {
-  const { data } = await api.get<UnknownPaginatedResponse<Exercise>>("/exercise", {
-    params,
-  });
+  const { data } = await api.get<UnknownPaginatedResponse<Exercise>>(
+    "/exercise",
+    {
+      params,
+    }
+  );
   if (Array.isArray(data)) {
     const items = (data as unknown[]).map(normalizeExercise);
     const hasNext = data.length === params.limit;
@@ -306,4 +335,3 @@ export async function updateExercise(
 export async function deleteExercise(id: number): Promise<void> {
   await api.delete(`/exercise/${id}`);
 }
-

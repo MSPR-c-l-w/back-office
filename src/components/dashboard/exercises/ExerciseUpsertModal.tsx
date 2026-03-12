@@ -161,7 +161,9 @@ export function ExerciseUpsertModal({
 
   if (!exercise) return null;
   const images = exercise.images_urls ?? [];
-  const heroImage = images.find((u) => typeof u === "string" && u.trim().length > 0);
+  const heroImage = images.find(
+    (u) => typeof u === "string" && u.trim().length > 0
+  );
 
   return (
     <>
@@ -301,25 +303,27 @@ export function ExerciseUpsertModal({
                     Images
                   </div>
                   <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
-                    {(exercise.images_urls ?? []).slice(0, 8).map((url, idx) => (
-                      <a
-                        key={`img-${exercise.id}-${idx}`}
-                        href={url}
-                        target="_blank"
-                        rel="noreferrer"
-                        className="rounded-md border bg-white overflow-hidden"
-                        title="Ouvrir l'image"
-                      >
-                        <Image
-                          src={url}
-                          alt={`${exercise.name} ${idx + 1}`}
-                          width={320}
-                          height={200}
-                          unoptimized
-                          className="h-24 w-full object-cover"
-                        />
-                      </a>
-                    ))}
+                    {(exercise.images_urls ?? [])
+                      .slice(0, 8)
+                      .map((url, idx) => (
+                        <a
+                          key={`img-${exercise.id}-${idx}`}
+                          href={url}
+                          target="_blank"
+                          rel="noreferrer"
+                          className="rounded-md border bg-white overflow-hidden"
+                          title="Ouvrir l'image"
+                        >
+                          <Image
+                            src={url}
+                            alt={`${exercise.name} ${idx + 1}`}
+                            width={320}
+                            height={200}
+                            unoptimized
+                            className="h-24 w-full object-cover"
+                          />
+                        </a>
+                      ))}
                   </div>
                 </div>
               )}
@@ -332,7 +336,10 @@ export function ExerciseUpsertModal({
               </div>
               <div className="space-y-2">
                 <label className="text-sm text-[#4A5568]">Niveau</label>
-                <Input value={level} onChange={(e) => setLevel(e.target.value)} />
+                <Input
+                  value={level}
+                  onChange={(e) => setLevel(e.target.value)}
+                />
               </div>
               <div className="space-y-2">
                 <label className="text-sm text-[#4A5568]">Catégorie</label>
@@ -473,4 +480,3 @@ export function ExerciseUpsertModal({
     </>
   );
 }
-
