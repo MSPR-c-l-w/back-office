@@ -5,6 +5,7 @@ import {
   Server,
   Users as UsersIcon,
   CreditCard,
+  Building2,
 } from "lucide-react";
 import { Sidebar } from "@/components/misc/Sidebar";
 import { Routes } from "@/utils/types/globals";
@@ -26,6 +27,11 @@ const routes: Routes[] = [
     path: "/plans",
     label: "Gestion Plans",
     icon: CreditCard,
+  },
+  {
+    path: "/organizations",
+    label: "Gestion Organisations",
+    icon: Building2,
   },
   {
     path: "/data",
