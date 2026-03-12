@@ -42,6 +42,8 @@ type Props = {
   typeOptions: string[];
   paginatedOrganizations: Organization[];
   filteredCount: number;
+  /** True s'il existe au moins une organisation en base (avant filtres / pagination) */
+  hasAnyOrganization: boolean;
   currentPage: number;
   totalPages: number;
   startIndex: number;
@@ -60,6 +62,7 @@ export function OrganizationsTableCard({
   typeOptions,
   paginatedOrganizations,
   filteredCount,
+  hasAnyOrganization,
   currentPage,
   totalPages,
   startIndex,
@@ -237,7 +240,9 @@ export function OrganizationsTableCard({
               {paginatedOrganizations.length === 0 && (
                 <TableRow>
                   <TableCell colSpan={7} className="text-center text-[#4A5568]">
-                    Aucune organisation trouvée.
+                    {hasAnyOrganization
+                      ? "Aucune organisation ne correspond à vos filtres."
+                      : "Aucune organisation créée."}
                   </TableCell>
                 </TableRow>
               )}

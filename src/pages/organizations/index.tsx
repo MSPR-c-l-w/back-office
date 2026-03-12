@@ -165,6 +165,7 @@ const OrganizationsPage: NextPageWithLayout = () => {
             typeOptions={typeOptions}
             paginatedOrganizations={paginatedOrganizations}
             filteredCount={filteredOrganizations.length}
+            hasAnyOrganization={organizations.length > 0}
             currentPage={currentPage}
             totalPages={totalPages}
             startIndex={startIndex}
