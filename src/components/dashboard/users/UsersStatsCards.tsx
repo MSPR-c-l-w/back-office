@@ -1,6 +1,6 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Activity, Clock, Target, TrendingUp } from "lucide-react";
-import type { UserListItem } from "./mocks";
+import type { UserListItem } from "@/utils/types/users";
 
 type Props = { allUsers: UserListItem[] };
 
