@@ -85,8 +85,11 @@ const ExercisesPage: NextPageWithLayout = () => {
 
         // Filtre "Nom": scan global côté front (le backend ne supporte pas name).
         if (nameTerm.length > 0) {
-          const needed = currentPage * ITEMS_PER_PAGE;
-          const matches: Exercise[] = [];
+          const sliceStart = (currentPage - 1) * ITEMS_PER_PAGE;
+          const sliceEnd = currentPage * ITEMS_PER_PAGE;
+
+          const pageItems: Exercise[] = [];
+          let matchesCount = 0;
 
           const musclesSet = new Set<string>();
           const levelsSet = new Set<string>();
@@ -99,7 +102,6 @@ const ExercisesPage: NextPageWithLayout = () => {
           while (
             hasNext &&
             backendPage <= SCAN_MAX_PAGES &&
-            matches.length < needed &&
             !cancelled
           ) {
             const res = await fetchPage(backendPage, SCAN_PAGE_SIZE);
@@ -112,7 +114,9 @@ const ExercisesPage: NextPageWithLayout = () => {
               if (ex.category) categoriesSet.add(ex.category);
 
               if ((ex.name ?? "").toLowerCase().includes(nameTerm)) {
-                matches.push(ex);
+                const idx = matchesCount;
+                if (idx >= sliceStart && idx < sliceEnd) pageItems.push(ex);
+                matchesCount += 1;
               }
             }
 
@@ -122,15 +126,11 @@ const ExercisesPage: NextPageWithLayout = () => {
 
           if (cancelled) return;
 
-          const sliceStart = (currentPage - 1) * ITEMS_PER_PAGE;
-          const sliceEnd = currentPage * ITEMS_PER_PAGE;
-          const pageItems = matches.slice(sliceStart, sliceEnd);
-
-          const mayHaveMore = hasNext || matches.length > sliceEnd;
-
           setItems(pageItems);
-          setTotalCount(-1);
-          setTotalPages(mayHaveMore ? currentPage + 1 : currentPage);
+          setTotalCount(matchesCount);
+          setTotalPages(
+            matchesCount > 0 ? Math.ceil(matchesCount / ITEMS_PER_PAGE) : 0
+          );
 
           setKnownMuscles((prev) => {
             const next = new Set(prev);
@@ -160,8 +160,30 @@ const ExercisesPage: NextPageWithLayout = () => {
         if (cancelled) return;
 
         setItems(res.items);
-        setTotalPages(res.meta.totalPages);
-        setTotalCount(res.meta.total);
+
+        if (res.meta.total >= 0) {
+          setTotalPages(res.meta.totalPages);
+          setTotalCount(res.meta.total);
+        } else {
+          // Si le backend ne fournit pas de total fiable, on calcule le total via un scan paginé.
+          let total = 0;
+          let backendPage = 1;
+          let hasNext = true;
+
+          while (hasNext && backendPage <= SCAN_MAX_PAGES && !cancelled) {
+            const pageRes = await fetchPage(backendPage, SCAN_PAGE_SIZE);
+            total += pageRes.items.length;
+            hasNext = pageRes.items.length === SCAN_PAGE_SIZE;
+            backendPage += 1;
+          }
+
+          if (cancelled) return;
+
+          setTotalCount(hasNext ? -1 : total);
+          setTotalPages(
+            hasNext ? Math.max(res.meta.totalPages, currentPage + 1) : Math.ceil(total / ITEMS_PER_PAGE)
+          );
+        }
 
         setKnownMuscles((prev) => {
           const next = new Set(prev);

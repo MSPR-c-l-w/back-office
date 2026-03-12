@@ -1,6 +1,5 @@
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent } from "@/components/ui/card";
 import { ConfirmDialog } from "@/components/ui/confirm-dialog";
 import {
   Dialog,
@@ -63,6 +62,7 @@ export function ExerciseUpsertModal({
       primary_muscles: (exercise?.primary_muscles ?? []).join("\n"),
       secondary_muscles: (exercise?.secondary_muscles ?? []).join("\n"),
       instructions: (exercise?.instructions ?? []).join("\n"),
+      image_urls: (exercise?.images_urls ?? []).join("\n"),
     }),
     [exercise]
   );
@@ -78,9 +78,7 @@ export function ExerciseUpsertModal({
     initial.secondary_muscles
   );
   const [instructions, setInstructions] = useState(initial.instructions);
-  const [imageUrls, setImageUrls] = useState(
-    (exercise?.images_urls ?? []).join("\n")
-  );
+  const [imageUrls, setImageUrls] = useState(initial.image_urls);
 
   useEffect(() => {
     if (!open) return;
@@ -95,7 +93,7 @@ export function ExerciseUpsertModal({
     setPrimaryMuscles(initial.primary_muscles);
     setSecondaryMuscles(initial.secondary_muscles);
     setInstructions(initial.instructions);
-    setImageUrls((exercise?.images_urls ?? []).join("\n"));
+    setImageUrls(initial.image_urls);
   }, [open, initial]);
 
   const goBackToDetails = () => {
@@ -110,7 +108,7 @@ export function ExerciseUpsertModal({
     setPrimaryMuscles(initial.primary_muscles);
     setSecondaryMuscles(initial.secondary_muscles);
     setInstructions(initial.instructions);
-    setImageUrls((exercise?.images_urls ?? []).join("\n"));
+    setImageUrls(initial.image_urls);
     requestAnimationFrame(scrollExerciseModalToTop);
   };
 
