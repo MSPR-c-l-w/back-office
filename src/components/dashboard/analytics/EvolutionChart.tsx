@@ -8,10 +8,10 @@ import {
   XAxis,
   YAxis,
 } from "recharts";
-import { EngagementType } from "./mocks";
+import type { EngagementTimeseriesPoint } from "@/utils/interfaces/analytics";
 
 interface Props {
-  engagementData: EngagementType[];
+  engagementData: EngagementTimeseriesPoint[];
 }
 
 export const EvolutionChart = ({ engagementData }: Props) => {
@@ -46,16 +46,16 @@ export const EvolutionChart = ({ engagementData }: Props) => {
       <Area
         yAxisId="left"
         type="monotone"
-        dataKey="steps"
+        dataKey="totalDurationHours"
         stroke="#4A90E2"
         strokeWidth={2}
         fill="url(#colorSteps)"
-        name="Pas"
+        name="Durée totale (h)"
       />
       <Area
         yAxisId="left"
         type="monotone"
-        dataKey="calories"
+        dataKey="totalCalories"
         stroke="#FF887B"
         strokeWidth={2}
         fill="url(#colorCalories)"
@@ -64,10 +64,10 @@ export const EvolutionChart = ({ engagementData }: Props) => {
       <Line
         yAxisId="right"
         type="monotone"
-        dataKey="sleep"
+        dataKey="activeUsersPercent"
         stroke="#7FD8BE"
         strokeWidth={3}
-        name="Sommeil (h)"
+        name="Utilisateurs actifs (%)"
         dot={{ fill: "#7FD8BE", r: 4 }}
       />
     </AreaChart>
