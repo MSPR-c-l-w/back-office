@@ -33,3 +33,9 @@ export type UserListItem = {
   lastActivity: string;
   avatar?: string;
 };
+export type UsersStats = {
+  totalUsers: number;
+  activeUsers: number;
+  premiumUsers: number;
+  b2bUsers: number;
+};

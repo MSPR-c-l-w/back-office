@@ -8,6 +8,7 @@ import { mapUserApiItemToListItem } from "@/utils/mappers/users";
 type UseUsersListParams = {
   page: number;
   limit: number;
+  search?: string;
 };
 
 type UseUsersListResult = {
@@ -21,6 +22,7 @@ type UseUsersListResult = {
 export function useUsersList({
   page,
   limit,
+  search,
 }: UseUsersListParams): UseUsersListResult {
   const [data, setData] = useState<UserListItem[]>([]);
   const [total, setTotal] = useState(0);
@@ -32,19 +34,23 @@ export function useUsersList({
     setError(null);
     try {
       const { data: response } = await api.get<UsersListApiResponse>("/users", {
-        params: { page, limit },
+        params: {
+          page,
+          limit,
+          ...(search?.trim() ? { search: search.trim() } : {}),
+        },
+
       });
       setData(response.data.map(mapUserApiItemToListItem));
       setTotal(response.total);
       // eslint-disable-next-line @typescript-eslint/no-unused-vars
     } catch (err) {
-      setError("Impossible de charger la liste des utilisateurs.");
       setData([]);
       setTotal(0);
     } finally {
       setLoading(false);
     }
-  }, [page, limit]);
+  }, [page, limit, search]);
 
   useEffect(() => {
     fetchUsers();
