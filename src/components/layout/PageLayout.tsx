@@ -6,6 +6,8 @@ import {
   Users as UsersIcon,
   CreditCard,
   Building2,
+  Dumbbell,
+  UtensilsCrossed,
 } from "lucide-react";
 import { Sidebar } from "@/components/misc/Sidebar";
 import { Routes } from "@/utils/types/globals";
@@ -32,6 +34,16 @@ const routes: Routes[] = [
     path: "/organizations",
     label: "Gestion Organisations",
     icon: Building2,
+  },
+  {
+    path: "/exercises",
+    label: "Gestion Exercices",
+    icon: Dumbbell,
+  },
+  {
+    path: "/nutrition",
+    label: "Gestion Nutrition",
+    icon: UtensilsCrossed,
   },
   {
     path: "/data",
