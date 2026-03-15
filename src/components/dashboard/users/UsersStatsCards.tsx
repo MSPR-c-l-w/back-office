@@ -15,7 +15,7 @@ export function UsersStatsCards({
   b2bUsers,
   loading,
 }: Props) {
-  const display = loading ? '—' : undefined;
+  const display = loading ? "—" : undefined;
 
   return (
     <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
