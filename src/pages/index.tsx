@@ -6,17 +6,44 @@ import { AgeDistribution } from "@/components/dashboard/dashboard-pilotage/AgeDi
 import { AlertCard } from "@/components/dashboard/dashboard-pilotage/AlertCard";
 import { DataQualityTrend } from "@/components/dashboard/dashboard-pilotage/DataQualityTrend";
 import { KpiCard } from "@/components/dashboard/dashboard-pilotage/KpiCard";
-import {
-  ageDistribution,
-  alerts,
-  dataQualityTrend,
-  kpiData,
-  objectivesData,
-} from "@/components/dashboard/dashboard-pilotage/mocks";
-import { ObjectivesDataChart } from "@/components/dashboard/dashboard-pilotage/ObjectivesDataChart";
 import { PageLayout } from "@/components/layout/PageLayout";
+import { useDashboardPilotage } from "@/hooks/useDashboardPilotage";
 
 const DashboardPage: NextPageWithLayout = () => {
+  const {
+    kpiData,
+    dataQualityTrend,
+    ageDistribution,
+    alerts,
+    loading,
+    error,
+    refetch,
+  } = useDashboardPilotage();
+
+  if (error) {
+    return (
+      <div className="rounded-lg border border-red-200 bg-red-50 p-4 text-red-800">
+        <p className="font-medium">Erreur de chargement du pilotage</p>
+        <p className="text-sm mt-1">{error}</p>
+        <button
+          type="button"
+          onClick={refetch}
+          className="mt-3 text-sm font-medium underline focus:outline-none focus:ring-2 focus:ring-red-500"
+        >
+          Réessayer
+        </button>
+      </div>
+    );
+  }
+
+  if (loading) {
+    return (
+      <div className="flex items-center justify-center min-h-[200px] text-[#4A5568]">
+        Chargement du pilotage…
+      </div>
+    );
+  }
+
   return (
     <div className="space-y-6">
       <section aria-labelledby="kpi-section">
@@ -44,30 +71,18 @@ const DashboardPage: NextPageWithLayout = () => {
         <AgeDistribution ageDistribution={ageDistribution} />
       </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-        <Card>
-          <CardHeader>
-            <CardTitle>Objectifs Utilisateurs</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <ResponsiveContainer width="100%" height={200}>
-              <ObjectivesDataChart objectivesData={objectivesData} />
-            </ResponsiveContainer>
-          </CardContent>
-        </Card>
-        <Card className="lg:col-span-2">
-          <CardHeader>
-            <CardTitle>Alertes Pipeline d&apos;Ingestion</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <ul className="space-y-3" role="list">
-              {alerts.map((alert) => (
-                <AlertCard key={alert.id} alert={alert} />
-              ))}
-            </ul>
-          </CardContent>
-        </Card>
-      </div>
+      <Card>
+        <CardHeader>
+          <CardTitle>Alertes Pipeline d&apos;Ingestion</CardTitle>
+        </CardHeader>
+        <CardContent>
+          <ul className="space-y-3" role="list">
+            {alerts.map((alert) => (
+              <AlertCard key={alert.id} alert={alert} />
+            ))}
+          </ul>
+        </CardContent>
+      </Card>
     </div>
   );
 };
