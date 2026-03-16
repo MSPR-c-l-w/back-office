@@ -5,12 +5,8 @@ import { useCallback, useEffect, useMemo, useState } from "react";
 import { DataQualityAnomalies } from "@/components/dashboard/data-management/DataQualityAnomalies";
 import { DataQualityValidation } from "@/components/dashboard/data-management/DataQualityValidation";
 import { DatasetCard } from "@/components/dashboard/data-management/DatasetCard";
-import {
-  datasets,
-  serverStatus,
-} from "@/components/dashboard/data-management/mocks";
+import { datasets } from "@/components/dashboard/data-management/mocks";
 import { PipelineLog } from "@/components/dashboard/data-management/PipelineLog";
-import { ServerStatusCard } from "@/components/dashboard/data-management/ServerStatusCard";
 import { PageLayout } from "@/components/layout/PageLayout";
 import { NextPageWithLayout } from "@/utils/types/globals";
 import { ReactElement } from "react";
@@ -304,19 +300,6 @@ const DataPage: NextPageWithLayout = () => {
         refreshSignal={refreshSignal}
         onDataChanged={() => setRefreshSignal((value) => value + 1)}
       />
-
-      <Card>
-        <CardHeader>
-          <CardTitle>Statut des Serveurs ETL</CardTitle>
-        </CardHeader>
-        <CardContent>
-          <div className="space-y-4">
-            {serverStatus.map((server, index) => (
-              <ServerStatusCard key={index} server={server} />
-            ))}
-          </div>
-        </CardContent>
-      </Card>
     </div>
   );
 };
