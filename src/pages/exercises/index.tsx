@@ -1,3 +1,4 @@
+import { TopExercisesCard } from "@/components/dashboard/analytics/TopExercisesCard";
 import {
   ExerciseUpsertModal,
   ExercisesTableCard,
@@ -8,6 +9,7 @@ import { useRequireRole } from "@/hooks/useRequireRole";
 import {
   deleteExercise,
   getExercise,
+  getTopExercisesGlobal,
   listExercises,
   searchExercises,
 } from "@/utils/exercisesApi";
@@ -57,7 +59,30 @@ const ExercisesPage: NextPageWithLayout = () => {
   );
   const [deleteLoading, setDeleteLoading] = useState(false);
 
+  const [topExercises, setTopExercises] = useState<
+    Awaited<ReturnType<typeof getTopExercisesGlobal>>
+  >([]);
+  const [topExercisesLoading, setTopExercisesLoading] = useState(true);
+
   const startIndex = (currentPage - 1) * ITEMS_PER_PAGE;
+
+  useEffect(() => {
+    let cancelled = false;
+    setTopExercisesLoading(true);
+    getTopExercisesGlobal()
+      .then((data) => {
+        if (!cancelled) setTopExercises(data);
+      })
+      .catch(() => {
+        if (!cancelled) setTopExercises([]);
+      })
+      .finally(() => {
+        if (!cancelled) setTopExercisesLoading(false);
+      });
+    return () => {
+      cancelled = true;
+    };
+  }, []);
 
   useEffect(() => {
     let cancelled = false;
@@ -304,6 +329,7 @@ const ExercisesPage: NextPageWithLayout = () => {
           onDismissBanner={() => setBanner(null)}
           isFetching={isFetching}
         />
+        <TopExercisesCard items={topExercises} loading={topExercisesLoading} />
 
         <ExerciseUpsertModal
           exercise={modalExercise}

@@ -1,4 +1,5 @@
-import { Badge, Bell, LogOut, Menu } from "lucide-react";
+import { Bell, LogOut, Menu } from "lucide-react";
+import { Badge } from "@/components/ui/badge";
 import { Button } from "../ui/button";
 import { useAuth } from "@/hooks/useAuth";
 

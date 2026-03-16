@@ -335,3 +335,101 @@ export async function updateExercise(
 export async function deleteExercise(id: number): Promise<void> {
   await api.delete(`/exercise/${id}`);
 }
+
+export type TopExerciseStats = {
+  exerciseId: number;
+  exerciseName: string;
+  count: number;
+};
+
+function normalizeTopExercise(raw: unknown): TopExerciseStats {
+  const r = (raw ?? {}) as Record<string, unknown>;
+  const id = Number(r.exerciseId ?? r.exercise_id ?? r.id ?? 0);
+  const exerciseObj = r.exercise as Record<string, unknown> | undefined;
+  const nameFromExercise =
+    exerciseObj &&
+    typeof exerciseObj === "object" &&
+    (exerciseObj.name ?? exerciseObj.exerciseName ?? exerciseObj.exercise_name);
+  const name =
+    String(
+      r.exerciseName ??
+        r.exercise_name ??
+        r.name ??
+        (typeof nameFromExercise === "string" ? nameFromExercise : "") ??
+        ""
+    ).trim() || `Exercice #${id}`;
+  const countObj = r._count as Record<string, unknown> | undefined;
+  const countFromCount =
+    countObj &&
+    typeof countObj === "object" &&
+    (countObj.exercise_id ?? countObj.exerciseId ?? countObj.count);
+  const statsObj = r.stats as Record<string, unknown> | undefined;
+  const countFromStats =
+    statsObj &&
+    typeof statsObj === "object" &&
+    (statsObj.count ??
+      statsObj.sessionsCount ??
+      statsObj.sessions_count ??
+      statsObj.total);
+  const countRaw =
+    r.count ??
+    r.sessionsCount ??
+    r.sessions_count ??
+    r.sessionCount ??
+    r.session_count ??
+    r.total ??
+    r.totalCount ??
+    r.total_count ??
+    r.nbSessions ??
+    r.nb_sessions ??
+    r.occurrences ??
+    r.sessionExerciseCount ??
+    r.session_exercise_count ??
+    r.cnt ??
+    r.value ??
+    countFromCount ??
+    countFromStats ??
+    0;
+  const count = typeof countRaw === "number" ? countRaw : Number(countRaw) || 0;
+  return { exerciseId: id, exerciseName: name, count };
+}
+
+function pickTopExercisesArray(obj: unknown): unknown[] {
+  if (Array.isArray(obj)) return obj;
+  if (!obj || typeof obj !== "object") return [];
+  const r = obj as Record<string, unknown>;
+  const arr =
+    r.data ??
+    r.items ??
+    r.results ??
+    r.topExercises ??
+    r.top_exercises ??
+    r.exercises ??
+    r.stats ??
+    [];
+  return Array.isArray(arr) ? arr : [];
+}
+
+export async function getTopExercisesGlobal(): Promise<TopExerciseStats[]> {
+  const { data } = await api.get<unknown>(
+    "/session-exercise/stats/top-exercises-global"
+  );
+  const arr = pickTopExercisesArray(data);
+  const items = (arr as unknown[]).map(normalizeTopExercise);
+
+  // Si le backend ne fournit pas le nom, on le récupère via getExercise
+  const enriched = await Promise.all(
+    items.map(async (item) => {
+      if (item.exerciseName.startsWith("Exercice #") && item.exerciseId > 0) {
+        try {
+          const ex = await getExercise(item.exerciseId);
+          return { ...item, exerciseName: ex.name || item.exerciseName };
+        } catch {
+          return item;
+        }
+      }
+      return item;
+    })
+  );
+  return enriched;
+}
