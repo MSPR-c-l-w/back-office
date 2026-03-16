@@ -1,5 +1,4 @@
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Download, Play } from "lucide-react";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { DataQualityAnomalies } from "@/components/dashboard/data-management/DataQualityAnomalies";
