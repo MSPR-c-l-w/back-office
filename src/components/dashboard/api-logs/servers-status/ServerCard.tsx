@@ -1,11 +1,11 @@
 import { Server } from "lucide-react";
-import { ServerType } from "../mocks";
+import { ServerStatus } from "../types";
 import { Badge } from "@/components/ui/badge";
 import { Progress } from "@/components/ui/progress";
 import { CSSProperties } from "react";
 
 interface Props {
-  server: ServerType;
+  server: ServerStatus;
 }
 
 export const ServerCard = ({ server }: Props) => {
@@ -45,41 +45,41 @@ export const ServerCard = ({ server }: Props) => {
         <div>
           <p className="mb-1 text-xs text-[#475569]">Requêtes/h</p>
           <p className="text-sm font-semibold text-[#4A5568]">
-            {server.requests}
+            {server.requestsPerHour}
           </p>
         </div>
         <div>
           <p className="mb-2 text-xs text-[#475569]">CPU</p>
           <Progress
-            value={server.cpu}
+            value={server.cpuPercent}
             className="h-2"
-            aria-label={`Utilisation CPU: ${server.cpu} pourcent`}
+            aria-label={`Utilisation CPU: ${server.cpuPercent} pourcent`}
             style={
               {
                 "--progress-background":
-                  server.cpu > 80 ? "#DC2626" : "#1D4ED8",
+                  server.cpuPercent > 80 ? "#DC2626" : "#1D4ED8",
               } as CSSProperties
             }
           />
           <p className="text-xs font-semibold text-[#4A5568] mt-1">
-            {server.cpu}%
+            {server.cpuPercent}%
           </p>
         </div>
         <div>
           <p className="mb-2 text-xs text-[#475569]">Mémoire</p>
           <Progress
-            value={server.memory}
+            value={server.memoryPercent}
             className="h-2"
-            aria-label={`Utilisation mémoire: ${server.memory} pourcent`}
+            aria-label={`Utilisation mémoire: ${server.memoryPercent} pourcent`}
             style={
               {
                 "--progress-background":
-                  server.memory > 85 ? "#DC2626" : "#0F766E",
+                  server.memoryPercent > 85 ? "#DC2626" : "#0F766E",
               } as CSSProperties
             }
           />
           <p className="text-xs font-semibold text-[#4A5568] mt-1">
-            {server.memory}%
+            {server.memoryPercent}%
           </p>
         </div>
       </div>

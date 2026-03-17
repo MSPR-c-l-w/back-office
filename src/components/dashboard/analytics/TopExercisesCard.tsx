@@ -54,8 +54,8 @@ export function TopExercisesCard({ items, loading }: Props) {
                     backgroundColor: "white",
                     border: "1px solid #E2E8F0",
                   }}
-                  formatter={(value: number) => [
-                    `${value} séance${value > 1 ? "s" : ""}`,
+                  formatter={(value?: number) => [
+                    `${value ?? 0} séance${(value ?? 0) > 1 ? "s" : ""}`,
                     "",
                   ]}
                 />

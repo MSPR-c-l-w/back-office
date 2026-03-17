@@ -72,7 +72,7 @@ export const Sidebar = ({
       aria-label="Navigation principale"
       aria-hidden={!isDesktop && !open}
       tabIndex={!isDesktop && open ? -1 : undefined}
-      {...(!isDesktop && !open ? { inert: "" } : {})}
+      {...(!isDesktop && !open ? { inert: true } : {})}
     >
       <div className="px-6 h-[92px] border-b border-gray-200 flex flex-col justify-center">
         <p className="text-xl font-bold text-[#4A5568] leading-tight">

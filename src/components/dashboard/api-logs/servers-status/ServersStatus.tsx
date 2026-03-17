@@ -1,23 +1,19 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { ServerType } from "../mocks";
+import { ServerStatus } from "../types";
 import { ServerCard } from "./ServerCard";
 
 interface Props {
-  servers: ServerType[];
+  server: ServerStatus;
 }
 
-export const ServersStatus = ({ servers }: Props) => {
+export const ServersStatus = ({ server }: Props) => {
   return (
     <Card>
       <CardHeader>
         <CardTitle>Statut des Serveurs</CardTitle>
       </CardHeader>
       <CardContent>
-        <div className="space-y-4">
-          {servers.map((server, index) => (
-            <ServerCard key={index} server={server} />
-          ))}
-        </div>
+        <ServerCard server={server} />
       </CardContent>
     </Card>
   );

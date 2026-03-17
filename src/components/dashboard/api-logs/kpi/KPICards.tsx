@@ -1,8 +1,8 @@
-import { KPICardType } from "../mocks";
+import { KPICard } from "../types";
 import { KpiCard } from "./KPICard";
 
 interface Props {
-  kpiCards: KPICardType[];
+  kpiCards: KPICard[];
 }
 
 export const KPICards = ({ kpiCards }: Props) => {

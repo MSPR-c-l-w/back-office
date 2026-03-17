@@ -1,7 +1,7 @@
 import { AlertTriangle, CreditCard, Database, Users } from "lucide-react";
-import { KPICardType } from "../api-logs/mocks";
+import { KPICard } from "../api-logs/types";
 
-export type KPIDataType = KPICardType & {
+export type KPIDataType = KPICard & {
   status: string;
 };
 

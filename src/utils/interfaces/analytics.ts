@@ -8,15 +8,15 @@ export type EngagementSummary = {
 
 export type EngagementTimeseriesPoint = {
   date: string;
-  steps: number;
-  calories: number;
-  sleep: number;
+  totalDurationHours: number;
+  totalCalories: number;
+  activeUsersPercent: number;
 };
 
 export type ProgressionPoint = {
   week: string;
-  progression: number;
-  satisfaction: number;
+  progressionPercent: number;
+  satisfactionPercent: number;
 };
 
 export type AgeBucket = {

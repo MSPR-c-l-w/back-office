@@ -1,8 +1,8 @@
 import { Badge } from "@/components/ui/badge";
-import { RecentLogType } from "../mocks";
+import { EtlRecentLog } from "../types";
 
 interface Props {
-  log: RecentLogType;
+  log: EtlRecentLog;
 }
 
 export const LogEtlCard = ({ log }: Props) => {
@@ -47,9 +47,6 @@ export const LogEtlCard = ({ log }: Props) => {
         </span>
       </div>
       <p className="text-sm text-[#4A5568] mb-1">{log.message}</p>
-      <code className="text-xs text-[#4A5568] opacity-70 font-mono bg-gray-100 px-2 py-1 rounded">
-        {log.details}
-      </code>
     </div>
   );
 };

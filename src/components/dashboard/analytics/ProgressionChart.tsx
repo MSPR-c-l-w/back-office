@@ -30,11 +30,17 @@ export const ProgressionChart = ({ progressionData }: Props) => {
             border: "1px solid #CBD5E1",
           }}
           labelStyle={{ color: "#1F2937" }}
+          formatter={(value: unknown, name: unknown) => {
+            const metric = String(name ?? "");
+            const n = typeof value === "number" ? value : Number(value);
+            const safe = Number.isFinite(n) ? n : 0;
+            return [`${Math.round(safe)} %`, metric];
+          }}
         />
         <Legend />
         <Line
           type="monotone"
-          dataKey="progression"
+          dataKey="progressionPercent"
           stroke="#1D4ED8"
           strokeWidth={3}
           name="Progression (%)"
@@ -42,7 +48,7 @@ export const ProgressionChart = ({ progressionData }: Props) => {
         />
         <Line
           type="monotone"
-          dataKey="satisfaction"
+          dataKey="satisfactionPercent"
           stroke="#166534"
           strokeWidth={3}
           name="Satisfaction (%)"
@@ -54,8 +60,8 @@ export const ProgressionChart = ({ progressionData }: Props) => {
         <ul>
           {progressionData.map((item) => (
             <li key={item.week}>
-              {item.week}: progression {item.progression} pour cent,
-              satisfaction {item.satisfaction} pour cent
+              {item.week}: progression {item.progressionPercent} pour cent,
+              satisfaction {item.satisfactionPercent} pour cent
             </li>
           ))}
         </ul>
