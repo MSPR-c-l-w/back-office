@@ -7,10 +7,10 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { EndpointType } from "../mocks";
+import { EndpointStat } from "../types";
 
 interface Props {
-  endpointsStats: EndpointType[];
+  endpointsStats: EndpointStat[];
 }
 
 export const EndpointsTable = ({ endpointsStats }: Props) => {

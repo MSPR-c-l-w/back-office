@@ -17,15 +17,27 @@ import {
   XAxis,
   YAxis,
 } from "recharts";
-import { ApiCallType } from "./mocks";
 import { useState } from "react";
+import { ApiCallPoint, ApiLogsRange } from "./types";
 
 interface Props {
-  apiCallsData: ApiCallType[];
+  apiCallsData: ApiCallPoint[];
+  defaultRange?: ApiLogsRange;
+  onRangeChange?: (range: ApiLogsRange) => void;
 }
 
-export const ApiCallsChart = ({ apiCallsData }: Props) => {
-  const [selectedTimeRange, setSelectedTimeRange] = useState("24h");
+export const ApiCallsChart = ({
+  apiCallsData,
+  defaultRange = "24h",
+  onRangeChange,
+}: Props) => {
+  const [selectedTimeRange, setSelectedTimeRange] =
+    useState<ApiLogsRange>(defaultRange);
+
+  const handleRangeChange = (range: ApiLogsRange) => {
+    setSelectedTimeRange(range);
+    onRangeChange?.(range);
+  };
 
   return (
     <Card>
@@ -34,7 +46,7 @@ export const ApiCallsChart = ({ apiCallsData }: Props) => {
           <CardTitle>Monitoring des Appels API REST</CardTitle>
           <Select
             value={selectedTimeRange}
-            onValueChange={setSelectedTimeRange}
+            onValueChange={(value) => handleRangeChange(value as ApiLogsRange)}
           >
             <SelectTrigger
               className="w-32"

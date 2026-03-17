@@ -1,9 +1,9 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { RecentLogType } from "../mocks";
+import { EtlRecentLog } from "../types";
 import { LogEtlCard } from "./LogEtlCard";
 
 interface Props {
-  recentLogs: RecentLogType[];
+  recentLogs: EtlRecentLog[];
 }
 
 export const LogEtlPipeline = ({ recentLogs }: Props) => {

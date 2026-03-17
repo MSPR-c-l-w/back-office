@@ -1,9 +1,9 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { EndpointsTable } from "./EndpointsTable";
-import { EndpointType } from "../mocks";
+import { EndpointStat } from "../types";
 
 interface Props {
-  endpointsStats: EndpointType[];
+  endpointsStats: EndpointStat[];
 }
 
 export const EndpointsStatistics = ({ endpointsStats }: Props) => {
