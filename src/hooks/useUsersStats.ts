@@ -1,8 +1,8 @@
 "use client";
 
-import { useCallback, useEffect, useState } from 'react';
-import api from '@/utils/axios';
-import type { UsersStats } from '@/utils/types/users';
+import { useCallback, useEffect, useState } from "react";
+import api from "@/utils/axios";
+import type { UsersStats } from "@/utils/types/users";
 
 type UseUsersStatsResult = {
   stats: UsersStats | null;
@@ -20,7 +20,7 @@ export function useUsersStats(): UseUsersStatsResult {
     setLoading(true);
     setError(null);
     try {
-      const { data } = await api.get<UsersStats>('/users/stats');
+      const { data } = await api.get<UsersStats>("/users/stats");
       setStats(data);
     } catch {
       setError("Impossible de charger les statistiques utilisateurs.");

@@ -39,7 +39,6 @@ export function useUsersList({
           limit,
           ...(search?.trim() ? { search: search.trim() } : {}),
         },
-
       });
       setData(response.data.map(mapUserApiItemToListItem));
       setTotal(response.total);

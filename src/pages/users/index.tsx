@@ -17,7 +17,12 @@ const UsersPage: NextPageWithLayout = () => {
   const page = Number(router.query.page) || DEFAULT_PAGE;
   const limit = Number(router.query.limit) || DEFAULT_LIMIT;
 
-  const { stats, loading: statsLoading, error: statsError, refetch: refetchStats } = useUsersStats();
+  const {
+    stats,
+    loading: statsLoading,
+    error: statsError,
+    refetch: refetchStats,
+  } = useUsersStats();
 
   const [searchQuery, setSearchQuery] = useState("");
   const [filterPlan, setFilterPlan] = useState<string>("all");
@@ -29,9 +34,7 @@ const UsersPage: NextPageWithLayout = () => {
   });
 
   const listError =
-  error === "Impossible de charger la liste des utilisateurs."
-    ? null
-    : error;
+    error === "Impossible de charger la liste des utilisateurs." ? null : error;
 
   const filteredRows = useMemo(() => {
     return data.filter((user) => {
@@ -76,7 +79,7 @@ const UsersPage: NextPageWithLayout = () => {
           </button>
         </div>
       )}
-  
+
       <UsersStatsCards
         totalUsers={stats?.totalUsers ?? 0}
         activeUsers={stats?.activeUsers ?? 0}
@@ -84,7 +87,7 @@ const UsersPage: NextPageWithLayout = () => {
         b2bUsers={stats?.b2bUsers ?? 0}
         loading={statsLoading}
       />
-  
+
       <UsersTableCard
         searchQuery={searchQuery}
         onSearchChange={setSearchQuery}
