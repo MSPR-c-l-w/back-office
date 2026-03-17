@@ -5,6 +5,8 @@ import { useRequireRole } from "@/hooks/useRequireRole";
 import { NextPageWithLayout } from "@/utils/types/globals";
 import { useRouter } from "next/router";
 import { ReactElement, useMemo, useState } from "react";
+import { UsersStatsCards } from "@/components/dashboard/users/UsersStatsCards";
+import { useUsersStats } from "@/hooks/useUsersStats";
 
 const DEFAULT_PAGE = 1;
 const DEFAULT_LIMIT = 20;
@@ -15,13 +17,24 @@ const UsersPage: NextPageWithLayout = () => {
   const page = Number(router.query.page) || DEFAULT_PAGE;
   const limit = Number(router.query.limit) || DEFAULT_LIMIT;
 
-  const { data, total, loading, error, refetch } = useUsersList({
-    page,
-    limit,
-  });
+  const {
+    stats,
+    loading: statsLoading,
+    error: statsError,
+    refetch: refetchStats,
+  } = useUsersStats();
 
   const [searchQuery, setSearchQuery] = useState("");
   const [filterPlan, setFilterPlan] = useState<string>("all");
+
+  const { data, total, loading, error, refetch } = useUsersList({
+    page,
+    limit,
+    search: searchQuery,
+  });
+
+  const listError =
+    error === "Impossible de charger la liste des utilisateurs." ? null : error;
 
   const filteredRows = useMemo(() => {
     return data.filter((user) => {
@@ -54,6 +67,32 @@ const UsersPage: NextPageWithLayout = () => {
 
   return (
     <div className="space-y-6">
+      {statsError && (
+        <div
+          className="rounded-md border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-800 flex items-center justify-between"
+          role="alert"
+        >
+          <span>{statsError}</span>
+          <button
+            type="button"
+            onClick={refetchStats}
+            className="text-[#4A90E2] hover:underline"
+          >
+            Réessayer
+          </button>
+        </div>
+      )}
+
+      <div aria-live="polite">
+        <UsersStatsCards
+          totalUsers={stats?.totalUsers ?? 0}
+          activeUsers={stats?.activeUsers ?? 0}
+          premiumUsers={stats?.premiumUsers ?? 0}
+          b2bUsers={stats?.b2bUsers ?? 0}
+          loading={statsLoading}
+        />
+      </div>
+
       <UsersTableCard
         searchQuery={searchQuery}
         onSearchChange={setSearchQuery}
@@ -68,7 +107,7 @@ const UsersPage: NextPageWithLayout = () => {
         onPageChange={handlePageChange}
         onSelectUser={handleSelectUser}
         loading={loading}
-        error={error}
+        error={listError}
         onRetry={refetch}
       />
     </div>

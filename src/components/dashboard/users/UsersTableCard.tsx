@@ -11,6 +11,7 @@ import {
 import {
   Table,
   TableBody,
+  TableCaption,
   TableCell,
   TableHead,
   TableHeader,
@@ -65,8 +66,12 @@ export function UsersTableCard({
           </CardTitle>
           <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3 w-full md:w-auto">
             <div className="relative flex-1 sm:flex-initial sm:w-64">
+              <label htmlFor="users-search" className="sr-only">
+                Rechercher un utilisateur
+              </label>
               <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-[#4A5568] opacity-50" />
               <Input
+                id="users-search"
                 type="search"
                 placeholder="Rechercher un utilisateur..."
                 value={searchQuery}
@@ -84,7 +89,10 @@ export function UsersTableCard({
                 onPageChange(1);
               }}
             >
-              <SelectTrigger className="w-full sm:w-40">
+              <SelectTrigger
+                className="w-full sm:w-40"
+                aria-label="Filtrer les utilisateurs par plan"
+              >
                 <Filter className="w-4 h-4 mr-2" />
                 <SelectValue placeholder="Filtrer" />
               </SelectTrigger>
@@ -111,6 +119,10 @@ export function UsersTableCard({
         )}
         <div className="rounded-md border">
           <Table>
+            <TableCaption className="sr-only">
+              Tableau des utilisateurs avec âge, objectif, plan, statut et
+              actions disponibles.
+            </TableCaption>
             <TableHeader>
               <TableRow>
                 <TableHead>Utilisateur</TableHead>
@@ -154,14 +166,15 @@ export function UsersTableCard({
                     </TableRow>
                   ))
                 : paginatedUsers.map((user) => (
-                    <TableRow
-                      key={user.id}
-                      className="cursor-pointer hover:bg-gray-50"
-                    >
+                    <TableRow key={user.id} className="hover:bg-gray-50">
                       <TableCell className="font-medium">
                         <div className="flex items-center gap-3">
                           <Avatar>
-                            <AvatarImage src={user.avatar} />
+                            <AvatarImage
+                              src={user.avatar}
+                              alt=""
+                              aria-hidden="true"
+                            />
                             <AvatarFallback className="bg-[#4A90E2] text-white">
                               {user.name
                                 .split(" ")
@@ -238,12 +251,19 @@ export function UsersTableCard({
         </div>
 
         <div className="flex items-center justify-between mt-4">
-          <p className="text-sm text-[#4A5568]">
+          <p
+            className="text-sm text-[#4A5568]"
+            role="status"
+            aria-live="polite"
+          >
             Affichage {startIndex + 1}-
             {Math.min(startIndex + itemsPerPage, filteredCount)} sur{" "}
             {filteredCount} utilisateurs
           </p>
-          <div className="flex items-center gap-2">
+          <nav
+            className="flex items-center gap-2"
+            aria-label="Pagination des utilisateurs"
+          >
             <Button
               variant="outline"
               size="sm"
@@ -272,6 +292,8 @@ export function UsersTableCard({
                     variant={currentPage === pageNum ? "default" : "outline"}
                     size="sm"
                     onClick={() => onPageChange(pageNum)}
+                    aria-current={currentPage === pageNum ? "page" : undefined}
+                    aria-label={`Aller à la page ${pageNum}`}
                     className={
                       currentPage === pageNum
                         ? "bg-[#4A90E2] text-white hover:bg-[#4A90E2]/90 hover:text-white"
@@ -295,7 +317,7 @@ export function UsersTableCard({
               Suivant
               <ChevronRight className="w-4 h-4" />
             </Button>
-          </div>
+          </nav>
         </div>
       </CardContent>
     </Card>

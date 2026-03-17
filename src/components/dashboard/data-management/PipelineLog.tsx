@@ -96,6 +96,9 @@ export const PipelineLog = ({
         <div
           ref={logContainerRef}
           className="bg-[#1e1e1e] rounded-lg p-4 font-mono text-sm h-80 min-h-80 max-h-80 overflow-y-auto flex flex-col"
+          role="log"
+          aria-live="polite"
+          aria-label="Journal du pipeline ETL"
         >
           {pipelineLogs.length === 0 ? (
             <p className="text-[#858585] text-sm flex-1 flex items-center justify-center">

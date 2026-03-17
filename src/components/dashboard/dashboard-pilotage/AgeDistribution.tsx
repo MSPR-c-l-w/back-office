@@ -21,26 +21,42 @@ export const AgeDistribution = ({ ageDistribution }: Props) => {
         <CardTitle>Répartition par Âge</CardTitle>
       </CardHeader>
       <CardContent>
-        <ResponsiveContainer width="100%" height={250}>
-          <BarChart data={ageDistribution}>
-            <CartesianGrid strokeDasharray="3 3" stroke="#E2E8F0" />
-            <XAxis dataKey="name" stroke="#4A5568" />
-            <YAxis stroke="#4A5568" />
-            <Tooltip
-              contentStyle={{
-                backgroundColor: "white",
-                border: "1px solid #E2E8F0",
-              }}
-              labelStyle={{ color: "#4A5568" }}
-            />
-            <Bar
-              dataKey="value"
-              fill="#4A90E2"
-              name="Utilisateurs"
-              radius={[8, 8, 0, 0]}
-            />
-          </BarChart>
-        </ResponsiveContainer>
+        <div
+          role="img"
+          aria-describedby="age-distribution-summary"
+          aria-label="Graphique de répartition des utilisateurs par tranche d’âge"
+        >
+          <ResponsiveContainer width="100%" height={250}>
+            <BarChart data={ageDistribution}>
+              <CartesianGrid strokeDasharray="3 3" stroke="#CBD5E1" />
+              <XAxis dataKey="name" stroke="#334155" />
+              <YAxis stroke="#334155" />
+              <Tooltip
+                contentStyle={{
+                  backgroundColor: "white",
+                  border: "1px solid #CBD5E1",
+                }}
+                labelStyle={{ color: "#1F2937" }}
+              />
+              <Bar
+                dataKey="value"
+                fill="#1D4ED8"
+                name="Utilisateurs"
+                radius={[8, 8, 0, 0]}
+              />
+            </BarChart>
+          </ResponsiveContainer>
+        </div>
+        <div id="age-distribution-summary" className="sr-only">
+          <p>Résumé textuel de la répartition par âge.</p>
+          <ul>
+            {ageDistribution.map((item) => (
+              <li key={item.name}>
+                {item.name}: {item.value} utilisateurs
+              </li>
+            ))}
+          </ul>
+        </div>
       </CardContent>
     </Card>
   );

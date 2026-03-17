@@ -12,14 +12,12 @@ export const EngagementCard = ({ metric }: Props) => {
       <CardContent className="pt-6">
         <div className="flex items-start justify-between mb-4">
           <div className="flex-1">
-            <p className="text-sm text-[#4A5568] opacity-70">{metric.label}</p>
+            <p className="text-sm text-[#475569]">{metric.label}</p>
             <div className="flex items-baseline gap-2 mt-2">
               <p className="text-3xl font-bold text-[#4A5568]">
                 {metric.value}
               </p>
-              <span className="text-sm text-[#4A5568] opacity-70">
-                {metric.unit}
-              </span>
+              <span className="text-sm text-[#475569]">{metric.unit}</span>
             </div>
             <div className="flex items-center gap-2 mt-2">
               <TrendingUp
@@ -29,7 +27,7 @@ export const EngagementCard = ({ metric }: Props) => {
               />
               <span
                 className="text-sm font-semibold"
-                style={{ color: metric.color }}
+                style={{ color: "#1F2937" }}
               >
                 {metric.trend}
               </span>

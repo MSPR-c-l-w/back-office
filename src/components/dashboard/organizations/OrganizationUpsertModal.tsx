@@ -87,6 +87,7 @@ export function OrganizationUpsertModal({
   const [error, setError] = useState<string | null>(null);
   const [info, setInfo] = useState<string | null>(null);
   const [deleteConfirmOpen, setDeleteConfirmOpen] = useState(false);
+  const errorId = "organization-upsert-error";
 
   const initial = useMemo(
     () => ({
@@ -228,7 +229,10 @@ export function OrganizationUpsertModal({
   return (
     <>
       <Dialog open={open} onOpenChange={onOpenChange}>
-        <DialogContent className="max-w-3xl max-h-[90vh] overflow-y-auto bg-white text-[#4A5568]">
+        <DialogContent
+          className="max-w-3xl max-h-[90vh] overflow-y-auto bg-white text-[#4A5568]"
+          aria-busy={loading}
+        >
           <DialogHeader>
             <div className="flex items-start justify-between gap-4">
               <div className="flex items-center gap-3 min-w-0">
@@ -338,42 +342,82 @@ export function OrganizationUpsertModal({
           {(isCreate || isEditing) && (
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-4">
               <div className="space-y-2">
-                <label className="text-sm text-[#4A5568]">Nom</label>
+                <label
+                  htmlFor="organization-name"
+                  className="text-sm text-[#4A5568]"
+                >
+                  Nom
+                </label>
                 <Input
+                  id="organization-name"
                   value={name}
                   onChange={(e) => setName(e.target.value)}
                   placeholder="ACME"
                   className="bg-white"
+                  aria-invalid={!!error && !name.trim()}
+                  aria-describedby={error && !name.trim() ? errorId : undefined}
                 />
               </div>
               <div className="space-y-2">
-                <label className="text-sm text-[#4A5568]">Type</label>
+                <label
+                  htmlFor="organization-type"
+                  className="text-sm text-[#4A5568]"
+                >
+                  Type
+                </label>
                 <Input
+                  id="organization-type"
                   value={type}
                   onChange={(e) => setType(e.target.value)}
                   placeholder="gym"
                   className="bg-white"
+                  aria-invalid={!!error && !type.trim()}
+                  aria-describedby={error && !type.trim() ? errorId : undefined}
                 />
               </div>
               <div className="space-y-2">
-                <label className="text-sm text-[#4A5568]">
+                <label
+                  htmlFor="organization-primary-color"
+                  className="text-sm text-[#4A5568]"
+                >
                   Couleur primaire (hex)
                 </label>
                 <Input
+                  id="organization-primary-color"
                   value={primaryColor}
                   onChange={(e) => setPrimaryColor(e.target.value)}
                   placeholder="#111827"
                   className="bg-white"
+                  aria-describedby="organization-primary-color-help"
                 />
+                <p
+                  id="organization-primary-color-help"
+                  className="text-xs text-[#4A5568]"
+                >
+                  Utilisez une couleur hexadécimale avec un contraste suffisant.
+                </p>
               </div>
               <div className="space-y-2">
-                <label className="text-sm text-[#4A5568]">Logo URL</label>
+                <label
+                  htmlFor="organization-logo-url"
+                  className="text-sm text-[#4A5568]"
+                >
+                  Logo URL
+                </label>
                 <Input
+                  id="organization-logo-url"
                   value={logoUrl}
                   onChange={(e) => setLogoUrl(e.target.value)}
                   placeholder="https://example.com/logo.png"
                   className="bg-white"
+                  aria-describedby="organization-logo-url-help"
                 />
+                <p
+                  id="organization-logo-url-help"
+                  className="text-xs text-[#4A5568]"
+                >
+                  Privilégiez une image lisible avec un fond compatible.
+                </p>
               </div>
               <div className="flex items-center gap-2 md:col-span-2 pt-2">
                 <Checkbox
@@ -394,7 +438,11 @@ export function OrganizationUpsertModal({
             </p>
           )}
           {error && (
-            <p className="text-sm text-[#FF887B] mt-2" role="alert">
+            <p
+              id={errorId}
+              className="text-sm text-[#FF887B] mt-2"
+              role="alert"
+            >
               {error}
             </p>
           )}

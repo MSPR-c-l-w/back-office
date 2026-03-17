@@ -6,6 +6,13 @@ interface Props {
 }
 
 export const AlertCard = ({ alert }: Props) => {
+  const severityLabel =
+    alert.type === "error"
+      ? "Erreur"
+      : alert.type === "warning"
+        ? "Avertissement"
+        : "Succès";
+
   return (
     <li
       key={alert.id}
@@ -13,39 +20,42 @@ export const AlertCard = ({ alert }: Props) => {
       style={{
         borderColor:
           alert.type === "error"
-            ? "#FF887B"
+            ? "#DC2626"
             : alert.type === "warning"
-              ? "#FFB88C"
-              : "#5CC58C",
+              ? "#B45309"
+              : "#166534",
         backgroundColor:
           alert.type === "error"
-            ? "#FF887B10"
+            ? "#FEE2E2"
             : alert.type === "warning"
-              ? "#FFB88C10"
-              : "#5CC58C10",
+              ? "#FEF3C7"
+              : "#DCFCE7",
       }}
     >
       {alert.type === "error" && (
         <XCircle
-          className="w-5 h-5 text-[#FF887B] flex-shrink-0 mt-0.5"
+          className="mt-0.5 h-5 w-5 shrink-0 text-[#DC2626]"
           aria-hidden="true"
         />
       )}
       {alert.type === "warning" && (
         <AlertTriangle
-          className="w-5 h-5 text-[#FFB88C] flex-shrink-0 mt-0.5"
+          className="mt-0.5 h-5 w-5 shrink-0 text-[#B45309]"
           aria-hidden="true"
         />
       )}
       {alert.type === "success" && (
         <CheckCircle
-          className="w-5 h-5 text-[#5CC58C] flex-shrink-0 mt-0.5"
+          className="mt-0.5 h-5 w-5 shrink-0 text-[#166534]"
           aria-hidden="true"
         />
       )}
       <div className="flex-1">
-        <p className="text-sm text-[#4A5568] font-medium">{alert.message}</p>
-        <p className="text-xs text-[#4A5568] opacity-70 mt-1">{alert.time}</p>
+        <p className="text-sm font-medium text-[#1F2937]">
+          <span className="sr-only">{severityLabel}: </span>
+          {alert.message}
+        </p>
+        <p className="mt-1 text-xs text-[#475569]">{alert.time}</p>
       </div>
     </li>
   );

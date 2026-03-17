@@ -5,6 +5,7 @@ import { Input } from "@/components/ui/input";
 import {
   Table,
   TableBody,
+  TableCaption,
   TableCell,
   TableHead,
   TableHeader,
@@ -62,8 +63,12 @@ export function PlansTableCard({
           </CardTitle>
           <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3 w-full md:w-auto">
             <div className="relative flex-1 sm:flex-initial sm:w-72">
+              <label htmlFor="plans-search" className="sr-only">
+                Rechercher un plan
+              </label>
               <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-[#4A5568] opacity-50" />
               <Input
+                id="plans-search"
                 type="search"
                 placeholder="Rechercher un plan..."
                 value={searchQuery}
@@ -87,6 +92,9 @@ export function PlansTableCard({
       <CardContent>
         <div className="rounded-md border">
           <Table>
+            <TableCaption className="sr-only">
+              Tableau des plans avec prix, fonctionnalités et actions.
+            </TableCaption>
             <TableHeader>
               <TableRow>
                 <TableHead>Plan</TableHead>
@@ -185,7 +193,10 @@ export function PlansTableCard({
                   filteredCount
                 )} sur ${filteredCount} plans`}
           </p>
-          <div className="flex items-center gap-2">
+          <nav
+            className="flex items-center gap-2"
+            aria-label="Pagination des plans"
+          >
             <Button
               variant="outline"
               size="sm"
@@ -214,6 +225,8 @@ export function PlansTableCard({
                     variant={currentPage === pageNum ? "default" : "outline"}
                     size="sm"
                     onClick={() => onPageChange(pageNum)}
+                    aria-current={currentPage === pageNum ? "page" : undefined}
+                    aria-label={`Aller à la page ${pageNum}`}
                     className={
                       currentPage === pageNum
                         ? "bg-[#4A90E2] hover:bg-[#4A90E2]/90"
@@ -238,7 +251,7 @@ export function PlansTableCard({
               Suivant
               <ChevronRight className="w-4 h-4" />
             </Button>
-          </div>
+          </nav>
         </div>
       </CardContent>
     </Card>

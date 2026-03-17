@@ -166,7 +166,10 @@ export const AnomalyModal = ({
           {/* Éditeur JSON */}
           <div className="flex flex-col gap-2">
             <div className="flex items-center justify-between">
-              <p className="text-xs text-[#4A5568] opacity-70 uppercase tracking-wide">
+              <p
+                id="anomaly-json-editor-label"
+                className="text-xs text-[#4A5568] opacity-70 uppercase tracking-wide"
+              >
                 Données JSON
               </p>
               {hasJsonChanged && (
@@ -180,13 +183,19 @@ export const AnomalyModal = ({
             </div>
             <div className="relative">
               <textarea
+                id="anomaly-json-editor"
                 value={jsonValue}
                 onChange={handleJsonChange}
                 className="w-full h-48 p-4 bg-[#1e1e1e] text-[#d4d4d4] rounded-lg font-mono text-sm border-2 border-gray-300 focus:border-[#4A90E2] focus:outline-none resize-none transition-colors"
                 placeholder="Modifier les données JSON ici..."
                 spellCheck={false}
+                aria-labelledby="anomaly-json-editor-label"
+                aria-describedby="anomaly-json-editor-help"
               />
             </div>
+            <p id="anomaly-json-editor-help" className="text-xs text-[#4A5568]">
+              Modifiez le JSON puis validez pour appliquer la correction.
+            </p>
           </div>
         </div>
 

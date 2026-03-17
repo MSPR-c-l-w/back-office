@@ -24,22 +24,41 @@ function formatLastActivity(updatedAt: string): string {
   return `Il y a ${diffDays} j`;
 }
 
+function normalizePlanName(raw?: string): "Freemium" | "Premium" | "B2B" {
+  if (!raw) return "Freemium";
+  const normalized = raw.trim().toLowerCase();
+  if (normalized === "premium") return "Premium";
+  if (normalized === "b2b") return "B2B";
+  return "Freemium";
+}
+
+function computeObjective(item: UserApiItem): string {
+  const target = item.healthProfile?.daily_calories_target;
+  if (typeof target === "number" && Number.isFinite(target)) {
+    return `${target} kcal/j`;
+  }
+  const activity = item.healthProfile?.physical_activity_level?.trim();
+  return activity ? activity : "—";
+}
+
 export function mapUserApiItemToListItem(item: UserApiItem): UserListItem {
   const name =
     [item.first_name, item.last_name].filter(Boolean).join(" ") || "—";
   const joinDate = item.created_at
     ? new Date(item.created_at).toLocaleDateString("fr-FR")
     : "—";
+  const latestSessionAt = item.sessions?.[0]?.created_at ?? item.updated_at;
+  const planName = item.subscriptions?.[0]?.plan?.name;
   return {
     id: item.id,
     name,
     email: item.email,
     age: computeAge(item.date_of_birth),
     gender: item.gender ?? "—",
-    objective: "—",
-    plan: "Freemium",
+    objective: computeObjective(item),
+    plan: normalizePlanName(planName),
     status: item.is_active ? "active" : "inactive",
     joinDate,
-    lastActivity: formatLastActivity(item.updated_at),
+    lastActivity: formatLastActivity(latestSessionAt),
   };
 }

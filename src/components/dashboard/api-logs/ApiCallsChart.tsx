@@ -36,7 +36,10 @@ export const ApiCallsChart = ({ apiCallsData }: Props) => {
             value={selectedTimeRange}
             onValueChange={setSelectedTimeRange}
           >
-            <SelectTrigger className="w-32">
+            <SelectTrigger
+              className="w-32"
+              aria-label="Sélectionner la période d’analyse des appels API"
+            >
               <SelectValue />
             </SelectTrigger>
             <SelectContent>
@@ -49,44 +52,61 @@ export const ApiCallsChart = ({ apiCallsData }: Props) => {
         </div>
       </CardHeader>
       <CardContent>
-        <ResponsiveContainer width="100%" height={300}>
-          <BarChart data={apiCallsData}>
-            <CartesianGrid strokeDasharray="3 3" stroke="#E2E8F0" />
-            <XAxis dataKey="time" stroke="#4A5568" />
-            <YAxis yAxisId="left" stroke="#4A5568" />
-            <YAxis yAxisId="right" orientation="right" stroke="#4A5568" />
-            <Tooltip
-              contentStyle={{
-                backgroundColor: "white",
-                border: "1px solid #E2E8F0",
-              }}
-              labelStyle={{ color: "#4A5568" }}
-            />
-            <Legend />
-            <Bar
-              yAxisId="left"
-              dataKey="calls"
-              fill="#4A90E2"
-              name="Appels"
-              radius={[8, 8, 0, 0]}
-            />
-            <Bar
-              yAxisId="left"
-              dataKey="errors"
-              fill="#FF887B"
-              name="Erreurs"
-              radius={[8, 8, 0, 0]}
-            />
-            <Line
-              yAxisId="right"
-              type="monotone"
-              dataKey="latency"
-              stroke="#7FD8BE"
-              strokeWidth={3}
-              name="Latence (ms)"
-            />
-          </BarChart>
-        </ResponsiveContainer>
+        <div
+          role="img"
+          aria-describedby="api-calls-chart-summary"
+          aria-label="Graphique des appels API, erreurs et latence"
+        >
+          <ResponsiveContainer width="100%" height={300}>
+            <BarChart data={apiCallsData}>
+              <CartesianGrid strokeDasharray="3 3" stroke="#CBD5E1" />
+              <XAxis dataKey="time" stroke="#334155" />
+              <YAxis yAxisId="left" stroke="#334155" />
+              <YAxis yAxisId="right" orientation="right" stroke="#334155" />
+              <Tooltip
+                contentStyle={{
+                  backgroundColor: "white",
+                  border: "1px solid #CBD5E1",
+                }}
+                labelStyle={{ color: "#1F2937" }}
+              />
+              <Legend />
+              <Bar
+                yAxisId="left"
+                dataKey="calls"
+                fill="#1D4ED8"
+                name="Appels"
+                radius={[8, 8, 0, 0]}
+              />
+              <Bar
+                yAxisId="left"
+                dataKey="errors"
+                fill="#B91C1C"
+                name="Erreurs"
+                radius={[8, 8, 0, 0]}
+              />
+              <Line
+                yAxisId="right"
+                type="monotone"
+                dataKey="latency"
+                stroke="#0F766E"
+                strokeWidth={3}
+                name="Latence (ms)"
+              />
+            </BarChart>
+          </ResponsiveContainer>
+        </div>
+        <div id="api-calls-chart-summary" className="sr-only">
+          <p>Résumé textuel des appels API.</p>
+          <ul>
+            {apiCallsData.map((item) => (
+              <li key={item.time}>
+                {item.time}: {item.calls} appels, {item.errors} erreurs, latence{" "}
+                {item.latency} millisecondes
+              </li>
+            ))}
+          </ul>
+        </div>
       </CardContent>
     </Card>
   );

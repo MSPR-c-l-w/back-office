@@ -5,6 +5,7 @@ import { cn } from "@/lib/utils";
 import { AuthProvider } from "@/contexts/AuthContext";
 import { EtlPipelineProvider } from "@/contexts/EtlPipelineContext";
 import { BackOfficeGuard } from "@/components/auth/BackOfficeGuard";
+import { NotificationsProvider } from "@/contexts/NotificationsContext";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -21,13 +22,19 @@ export default function App({ Component, pageProps }: AppPropsWithLayout) {
   return (
     <AuthProvider>
       <EtlPipelineProvider>
-        <BackOfficeGuard>
-          <div
-            className={cn(geistSans.variable, geistMono.variable, "font-sans")}
-          >
-            {getLayout(<Component {...pageProps} />)}
-          </div>
-        </BackOfficeGuard>
+        <NotificationsProvider>
+          <BackOfficeGuard>
+            <div
+              className={cn(
+                geistSans.variable,
+                geistMono.variable,
+                "font-sans"
+              )}
+            >
+              {getLayout(<Component {...pageProps} />)}
+            </div>
+          </BackOfficeGuard>
+        </NotificationsProvider>
       </EtlPipelineProvider>
     </AuthProvider>
   );

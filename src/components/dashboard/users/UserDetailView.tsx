@@ -16,6 +16,7 @@ import {
   ResponsiveContainer,
 } from "recharts";
 import { Progress } from "@/components/ui/progress";
+import type { CSSProperties } from "react";
 
 interface User {
   id: number;
@@ -34,9 +35,16 @@ interface User {
 interface UserDetailViewProps {
   user: User;
   onBack: () => void;
+  onEdit?: () => void;
+  onDelete?: () => void;
 }
 
-export function UserDetailView({ user, onBack }: UserDetailViewProps) {
+export function UserDetailView({
+  user,
+  onBack,
+  onEdit,
+  onDelete,
+}: UserDetailViewProps) {
   // Mock user metrics data
   const getUserMetrics = (userId: number) => {
     const baseValue = userId * 137;
@@ -86,15 +94,37 @@ export function UserDetailView({ user, onBack }: UserDetailViewProps) {
     <div className="space-y-8">
       {/* Back Button */}
       <div>
-        <Button
-          variant="ghost"
-          onClick={onBack}
-          className="text-[#4A90E2] hover:text-[#3a7bc8] hover:bg-[#4A90E2] hover:bg-opacity-10"
-          aria-label="Retour à la liste des utilisateurs"
-        >
-          <ArrowLeft className="w-4 h-4 mr-2" aria-hidden="true" />
-          Retour à la liste
-        </Button>
+        <div className="flex items-center justify-between gap-3">
+          <Button
+            variant="ghost"
+            onClick={onBack}
+            className="text-[#4A90E2] hover:text-[#3a7bc8] hover:bg-[#4A90E2] hover:bg-opacity-10"
+            aria-label="Retour à la liste des utilisateurs"
+          >
+            <ArrowLeft className="w-4 h-4 mr-2" aria-hidden="true" />
+            Retour à la liste
+          </Button>
+          {onEdit && (
+            <div className="flex items-center gap-2">
+              <Button
+                variant="outline"
+                onClick={onEdit}
+                className="bg-white text-[#4A90E2] border-[#4A90E2] hover:bg-[#4A90E2] hover:text-white"
+              >
+                Modifier
+              </Button>
+              {onDelete && (
+                <Button
+                  variant="outline"
+                  onClick={onDelete}
+                  className="bg-white text-[#FF887B] border-[#FF887B] hover:bg-[#FF887B] hover:text-white"
+                >
+                  Supprimer
+                </Button>
+              )}
+            </div>
+          )}
+        </div>
       </div>
 
       {/* User Header */}
@@ -115,17 +145,17 @@ export function UserDetailView({ user, onBack }: UserDetailViewProps) {
             </Avatar>
             <div className="flex-1">
               <h2 className="text-3xl font-bold text-[#4A5568]">{user.name}</h2>
-              <p className="text-[#4A5568] opacity-70 mt-2">
+              <p className="mt-2 text-[#475569]">
                 {user.email} • Membre depuis le {user.joinDate}
               </p>
               <div className="flex items-center gap-3 mt-3">
                 <Badge
                   className={
                     user.plan === "Premium"
-                      ? "bg-[#5CC58C] hover:bg-[#5CC58C]"
+                      ? "bg-[#166534] text-white hover:bg-[#166534]"
                       : user.plan === "B2B"
-                        ? "bg-[#7FD8BE] hover:bg-[#7FD8BE]"
-                        : "bg-gray-400 hover:bg-gray-400"
+                        ? "bg-[#0F766E] text-white hover:bg-[#0F766E]"
+                        : "bg-[#475569] text-white hover:bg-[#475569]"
                   }
                 >
                   {user.plan}
@@ -134,7 +164,7 @@ export function UserDetailView({ user, onBack }: UserDetailViewProps) {
                   variant="outline"
                   className={
                     user.status === "active"
-                      ? "bg-[#5CC58C] bg-opacity-10 text-[#5CC58C] border-[#5CC58C]"
+                      ? "border-[#166534] bg-[#DCFCE7] text-[#166534]"
                       : "bg-gray-200 text-gray-600 border-gray-300"
                   }
                 >
@@ -157,7 +187,7 @@ export function UserDetailView({ user, onBack }: UserDetailViewProps) {
         <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
           <Card>
             <CardContent className="py-4">
-              <div className="text-sm text-[#4A5568] opacity-70">Âge</div>
+              <div className="text-sm text-[#475569]">Âge</div>
               <div className="text-2xl font-bold text-[#4A5568] mt-1">
                 {user.age} ans
               </div>
@@ -165,7 +195,7 @@ export function UserDetailView({ user, onBack }: UserDetailViewProps) {
           </Card>
           <Card>
             <CardContent className="py-4">
-              <div className="text-sm text-[#4A5568] opacity-70">Genre</div>
+              <div className="text-sm text-[#475569]">Genre</div>
               <div className="text-2xl font-bold text-[#4A5568] mt-1">
                 {user.gender === "F" ? "Féminin" : "Masculin"}
               </div>
@@ -173,7 +203,7 @@ export function UserDetailView({ user, onBack }: UserDetailViewProps) {
           </Card>
           <Card>
             <CardContent className="py-4">
-              <div className="text-sm text-[#4A5568] opacity-70">Objectif</div>
+              <div className="text-sm text-[#475569]">Objectif</div>
               <div className="text-lg font-semibold text-[#4A5568] mt-1">
                 {user.objective}
               </div>
@@ -181,9 +211,7 @@ export function UserDetailView({ user, onBack }: UserDetailViewProps) {
           </Card>
           <Card>
             <CardContent className="py-4">
-              <div className="text-sm text-[#4A5568] opacity-70">
-                Dernière activité
-              </div>
+              <div className="text-sm text-[#475569]">Dernière activité</div>
               <div className="text-lg font-semibold text-[#4A5568] mt-1">
                 {user.lastActivity}
               </div>
@@ -205,19 +233,15 @@ export function UserDetailView({ user, onBack }: UserDetailViewProps) {
             <CardContent className="py-4">
               <div className="flex items-start justify-between">
                 <div className="flex-1">
-                  <div className="text-sm text-[#4A5568] opacity-70">
-                    Pas Moyens
-                  </div>
+                  <div className="text-sm text-[#475569]">Pas Moyens</div>
                   <div className="text-3xl font-bold text-[#4A5568] mt-2">
                     {metrics.currentMetrics.avgSteps.toLocaleString()}
                   </div>
-                  <p className="text-sm text-[#4A5568] opacity-70 mt-1">
-                    pas/jour
-                  </p>
+                  <p className="mt-1 text-sm text-[#475569]">pas/jour</p>
                 </div>
-                <div className="w-12 h-12 rounded-lg bg-[#4A90E2] bg-opacity-10 flex items-center justify-center">
+                <div className="flex h-12 w-12 items-center justify-center rounded-lg bg-[#DBEAFE]">
                   <Activity
-                    className="w-6 h-6 text-[#4A90E2]"
+                    className="w-6 h-6 text-[#1D4ED8]"
                     aria-hidden="true"
                   />
                 </div>
@@ -228,19 +252,17 @@ export function UserDetailView({ user, onBack }: UserDetailViewProps) {
             <CardContent className="py-4">
               <div className="flex items-start justify-between">
                 <div className="flex-1">
-                  <div className="text-sm text-[#4A5568] opacity-70">
+                  <div className="text-sm text-[#475569]">
                     Calories Moyennes
                   </div>
                   <div className="text-3xl font-bold text-[#4A5568] mt-2">
                     {metrics.currentMetrics.avgCalories}
                   </div>
-                  <p className="text-sm text-[#4A5568] opacity-70 mt-1">
-                    kcal/jour
-                  </p>
+                  <p className="mt-1 text-sm text-[#475569]">kcal/jour</p>
                 </div>
-                <div className="w-12 h-12 rounded-lg bg-[#FF887B] bg-opacity-10 flex items-center justify-center">
+                <div className="flex h-12 w-12 items-center justify-center rounded-lg bg-[#FEE2E2]">
                   <Activity
-                    className="w-6 h-6 text-[#FF887B]"
+                    className="w-6 h-6 text-[#B91C1C]"
                     aria-hidden="true"
                   />
                 </div>
@@ -251,16 +273,16 @@ export function UserDetailView({ user, onBack }: UserDetailViewProps) {
             <CardContent className="py-4">
               <div className="flex items-start justify-between mb-3">
                 <div className="flex-1">
-                  <div className="text-sm text-[#4A5568] opacity-70">
+                  <div className="text-sm text-[#475569]">
                     Progression Objectif
                   </div>
                   <div className="text-3xl font-bold text-[#4A5568] mt-2">
                     {metrics.currentMetrics.goalProgress}%
                   </div>
                 </div>
-                <div className="w-12 h-12 rounded-lg bg-[#5CC58C] bg-opacity-10 flex items-center justify-center">
+                <div className="flex h-12 w-12 items-center justify-center rounded-lg bg-[#DCFCE7]">
                   <Target
-                    className="w-6 h-6 text-[#5CC58C]"
+                    className="w-6 h-6 text-[#166534]"
                     aria-hidden="true"
                   />
                 </div>
@@ -269,6 +291,7 @@ export function UserDetailView({ user, onBack }: UserDetailViewProps) {
                 value={metrics.currentMetrics.goalProgress}
                 className="h-2"
                 aria-label={`Progression de l'objectif : ${metrics.currentMetrics.goalProgress} pourcent`}
+                style={{ "--progress-background": "#166534" } as CSSProperties}
               />
             </CardContent>
           </Card>
@@ -292,35 +315,46 @@ export function UserDetailView({ user, onBack }: UserDetailViewProps) {
             <CardContent>
               <div
                 role="img"
+                aria-describedby="user-daily-steps-summary"
                 aria-label="Graphique en barres montrant l'activité quotidienne de l'utilisateur comparée à son objectif de 10000 pas sur les 7 derniers jours."
               >
                 <ResponsiveContainer width="100%" height={300}>
                   <BarChart data={metrics.dailySteps}>
-                    <CartesianGrid strokeDasharray="3 3" stroke="#E2E8F0" />
-                    <XAxis dataKey="date" stroke="#4A5568" />
-                    <YAxis stroke="#4A5568" />
+                    <CartesianGrid strokeDasharray="3 3" stroke="#CBD5E1" />
+                    <XAxis dataKey="date" stroke="#334155" />
+                    <YAxis stroke="#334155" />
                     <Tooltip
                       contentStyle={{
                         backgroundColor: "white",
-                        border: "1px solid #E2E8F0",
+                        border: "1px solid #CBD5E1",
                       }}
                     />
                     <Legend />
                     <Bar
                       dataKey="steps"
-                      fill="#4A90E2"
+                      fill="#1D4ED8"
                       name="Pas"
                       radius={[8, 8, 0, 0]}
                     />
                     <Bar
                       dataKey="goal"
-                      fill="#5CC58C"
+                      fill="#166534"
                       name="Objectif"
                       radius={[8, 8, 0, 0]}
                       opacity={0.3}
                     />
                   </BarChart>
                 </ResponsiveContainer>
+              </div>
+              <div id="user-daily-steps-summary" className="sr-only">
+                <ul>
+                  {metrics.dailySteps.map((item) => (
+                    <li key={item.date}>
+                      {item.date}: {item.steps} pas sur un objectif de{" "}
+                      {item.goal}
+                    </li>
+                  ))}
+                </ul>
               </div>
             </CardContent>
           </Card>
@@ -333,38 +367,49 @@ export function UserDetailView({ user, onBack }: UserDetailViewProps) {
             <CardContent>
               <div
                 role="img"
+                aria-describedby="user-weekly-calories-summary"
                 aria-label="Graphique linéaire montrant les calories consommées et brûlées de l'utilisateur sur 4 semaines."
               >
                 <ResponsiveContainer width="100%" height={300}>
                   <LineChart data={metrics.weeklyCalories}>
-                    <CartesianGrid strokeDasharray="3 3" stroke="#E2E8F0" />
-                    <XAxis dataKey="week" stroke="#4A5568" />
-                    <YAxis stroke="#4A5568" />
+                    <CartesianGrid strokeDasharray="3 3" stroke="#CBD5E1" />
+                    <XAxis dataKey="week" stroke="#334155" />
+                    <YAxis stroke="#334155" />
                     <Tooltip
                       contentStyle={{
                         backgroundColor: "white",
-                        border: "1px solid #E2E8F0",
+                        border: "1px solid #CBD5E1",
                       }}
                     />
                     <Legend />
                     <Line
                       type="monotone"
                       dataKey="consumed"
-                      stroke="#FF887B"
+                      stroke="#B91C1C"
                       strokeWidth={3}
                       name="Consommées"
-                      dot={{ fill: "#FF887B", r: 5 }}
+                      dot={{ fill: "#B91C1C", r: 5 }}
                     />
                     <Line
                       type="monotone"
                       dataKey="burned"
-                      stroke="#5CC58C"
+                      stroke="#166534"
                       strokeWidth={3}
                       name="Brûlées"
-                      dot={{ fill: "#5CC58C", r: 5 }}
+                      dot={{ fill: "#166534", r: 5 }}
                     />
                   </LineChart>
                 </ResponsiveContainer>
+              </div>
+              <div id="user-weekly-calories-summary" className="sr-only">
+                <ul>
+                  {metrics.weeklyCalories.map((item) => (
+                    <li key={item.week}>
+                      {item.week}: {item.consumed} calories consommées et{" "}
+                      {item.burned} calories brûlées
+                    </li>
+                  ))}
+                </ul>
               </div>
             </CardContent>
           </Card>

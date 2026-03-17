@@ -27,9 +27,11 @@ const PlansPage: NextPageWithLayout = () => {
   const [deleteConfirmOpen, setDeleteConfirmOpen] = useState(false);
   const [planToDelete, setPlanToDelete] = useState<Plan | null>(null);
   const [deleteLoading, setDeleteLoading] = useState(false);
+  const [deleteError, setDeleteError] = useState<string | null>(null);
 
-  useEffect(() => {
+  const loadPlans = () => {
     let cancelled = false;
+    setLoading(true);
     listPlans()
       .then((data) => {
         if (cancelled) return;
@@ -48,6 +50,10 @@ const PlansPage: NextPageWithLayout = () => {
     return () => {
       cancelled = true;
     };
+  };
+
+  useEffect(() => {
+    return loadPlans();
   }, []);
 
   const filteredPlans = useMemo(() => {
@@ -85,6 +91,7 @@ const PlansPage: NextPageWithLayout = () => {
   };
 
   const requestDeleteFromTable = (plan: Plan) => {
+    setDeleteError(null);
     setPlanToDelete(plan);
     setDeleteConfirmOpen(true);
   };
@@ -98,7 +105,7 @@ const PlansPage: NextPageWithLayout = () => {
       setDeleteConfirmOpen(false);
       setPlanToDelete(null);
     } catch {
-      window.alert("Impossible de supprimer le plan.");
+      setDeleteError("Impossible de supprimer le plan.");
     } finally {
       setDeleteLoading(false);
     }
@@ -106,6 +113,14 @@ const PlansPage: NextPageWithLayout = () => {
 
   return (
     <div className="space-y-6">
+      {deleteError && (
+        <div
+          className="rounded-md border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-800"
+          role="alert"
+        >
+          {deleteError}
+        </div>
+      )}
       {loading ? (
         <Card>
           <CardHeader>
@@ -113,7 +128,9 @@ const PlansPage: NextPageWithLayout = () => {
               Plans
             </CardTitle>
           </CardHeader>
-          <CardContent className="text-[#4A5568]">Chargement…</CardContent>
+          <CardContent className="text-[#4A5568]" role="status">
+            Chargement…
+          </CardContent>
         </Card>
       ) : error ? (
         <Card>
@@ -123,10 +140,12 @@ const PlansPage: NextPageWithLayout = () => {
             </CardTitle>
           </CardHeader>
           <CardContent className="space-y-3">
-            <p className="text-[#FF887B]">{error}</p>
+            <p className="text-[#FF887B]" role="alert">
+              {error}
+            </p>
             <Button
               variant="outline"
-              onClick={() => window.location.reload()}
+              onClick={loadPlans}
               className="text-[#4A90E2] border-[#4A90E2]"
             >
               Réessayer
