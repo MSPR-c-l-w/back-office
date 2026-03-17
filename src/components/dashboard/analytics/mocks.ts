@@ -1,11 +1,11 @@
-import { Activity, Flame, LucideProps, Moon } from "lucide-react";
+import { Activity, Flame, Gauge, LucideProps } from "lucide-react";
 import { ForwardRefExoticComponent, RefAttributes } from "react";
 
 export type EngagementType = {
   date: string;
-  steps: number;
-  calories: number;
-  sleep: number;
+  totalDurationHours: number;
+  totalCalories: number;
+  activeUsersPercent: number;
 };
 
 export type ProgressionType = {
@@ -39,13 +39,48 @@ export type EngagementMetricType = {
 };
 
 export const engagementData: EngagementType[] = [
-  { date: "01/02", steps: 8234, calories: 2145, sleep: 7.2 },
-  { date: "02/02", steps: 9521, calories: 2389, sleep: 6.8 },
-  { date: "03/02", steps: 7892, calories: 2012, sleep: 7.5 },
-  { date: "04/02", steps: 10234, calories: 2567, sleep: 7.1 },
-  { date: "05/02", steps: 11456, calories: 2789, sleep: 8.0 },
-  { date: "06/02", steps: 9876, calories: 2456, sleep: 7.3 },
-  { date: "07/02", steps: 8945, calories: 2234, sleep: 6.9 },
+  {
+    date: "2026-02-01",
+    totalDurationHours: 120,
+    totalCalories: 240000,
+    activeUsersPercent: 40,
+  },
+  {
+    date: "2026-02-02",
+    totalDurationHours: 135,
+    totalCalories: 260000,
+    activeUsersPercent: 45,
+  },
+  {
+    date: "2026-02-03",
+    totalDurationHours: 110,
+    totalCalories: 220000,
+    activeUsersPercent: 38,
+  },
+  {
+    date: "2026-02-04",
+    totalDurationHours: 150,
+    totalCalories: 280000,
+    activeUsersPercent: 50,
+  },
+  {
+    date: "2026-02-05",
+    totalDurationHours: 165,
+    totalCalories: 300000,
+    activeUsersPercent: 52,
+  },
+  {
+    date: "2026-02-06",
+    totalDurationHours: 140,
+    totalCalories: 260000,
+    activeUsersPercent: 47,
+  },
+  {
+    date: "2026-02-07",
+    totalDurationHours: 125,
+    totalCalories: 245000,
+    activeUsersPercent: 42,
+  },
 ];
 
 export const progressionData: ProgressionType[] = [
@@ -73,8 +108,8 @@ export const conversionData: ConversionType[] = [
 export const engagementMetrics: EngagementMetricType[] = [
   {
     label: "Activité Moyenne",
-    value: "9,451",
-    unit: "pas/jour",
+    value: "65",
+    unit: "min/jour",
     trend: "+12.3%",
     icon: Activity,
     color: "#4A90E2",
@@ -88,11 +123,11 @@ export const engagementMetrics: EngagementMetricType[] = [
     color: "#FF887B",
   },
   {
-    label: "Sommeil Moyen",
-    value: "7.3",
-    unit: "heures",
-    trend: "+0.5h",
-    icon: Moon,
+    label: "Intensité Moyenne",
+    value: "73",
+    unit: "%",
+    trend: "+4.1pts",
+    icon: Gauge,
     color: "#7FD8BE",
   },
 ];

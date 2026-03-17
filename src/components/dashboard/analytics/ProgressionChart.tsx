@@ -7,10 +7,10 @@ import {
   XAxis,
   YAxis,
 } from "recharts";
-import { ProgressionType } from "./mocks";
+import type { ProgressionPoint } from "@/utils/interfaces/analytics";
 
 interface Props {
-  progressionData: ProgressionType[];
+  progressionData: ProgressionPoint[];
 }
 
 export const ProgressionChart = ({ progressionData }: Props) => {
@@ -29,7 +29,7 @@ export const ProgressionChart = ({ progressionData }: Props) => {
       <Legend />
       <Line
         type="monotone"
-        dataKey="progression"
+        dataKey="progressionPercent"
         stroke="#4A90E2"
         strokeWidth={3}
         name="Progression (%)"
@@ -37,7 +37,7 @@ export const ProgressionChart = ({ progressionData }: Props) => {
       />
       <Line
         type="monotone"
-        dataKey="satisfaction"
+        dataKey="satisfactionPercent"
         stroke="#5CC58C"
         strokeWidth={3}
         name="Satisfaction (%)"
