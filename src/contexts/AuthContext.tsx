@@ -29,6 +29,17 @@ export const AuthProvider = ({ children }: Props) => {
   const [user, setUser] = useState<User | null>(null);
   const [loading, setLoading] = useState<boolean>(true);
 
+  const ensureCsrfToken = useCallback(async () => {
+    try {
+      const { data } = await api.get<{ token: string }>("/auth/csrf");
+      if (data?.token) {
+        api.defaults.headers.common["X-CSRF-Token"] = data.token;
+      }
+    } catch {
+      // On ne bloque pas l'UI en cas d'échec CSRF (ex: JWT expiré), les appels protégés renverront 403.
+    }
+  }, []);
+
   const fetchUser = useCallback(async (): Promise<User | null> => {
     try {
       const { data, status } = await api.get<User>("/auth/me");
@@ -37,6 +48,7 @@ export const AuthProvider = ({ children }: Props) => {
         return null;
       }
       setUser(data);
+      await ensureCsrfToken();
       return data;
     } catch {
       setUser(null);
@@ -44,7 +56,7 @@ export const AuthProvider = ({ children }: Props) => {
     } finally {
       setLoading(false);
     }
-  }, []);
+  }, [ensureCsrfToken]);
 
   useEffect(() => {
     fetchUser();
