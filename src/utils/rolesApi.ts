@@ -8,4 +8,3 @@ export async function listRoles(): Promise<Role[]> {
   }
   return data as Role[];
 }
-
