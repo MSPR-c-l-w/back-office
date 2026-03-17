@@ -14,6 +14,15 @@ interface Props {
 }
 
 export const EndpointsTable = ({ endpointsStats }: Props) => {
+  const getMethodColor = (method: string): string => {
+    const upper = method.toUpperCase();
+    if (upper === "GET") return "#EF4444"; // rouge
+    if (upper === "POST") return "#22C55E"; // vert
+    if (upper === "PUT") return "#FACC15"; // jaune
+    if (upper === "DELETE") return "#FB923C"; // orange
+    return "#E5E7EB"; // gris clair par défaut
+  };
+
   return (
     <Table>
       <TableHeader>
@@ -29,8 +38,22 @@ export const EndpointsTable = ({ endpointsStats }: Props) => {
         {endpointsStats.map((endpoint, index) => (
           <TableRow key={index}>
             <TableCell>
-              <code className="text-sm text-[#4A90E2] bg-[#4A90E2] bg-opacity-10 px-2 py-1 rounded">
-                {endpoint.endpoint}
+              <code className="inline-flex items-center gap-2 rounded px-2 py-1 bg-[#020617] text-xs text-white">
+                {(() => {
+                  const [method, ...rest] = endpoint.endpoint.split(" ");
+                  const path = rest.join(" ") || "";
+                  return (
+                    <>
+                      <span
+                        style={{ color: getMethodColor(method) }}
+                        className="font-semibold"
+                      >
+                        {method}
+                      </span>
+                      <span className="text-white/90">{path}</span>
+                    </>
+                  );
+                })()}
               </code>
             </TableCell>
             <TableCell className="text-right text-[#4A5568] font-medium">
