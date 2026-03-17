@@ -57,13 +57,32 @@ function redirectToLogin() {
 
 type RetryableConfig = { url?: string; _retry?: boolean };
 
+type AxiosErrorLike = {
+  response?: { status?: number };
+  request?: unknown;
+  config?: RetryableConfig;
+  code?: string;
+};
+
+function isApiUnavailableError(error: AxiosErrorLike): boolean {
+  return (
+    !error.response &&
+    error.code !== "ERR_CANCELED" &&
+    (error.request != null ||
+      error.code === "ERR_NETWORK" ||
+      error.code === "ECONNABORTED")
+  );
+}
+
 api.interceptors.response.use(
   (response) => response,
-  async (error: {
-    response?: { status?: number };
-    config?: RetryableConfig;
-  }) => {
+  async (error: AxiosErrorLike) => {
     const originalRequest = error.config;
+
+    if (isApiUnavailableError(error)) {
+      redirectToLogin();
+      return Promise.reject(error);
+    }
 
     if (error.response?.status !== 401 || !originalRequest) {
       return Promise.reject(error);
