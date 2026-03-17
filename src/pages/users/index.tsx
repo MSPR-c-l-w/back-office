@@ -1,10 +1,10 @@
 import { UsersTableCard } from "@/components/dashboard/users/UsersTableCard";
 import { PageLayout } from "@/components/layout/PageLayout";
-import { useUsersList } from "@/hooks/useUsersList";
+import { useUsersList, type UsersPlanFilter } from "@/hooks/useUsersList";
 import { useRequireRole } from "@/hooks/useRequireRole";
 import { NextPageWithLayout } from "@/utils/types/globals";
 import { useRouter } from "next/router";
-import { ReactElement, useMemo, useState } from "react";
+import { ReactElement, useState } from "react";
 import { UsersStatsCards } from "@/components/dashboard/users/UsersStatsCards";
 import { useUsersStats } from "@/hooks/useUsersStats";
 
@@ -25,37 +25,42 @@ const UsersPage: NextPageWithLayout = () => {
   } = useUsersStats();
 
   const [searchQuery, setSearchQuery] = useState("");
-  const [filterPlan, setFilterPlan] = useState<string>("all");
+  const [filterPlan, setFilterPlan] = useState<UsersPlanFilter | "all">("all");
 
   const { data, total, loading, error, refetch } = useUsersList({
     page,
     limit,
     search: searchQuery,
+    plan: filterPlan === "all" ? undefined : filterPlan,
   });
 
   const listError =
     error === "Impossible de charger la liste des utilisateurs." ? null : error;
-
-  const filteredRows = useMemo(() => {
-    return data.filter((user) => {
-      const matchesSearch =
-        user.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        user.email.toLowerCase().includes(searchQuery.toLowerCase());
-      const matchesPlan = filterPlan === "all" || user.plan === filterPlan;
-      return matchesSearch && matchesPlan;
-    });
-  }, [data, searchQuery, filterPlan]);
-
-  const hasActiveFilter = searchQuery.trim() !== "" || filterPlan !== "all";
-  const totalPages = hasActiveFilter
-    ? 1
-    : Math.max(1, Math.ceil(total / limit));
-  const startIndex = total === 0 ? 0 : hasActiveFilter ? 0 : (page - 1) * limit;
-  const filteredCount = hasActiveFilter ? filteredRows.length : total;
+  const totalPages = Math.max(1, Math.ceil(total / limit));
+  const startIndex = total === 0 ? 0 : (page - 1) * limit;
+  const filteredCount = total;
 
   const handlePageChange = (newPage: number) => {
     router.push(
       { pathname: "/users", query: { ...router.query, page: newPage, limit } },
+      undefined,
+      { shallow: true }
+    );
+  };
+
+  const handleSearchChange = (value: string) => {
+    setSearchQuery(value);
+    void router.push(
+      { pathname: "/users", query: { ...router.query, page: 1, limit } },
+      undefined,
+      { shallow: true }
+    );
+  };
+
+  const handleFilterPlanChange = (value: UsersPlanFilter | "all") => {
+    setFilterPlan(value);
+    void router.push(
+      { pathname: "/users", query: { ...router.query, page: 1, limit } },
       undefined,
       { shallow: true }
     );
@@ -95,12 +100,12 @@ const UsersPage: NextPageWithLayout = () => {
 
       <UsersTableCard
         searchQuery={searchQuery}
-        onSearchChange={setSearchQuery}
+        onSearchChange={handleSearchChange}
         filterPlan={filterPlan}
-        onFilterPlanChange={setFilterPlan}
-        paginatedUsers={filteredRows}
+        onFilterPlanChange={handleFilterPlanChange}
+        paginatedUsers={data}
         filteredCount={filteredCount}
-        currentPage={hasActiveFilter ? 1 : page}
+        currentPage={page}
         totalPages={totalPages}
         startIndex={startIndex}
         itemsPerPage={limit}

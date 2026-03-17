@@ -24,11 +24,14 @@ function formatLastActivity(updatedAt: string): string {
   return `Il y a ${diffDays} j`;
 }
 
-function normalizePlanName(raw?: string): "Freemium" | "Premium" | "B2B" {
+function normalizePlanName(
+  raw?: string
+): "Freemium" | "Premium" | "Premium+" | "B2B" {
   if (!raw) return "Freemium";
   const normalized = raw.trim().toLowerCase();
-  if (normalized === "premium") return "Premium";
-  if (normalized === "b2b") return "B2B";
+  if (normalized.includes("b2b")) return "B2B";
+  if (normalized === "premium+") return "Premium+";
+  if (normalized.includes("premium")) return "Premium";
   return "Freemium";
 }
 

@@ -138,7 +138,7 @@ export function PlanUpsertModal({
     <>
       <Dialog open={open} onOpenChange={onOpenChange}>
         <DialogContent
-          className="max-h-[90vh] max-w-3xl overflow-y-auto rounded-2xl border-[#E2E8F0] bg-white text-[#4A5568] shadow-xl"
+          className="max-w-3xl max-h-[90vh] overflow-y-auto bg-white text-[#4A5568]"
           aria-busy={loading}
         >
           <DialogHeader>

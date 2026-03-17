@@ -25,7 +25,7 @@ interface User {
   age: number;
   gender: string;
   objective: string;
-  plan: "Freemium" | "Premium" | "B2B";
+  plan: "Freemium" | "Premium" | "Premium+" | "B2B";
   status: "active" | "inactive";
   joinDate: string;
   lastActivity: string;
@@ -151,7 +151,7 @@ export function UserDetailView({
               <div className="flex items-center gap-3 mt-3">
                 <Badge
                   className={
-                    user.plan === "Premium"
+                    user.plan === "Premium" || user.plan === "Premium+"
                       ? "bg-[#166534] text-white hover:bg-[#166534]"
                       : user.plan === "B2B"
                         ? "bg-[#0F766E] text-white hover:bg-[#0F766E]"
