@@ -19,14 +19,15 @@ import {
 } from "@/components/ui/table";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Input } from "@/components/ui/input";
+import type { UsersPlanFilter } from "@/hooks/useUsersList";
 import { Filter, Search, ChevronLeft, ChevronRight } from "lucide-react";
 import type { UserListItem } from "@/utils/types/users";
 
 type Props = {
   searchQuery: string;
   onSearchChange: (value: string) => void;
-  filterPlan: string;
-  onFilterPlanChange: (value: string) => void;
+  filterPlan: UsersPlanFilter | "all";
+  onFilterPlanChange: (value: UsersPlanFilter | "all") => void;
   paginatedUsers: UserListItem[];
   filteredCount: number;
   currentPage: number;
@@ -75,20 +76,11 @@ export function UsersTableCard({
                 type="search"
                 placeholder="Rechercher un utilisateur..."
                 value={searchQuery}
-                onChange={(e) => {
-                  onSearchChange(e.target.value);
-                  onPageChange(1);
-                }}
+                onChange={(e) => onSearchChange(e.target.value)}
                 className="pl-10"
               />
             </div>
-            <Select
-              value={filterPlan}
-              onValueChange={(value) => {
-                onFilterPlanChange(value);
-                onPageChange(1);
-              }}
-            >
+            <Select value={filterPlan} onValueChange={onFilterPlanChange}>
               <SelectTrigger
                 className="w-full sm:w-40"
                 aria-label="Filtrer les utilisateurs par plan"
@@ -100,6 +92,7 @@ export function UsersTableCard({
                 <SelectItem value="all">Tous les plans</SelectItem>
                 <SelectItem value="Freemium">Freemium</SelectItem>
                 <SelectItem value="Premium">Premium</SelectItem>
+                <SelectItem value="Premium+">Premium+</SelectItem>
                 <SelectItem value="B2B">B2B</SelectItem>
               </SelectContent>
             </Select>
@@ -209,7 +202,7 @@ export function UsersTableCard({
                       <TableCell>
                         <Badge
                           className={
-                            user.plan === "Premium"
+                            user.plan === "Premium" || user.plan === "Premium+"
                               ? "bg-[#5CC58C] hover:bg-[#5CC58C]"
                               : user.plan === "B2B"
                                 ? "bg-[#7FD8BE] hover:bg-[#7FD8BE]"

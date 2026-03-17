@@ -40,7 +40,7 @@ export type UserListItem = {
   age: number;
   gender: string;
   objective: string;
-  plan: "Freemium" | "Premium" | "B2B";
+  plan: "Freemium" | "Premium" | "Premium+" | "B2B";
   status: "active" | "inactive";
   joinDate: string;
   lastActivity: string;

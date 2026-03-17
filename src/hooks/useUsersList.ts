@@ -5,10 +5,13 @@ import api from "@/utils/axios";
 import type { UsersListApiResponse, UserListItem } from "@/utils/types/users";
 import { mapUserApiItemToListItem } from "@/utils/mappers/users";
 
+export type UsersPlanFilter = "Freemium" | "Premium" | "Premium+" | "B2B";
+
 type UseUsersListParams = {
   page: number;
   limit: number;
   search?: string;
+  plan?: UsersPlanFilter;
 };
 
 type UseUsersListResult = {
@@ -23,6 +26,7 @@ export function useUsersList({
   page,
   limit,
   search,
+  plan,
 }: UseUsersListParams): UseUsersListResult {
   const [data, setData] = useState<UserListItem[]>([]);
   const [total, setTotal] = useState(0);
@@ -38,6 +42,7 @@ export function useUsersList({
           page,
           limit,
           ...(search?.trim() ? { search: search.trim() } : {}),
+          ...(plan ? { plan } : {}),
         },
       });
       setData(response.data.map(mapUserApiItemToListItem));
@@ -49,7 +54,7 @@ export function useUsersList({
     } finally {
       setLoading(false);
     }
-  }, [page, limit, search]);
+  }, [page, limit, search, plan]);
 
   useEffect(() => {
     fetchUsers();
