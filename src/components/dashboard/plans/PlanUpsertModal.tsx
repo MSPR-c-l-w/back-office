@@ -1,6 +1,4 @@
-import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent } from "@/components/ui/card";
 import { ConfirmDialog } from "@/components/ui/confirm-dialog";
 import {
   Dialog,
@@ -13,7 +11,7 @@ import {
 import { Input } from "@/components/ui/input";
 import type { Plan } from "@/utils/interfaces/plan";
 import { createPlan, deletePlan, updatePlan } from "@/utils/plansApi";
-import { Save, Trash2 } from "lucide-react";
+import { Check, Save, Trash2 } from "lucide-react";
 import { useEffect, useMemo, useState } from "react";
 
 type Props = {
@@ -32,6 +30,7 @@ function parseFeatures(raw: string): string[] {
 }
 
 function formatPrice(price: number) {
+  if (price === 0) return "Gratuit";
   return price.toLocaleString("fr-FR", {
     style: "currency",
     currency: "EUR",
@@ -152,44 +151,42 @@ export function PlanUpsertModal({
           </DialogHeader>
 
           {!isCreate && !isEditing && plan && (
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mt-4">
-              <Card className="bg-white">
-                <CardContent className="pt-6">
-                  <div className="text-sm text-[#4A5568] opacity-70">Prix</div>
-                  <div className="text-lg font-semibold text-[#4A5568] mt-1">
+            <div className="mt-6 space-y-6">
+              <div className="flex flex-col sm:flex-row sm:items-center gap-4 rounded-xl border border-[#E2E8F0] bg-[#F8FAFB] p-5">
+                <div className="flex items-baseline gap-2">
+                  <span className="text-sm font-medium text-[#4A5568] opacity-70">
+                    Prix
+                  </span>
+                  <span className="text-2xl font-bold text-[#4A90E2]">
                     {formatPrice(plan.price)}
-                  </div>
-                </CardContent>
-              </Card>
-              <Card className="bg-white md:col-span-2">
-                <CardContent className="pt-6">
-                  <div className="text-sm text-[#4A5568] opacity-70">
-                    Fonctionnalités
-                  </div>
-                  <div className="flex flex-wrap gap-2 mt-2">
-                    {plan.features.length === 0 ? (
-                      <span className="text-sm text-[#4A5568] opacity-70">
-                        —
-                      </span>
-                    ) : (
-                      plan.features.map((f, idx) => (
-                        <Badge
-                          key={`${plan.id}-f-${idx}`}
-                          variant="outline"
-                          className="bg-[#4A90E2] bg-opacity-10 text-[#4A90E2] border-[#4A90E2]"
-                        >
-                          {f}
-                        </Badge>
-                      ))
-                    )}
-                  </div>
-                </CardContent>
-              </Card>
+                  </span>
+                </div>
+              </div>
+              <div className="rounded-xl border border-[#E2E8F0] bg-[#F8FAFB] p-5">
+                <h4 className="mb-3 text-sm font-medium text-[#4A5568] opacity-70">
+                  Fonctionnalités
+                </h4>
+                {plan.features.length === 0 ? (
+                  <p className="text-sm text-[#4A5568] opacity-60">—</p>
+                ) : (
+                  <ul className="space-y-2">
+                    {plan.features.map((f, idx) => (
+                      <li
+                        key={`${plan.id}-f-${idx}`}
+                        className="flex items-start gap-3 rounded-lg bg-white px-3 py-2.5 text-sm text-[#4A5568] shadow-sm"
+                      >
+                        <Check className="mt-0.5 h-4 w-4 shrink-0 text-[#5CC58C]" />
+                        <span className="min-w-0 flex-1 break-words">{f}</span>
+                      </li>
+                    ))}
+                  </ul>
+                )}
+              </div>
             </div>
           )}
 
           {(isCreate || isEditing) && (
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-4">
+            <div className="mt-6 grid grid-cols-1 gap-4 md:grid-cols-2">
               <div className="space-y-2">
                 <label htmlFor="plan-name" className="text-sm text-[#4A5568]">
                   Nom

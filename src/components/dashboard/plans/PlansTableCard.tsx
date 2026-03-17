@@ -15,6 +15,7 @@ import type { Plan } from "@/utils/interfaces/plan";
 import { ChevronLeft, ChevronRight, Plus, Search, Trash2 } from "lucide-react";
 
 function formatPrice(price: number) {
+  if (price === 0) return "Gratuit";
   return price.toLocaleString("fr-FR", {
     style: "currency",
     currency: "EUR",
