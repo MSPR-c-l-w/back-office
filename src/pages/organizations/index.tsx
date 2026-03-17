@@ -35,9 +35,11 @@ const OrganizationsPage: NextPageWithLayout = () => {
   const [organizationToDelete, setOrganizationToDelete] =
     useState<Organization | null>(null);
   const [deleteLoading, setDeleteLoading] = useState(false);
+  const [deleteError, setDeleteError] = useState<string | null>(null);
 
-  useEffect(() => {
+  const loadOrganizations = () => {
     let cancelled = false;
+    setLoading(true);
     listOrganizations()
       .then((data) => {
         if (cancelled) return;
@@ -56,6 +58,10 @@ const OrganizationsPage: NextPageWithLayout = () => {
     return () => {
       cancelled = true;
     };
+  };
+
+  useEffect(() => {
+    return loadOrganizations();
   }, []);
 
   const typeOptions = useMemo(() => {
@@ -93,6 +99,7 @@ const OrganizationsPage: NextPageWithLayout = () => {
   };
 
   const handleDeleteFromTable = (org: Organization) => {
+    setDeleteError(null);
     setOrganizationToDelete(org);
     setDeleteConfirmOpen(true);
   };
@@ -108,7 +115,7 @@ const OrganizationsPage: NextPageWithLayout = () => {
       setDeleteConfirmOpen(false);
       setOrganizationToDelete(null);
     } catch {
-      window.alert("Impossible de supprimer l’organisation.");
+      setDeleteError("Impossible de supprimer l’organisation.");
     } finally {
       setDeleteLoading(false);
     }
@@ -128,6 +135,14 @@ const OrganizationsPage: NextPageWithLayout = () => {
 
   return (
     <div className="space-y-6">
+      {deleteError && (
+        <div
+          className="rounded-md border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-800"
+          role="alert"
+        >
+          {deleteError}
+        </div>
+      )}
       {loading ? (
         <Card>
           <CardHeader>
@@ -135,7 +150,9 @@ const OrganizationsPage: NextPageWithLayout = () => {
               Organisations
             </CardTitle>
           </CardHeader>
-          <CardContent className="text-[#4A5568]">Chargement…</CardContent>
+          <CardContent className="text-[#4A5568]" role="status">
+            Chargement…
+          </CardContent>
         </Card>
       ) : error ? (
         <Card>
@@ -145,10 +162,12 @@ const OrganizationsPage: NextPageWithLayout = () => {
             </CardTitle>
           </CardHeader>
           <CardContent className="space-y-3">
-            <p className="text-[#FF887B]">{error}</p>
+            <p className="text-[#FF887B]" role="alert">
+              {error}
+            </p>
             <Button
               variant="outline"
-              onClick={() => window.location.reload()}
+              onClick={loadOrganizations}
               className="text-[#4A90E2] border-[#4A90E2]"
             >
               Réessayer

@@ -4,6 +4,7 @@ export type { UserMetrics } from "./mocks";
 export { UsersStatsCards } from "./UsersStatsCards";
 export { UsersTableCard } from "./UsersTableCard";
 export { UserDetailModal } from "./UserDetailModal";
+export { UserUpdateModal } from "./UserUpdateModal";
 export { UserMetricsSummary } from "./UserMetricsSummary";
 export { DailyStepsChart } from "./DailyStepsChart";
 export { WeeklyCaloriesChart } from "./WeeklyCaloriesChart";

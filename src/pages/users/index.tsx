@@ -68,7 +68,10 @@ const UsersPage: NextPageWithLayout = () => {
   return (
     <div className="space-y-6">
       {statsError && (
-        <div className="rounded-md border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-800 flex items-center justify-between">
+        <div
+          className="rounded-md border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-800 flex items-center justify-between"
+          role="alert"
+        >
           <span>{statsError}</span>
           <button
             type="button"
@@ -80,13 +83,15 @@ const UsersPage: NextPageWithLayout = () => {
         </div>
       )}
 
-      <UsersStatsCards
-        totalUsers={stats?.totalUsers ?? 0}
-        activeUsers={stats?.activeUsers ?? 0}
-        premiumUsers={stats?.premiumUsers ?? 0}
-        b2bUsers={stats?.b2bUsers ?? 0}
-        loading={statsLoading}
-      />
+      <div aria-live="polite">
+        <UsersStatsCards
+          totalUsers={stats?.totalUsers ?? 0}
+          activeUsers={stats?.activeUsers ?? 0}
+          premiumUsers={stats?.premiumUsers ?? 0}
+          b2bUsers={stats?.b2bUsers ?? 0}
+          loading={statsLoading}
+        />
+      </div>
 
       <UsersTableCard
         searchQuery={searchQuery}

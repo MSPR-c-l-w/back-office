@@ -12,6 +12,7 @@ import {
 import {
   Table,
   TableBody,
+  TableCaption,
   TableCell,
   TableHead,
   TableHeader,
@@ -81,8 +82,12 @@ export function OrganizationsTableCard({
           </CardTitle>
           <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3 w-full md:w-auto">
             <div className="relative flex-1 sm:flex-initial sm:w-64">
+              <label htmlFor="organizations-search" className="sr-only">
+                Rechercher une organisation
+              </label>
               <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-[#4A5568] opacity-50" />
               <Input
+                id="organizations-search"
                 type="search"
                 placeholder="Rechercher une organisation..."
                 value={searchQuery}
@@ -100,7 +105,10 @@ export function OrganizationsTableCard({
                 onPageChange(1);
               }}
             >
-              <SelectTrigger className="w-full sm:w-44">
+              <SelectTrigger
+                className="w-full sm:w-44"
+                aria-label="Filtrer les organisations par type"
+              >
                 <Filter className="w-4 h-4 mr-2" />
                 <SelectValue placeholder="Filtrer" />
               </SelectTrigger>
@@ -126,6 +134,9 @@ export function OrganizationsTableCard({
       <CardContent>
         <div className="rounded-md border">
           <Table>
+            <TableCaption className="sr-only">
+              Tableau des organisations avec type, branding, statut et actions.
+            </TableCaption>
             <TableHeader>
               <TableRow>
                 <TableHead>Organisation</TableHead>
@@ -153,7 +164,11 @@ export function OrganizationsTableCard({
                     <TableCell className="font-medium">
                       <div className="flex items-center gap-3">
                         <Avatar>
-                          <AvatarImage src={logoUrl} />
+                          <AvatarImage
+                            src={logoUrl}
+                            alt=""
+                            aria-hidden="true"
+                          />
                           <AvatarFallback className="bg-[#4A90E2] text-white">
                             {initials || "OR"}
                           </AvatarFallback>
@@ -186,6 +201,7 @@ export function OrganizationsTableCard({
                             href={logoUrl}
                             target="_blank"
                             rel="noreferrer"
+                            aria-label="Ouvrir le logo de l’organisation dans un nouvel onglet"
                           >
                             {logoUrl}
                           </a>
@@ -259,7 +275,10 @@ export function OrganizationsTableCard({
                   filteredCount
                 )} sur ${filteredCount} organisations`}
           </p>
-          <div className="flex items-center gap-2">
+          <nav
+            className="flex items-center gap-2"
+            aria-label="Pagination des organisations"
+          >
             <Button
               variant="outline"
               size="sm"
@@ -288,6 +307,8 @@ export function OrganizationsTableCard({
                     variant={currentPage === pageNum ? "default" : "outline"}
                     size="sm"
                     onClick={() => onPageChange(pageNum)}
+                    aria-current={currentPage === pageNum ? "page" : undefined}
+                    aria-label={`Aller à la page ${pageNum}`}
                     className={
                       currentPage === pageNum
                         ? "bg-[#4A90E2] hover:bg-[#4A90E2]/90"
@@ -312,7 +333,7 @@ export function OrganizationsTableCard({
               Suivant
               <ChevronRight className="w-4 h-4" />
             </Button>
-          </div>
+          </nav>
         </div>
       </CardContent>
     </Card>

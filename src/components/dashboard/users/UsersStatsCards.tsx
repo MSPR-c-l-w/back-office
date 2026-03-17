@@ -18,7 +18,11 @@ export function UsersStatsCards({
   const display = loading ? "—" : undefined;
 
   return (
-    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+    <div
+      className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4"
+      role="status"
+      aria-live="polite"
+    >
       <Card>
         <CardHeader>
           <CardTitle className="text-sm text-[#4A5568] opacity-80">

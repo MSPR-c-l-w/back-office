@@ -11,6 +11,7 @@ import { NextPageWithLayout } from "@/utils/types/globals";
 import { ReactElement } from "react";
 import { useEtlLogs, type PipelineId } from "@/hooks/useEtlLogs";
 import api from "@/utils/axios";
+import { useNotifications } from "@/contexts/NotificationsContext";
 
 const DATASET_TO_PIPELINE: Record<string, PipelineId> = {
   nutrition: "nutrition",
@@ -51,6 +52,7 @@ function formatRelativeSync(lastSyncIso: string | null): string {
 }
 
 const DataPage: NextPageWithLayout = () => {
+  const { pushNotification } = useNotifications();
   const [launchingByPipeline, setLaunchingByPipeline] = useState<
     Record<PipelineId, boolean>
   >({
@@ -177,10 +179,37 @@ const DataPage: NextPageWithLayout = () => {
     subscribe(targetPipeline);
     const path = PIPELINE_TO_API_PATH[targetPipeline];
     try {
+      pushNotification({
+        id: `etl-start-${targetPipeline}-${Date.now()}`,
+        type: "info",
+        title: "Pipeline ETL",
+        message: `Pipeline ${targetPipeline} démarré`,
+        createdAt: new Date().toISOString(),
+        source: "etl",
+        read: false,
+      });
       await api.post(path);
       setStatusByPipeline((prev) => ({ ...prev, [targetPipeline]: "success" }));
+      pushNotification({
+        id: `etl-success-${targetPipeline}-${Date.now()}`,
+        type: "success",
+        title: "Pipeline ETL",
+        message: `Pipeline ${targetPipeline} terminé avec succès`,
+        createdAt: new Date().toISOString(),
+        source: "etl",
+        read: false,
+      });
     } catch {
       setStatusByPipeline((prev) => ({ ...prev, [targetPipeline]: "error" }));
+      pushNotification({
+        id: `etl-error-${targetPipeline}-${Date.now()}`,
+        type: "error",
+        title: "Pipeline ETL",
+        message: `Erreur lors de l'exécution du pipeline ${targetPipeline}`,
+        createdAt: new Date().toISOString(),
+        source: "etl",
+        read: false,
+      });
     } finally {
       setLaunchingByPipeline((prev) => ({ ...prev, [targetPipeline]: false }));
       await refreshPipelineStatuses();

@@ -6,6 +6,9 @@ import { ReactElement, useCallback, useEffect, useState } from "react";
 import api from "@/utils/axios";
 import type { User } from "@/utils/interfaces/user";
 import { UserDetailView } from "@/components/dashboard/users/UserDetailView";
+import { UserUpdateModal } from "@/components/dashboard/users/UserUpdateModal";
+import { ConfirmDialog } from "@/components/ui/confirm-dialog";
+import { deleteUser } from "@/utils/usersApi";
 
 type DetailUser = {
   id: number;
@@ -20,6 +23,29 @@ type DetailUser = {
   lastActivity: string;
   avatar?: string;
 };
+
+function formatLastActivity(dateInput: Date | string | undefined): string {
+  if (!dateInput) return "—";
+  const date = dateInput instanceof Date ? dateInput : new Date(dateInput);
+  if (Number.isNaN(date.getTime())) return "—";
+
+  const diffMs = Date.now() - date.getTime();
+  const diffMin = Math.floor(diffMs / 60_000);
+  const diffH = Math.floor(diffMin / 60);
+  const diffDays = Math.floor(diffH / 24);
+
+  if (diffMin < 60) return `Il y a ${diffMin} min`;
+  if (diffH < 24) return `Il y a ${diffH} h`;
+  return `Il y a ${diffDays} j`;
+}
+
+function normalizePlanName(raw?: string): "Freemium" | "Premium" | "B2B" {
+  if (!raw) return "Freemium";
+  const normalized = raw.trim().toLowerCase();
+  if (normalized === "premium") return "Premium";
+  if (normalized === "b2b") return "B2B";
+  return "Freemium";
+}
 
 function mapApiUserToDetailUser(apiUser: User): DetailUser {
   const name =
@@ -41,15 +67,12 @@ function mapApiUserToDetailUser(apiUser: User): DetailUser {
       : new Date(
           (apiUser as unknown as { created_at: string }).created_at
         ).toLocaleDateString("fr-FR");
-  const updatedAt =
-    apiUser.updated_at instanceof Date
-      ? apiUser.updated_at
-      : new Date((apiUser as unknown as { updated_at: string }).updated_at);
-  const diffMs = Date.now() - updatedAt.getTime();
-  const diffH = Math.floor(diffMs / 36e5);
-  const diffDays = Math.floor(diffH / 24);
-  const lastActivity =
-    diffH < 24 ? `Il y a ${diffH} h` : `Il y a ${diffDays} j`;
+  const latestSessionAt =
+    apiUser.sessions?.[0]?.created_at ?? apiUser.updated_at;
+  const objective =
+    typeof apiUser.healthProfile?.daily_calories_target === "number"
+      ? `${apiUser.healthProfile.daily_calories_target} kcal/j`
+      : apiUser.healthProfile?.physical_activity_level?.trim() || "—";
 
   return {
     id: apiUser.id,
@@ -57,11 +80,11 @@ function mapApiUserToDetailUser(apiUser: User): DetailUser {
     email: apiUser.email,
     age,
     gender: apiUser.gender ?? "—",
-    objective: "—",
-    plan: "Freemium",
+    objective,
+    plan: normalizePlanName(apiUser.subscriptions?.[0]?.plan?.name),
     status: apiUser.is_active ? "active" : "inactive",
     joinDate,
-    lastActivity,
+    lastActivity: formatLastActivity(latestSessionAt),
   };
 }
 
@@ -69,9 +92,13 @@ const UserDetailPage: NextPageWithLayout = () => {
   useRequireRole("ADMIN");
   const router = useRouter();
   const id = router.query.id as string | undefined;
-  const [user, setUser] = useState<DetailUser | null>(null);
+  const [user, setUser] = useState<User | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [editOpen, setEditOpen] = useState(false);
+  const [deleteOpen, setDeleteOpen] = useState(false);
+  const [deleteLoading, setDeleteLoading] = useState(false);
+  const [deleteError, setDeleteError] = useState<string | null>(null);
 
   const fetchUser = useCallback(async () => {
     if (!id) {
@@ -82,7 +109,7 @@ const UserDetailPage: NextPageWithLayout = () => {
     setError(null);
     try {
       const { data: apiUser } = await api.get<User>(`/users/${id}`);
-      setUser(mapApiUserToDetailUser(apiUser));
+      setUser(apiUser);
     } catch (err: unknown) {
       const status =
         err && typeof err === "object" && "response" in err
@@ -123,6 +150,22 @@ const UserDetailPage: NextPageWithLayout = () => {
     router.push("/users");
   };
 
+  const handleDelete = useCallback(async () => {
+    if (!user) return;
+    setDeleteLoading(true);
+    setDeleteError(null);
+
+    try {
+      await deleteUser(user.id);
+      setDeleteOpen(false);
+      await router.push("/users");
+    } catch {
+      setDeleteError("Impossible de supprimer cet utilisateur.");
+    } finally {
+      setDeleteLoading(false);
+    }
+  }, [router, user]);
+
   if (loading) {
     return (
       <div className="flex items-center justify-center py-12">
@@ -146,7 +189,38 @@ const UserDetailPage: NextPageWithLayout = () => {
     );
   }
 
-  return <UserDetailView user={user} onBack={handleBack} />;
+  const detailUser = mapApiUserToDetailUser(user);
+
+  return (
+    <>
+      {deleteError && (
+        <div className="mb-4 rounded-md border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-800">
+          {deleteError}
+        </div>
+      )}
+      <UserDetailView
+        user={detailUser}
+        onBack={handleBack}
+        onEdit={() => setEditOpen(true)}
+        onDelete={() => setDeleteOpen(true)}
+      />
+      <UserUpdateModal
+        user={user}
+        open={editOpen}
+        onOpenChange={setEditOpen}
+        onSaved={setUser}
+      />
+      <ConfirmDialog
+        open={deleteOpen}
+        onOpenChange={setDeleteOpen}
+        title="Supprimer cet utilisateur ?"
+        description="La suppression le passera en statut supprimé dans la base. Cette action est réversible uniquement depuis le backend."
+        confirmLabel="Supprimer"
+        loading={deleteLoading}
+        onConfirm={handleDelete}
+      />
+    </>
+  );
 };
 
 UserDetailPage.getLayout = function (page: ReactElement) {

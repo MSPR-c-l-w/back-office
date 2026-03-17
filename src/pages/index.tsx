@@ -1,15 +1,17 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { ResponsiveContainer } from "recharts";
 import { NextPageWithLayout } from "@/utils/types/globals";
-import { ReactElement } from "react";
+import { ReactElement, useEffect } from "react";
 import { AgeDistribution } from "@/components/dashboard/dashboard-pilotage/AgeDistribution";
 import { AlertCard } from "@/components/dashboard/dashboard-pilotage/AlertCard";
 import { DataQualityTrend } from "@/components/dashboard/dashboard-pilotage/DataQualityTrend";
 import { KpiCard } from "@/components/dashboard/dashboard-pilotage/KpiCard";
 import { PageLayout } from "@/components/layout/PageLayout";
 import { useDashboardPilotage } from "@/hooks/useDashboardPilotage";
+import { useNotifications } from "@/contexts/NotificationsContext";
 
 const DashboardPage: NextPageWithLayout = () => {
+  const { pushNotification } = useNotifications();
   const {
     kpiData,
     dataQualityTrend,
@@ -19,6 +21,27 @@ const DashboardPage: NextPageWithLayout = () => {
     error,
     refetch,
   } = useDashboardPilotage();
+
+  const sortedAlerts = [...alerts].sort((a, b) => b.id - a.id);
+
+  useEffect(() => {
+    alerts.forEach((alert) => {
+      pushNotification({
+        id: `dashboard-${alert.id}`,
+        type:
+          alert.type === "error"
+            ? "error"
+            : alert.type === "warning"
+              ? "warning"
+              : "success",
+        title: "Alerte pipeline d'ingestion",
+        message: alert.message,
+        createdAt: new Date().toISOString(),
+        source: "dashboard",
+        read: false,
+      });
+    });
+  }, [alerts, pushNotification]);
 
   if (error) {
     return (
@@ -77,7 +100,7 @@ const DashboardPage: NextPageWithLayout = () => {
         </CardHeader>
         <CardContent>
           <ul className="space-y-3" role="list">
-            {alerts.map((alert) => (
+            {sortedAlerts.map((alert) => (
               <AlertCard key={alert.id} alert={alert} />
             ))}
           </ul>

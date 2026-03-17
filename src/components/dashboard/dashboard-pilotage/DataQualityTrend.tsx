@@ -15,23 +15,42 @@ interface Props {
 
 export const DataQualityTrend = ({ dataQualityTrend }: Props) => {
   return (
-    <LineChart data={dataQualityTrend}>
-      <CartesianGrid strokeDasharray="3 3" stroke="#E2E8F0" />
-      <XAxis dataKey="date" stroke="#4A5568" />
-      <YAxis stroke="#4A5568" domain={[95, 100]} />
-      <Tooltip
-        contentStyle={{ backgroundColor: "white", border: "1px solid #E2E8F0" }}
-        labelStyle={{ color: "#4A5568" }}
-      />
-      <Legend />
-      <Line
-        type="monotone"
-        dataKey="quality"
-        stroke="#4A90E2"
-        strokeWidth={3}
-        name="Qualité (%)"
-        dot={{ fill: "#4A90E2", r: 4 }}
-      />
-    </LineChart>
+    <div
+      role="img"
+      aria-describedby="data-quality-trend-summary"
+      aria-label="Graphique d’évolution de la qualité des données"
+    >
+      <LineChart data={dataQualityTrend}>
+        <CartesianGrid strokeDasharray="3 3" stroke="#CBD5E1" />
+        <XAxis dataKey="date" stroke="#334155" />
+        <YAxis stroke="#334155" domain={[95, 100]} />
+        <Tooltip
+          contentStyle={{
+            backgroundColor: "white",
+            border: "1px solid #CBD5E1",
+          }}
+          labelStyle={{ color: "#1F2937" }}
+        />
+        <Legend />
+        <Line
+          type="monotone"
+          dataKey="quality"
+          stroke="#1D4ED8"
+          strokeWidth={3}
+          name="Qualité (%)"
+          dot={{ fill: "#1D4ED8", r: 4 }}
+        />
+      </LineChart>
+      <div id="data-quality-trend-summary" className="sr-only">
+        <p>Résumé textuel de la qualité des données.</p>
+        <ul>
+          {dataQualityTrend.map((item) => (
+            <li key={item.date}>
+              {item.date}: {item.quality} pour cent
+            </li>
+          ))}
+        </ul>
+      </div>
+    </div>
   );
 };

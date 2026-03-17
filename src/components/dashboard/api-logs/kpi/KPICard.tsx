@@ -12,7 +12,7 @@ export const KpiCard = ({ kpi }: Props) => {
       <CardContent className="pt-6">
         <div className="flex items-start justify-between">
           <div className="flex-1">
-            <p className="text-sm text-[#4A5568] opacity-70">{kpi.label}</p>
+            <p className="text-sm text-[#475569]">{kpi.label}</p>
             <p className="text-3xl font-bold text-[#4A5568] mt-2">
               {kpi.value}
             </p>
@@ -24,7 +24,7 @@ export const KpiCard = ({ kpi }: Props) => {
               />
               <span
                 className="text-sm font-semibold"
-                style={{ color: kpi.color }}
+                style={{ color: "#1F2937" }}
               >
                 {kpi.trend}
               </span>

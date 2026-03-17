@@ -13,6 +13,19 @@ export type UserApiItem = {
   role_id?: number | null;
   height?: number | null;
   deleted_at?: string | null;
+  healthProfile?: {
+    physical_activity_level?: string | null;
+    daily_calories_target?: number | null;
+  } | null;
+  sessions?: Array<{
+    created_at: string;
+  }>;
+  subscriptions?: Array<{
+    status?: string;
+    plan?: {
+      name?: string;
+    };
+  }>;
 };
 
 export type UsersListApiResponse = {

@@ -51,6 +51,7 @@ export function PlanUpsertModal({
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [deleteConfirmOpen, setDeleteConfirmOpen] = useState(false);
+  const errorId = "plan-upsert-error";
 
   const initial = useMemo(
     () => ({
@@ -137,7 +138,10 @@ export function PlanUpsertModal({
   return (
     <>
       <Dialog open={open} onOpenChange={onOpenChange}>
-        <DialogContent className="max-w-3xl max-h-[90vh] overflow-y-auto bg-white text-[#4A5568]">
+        <DialogContent
+          className="max-w-3xl max-h-[90vh] overflow-y-auto bg-white text-[#4A5568]"
+          aria-busy={loading}
+        >
           <DialogHeader>
             <DialogTitle className="text-2xl">
               {isCreate ? "Nouveau plan" : plan?.name}
@@ -187,42 +191,67 @@ export function PlanUpsertModal({
           {(isCreate || isEditing) && (
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-4">
               <div className="space-y-2">
-                <label className="text-sm text-[#4A5568]">Nom</label>
+                <label htmlFor="plan-name" className="text-sm text-[#4A5568]">
+                  Nom
+                </label>
                 <Input
+                  id="plan-name"
                   value={name}
                   onChange={(e) => setName(e.target.value)}
                   placeholder="Premium"
                   className="bg-white"
+                  aria-invalid={!!error && !name.trim()}
+                  aria-describedby={error && !name.trim() ? errorId : undefined}
                 />
               </div>
               <div className="space-y-2">
-                <label className="text-sm text-[#4A5568]">Prix</label>
+                <label htmlFor="plan-price" className="text-sm text-[#4A5568]">
+                  Prix
+                </label>
                 <Input
+                  id="plan-price"
                   value={price}
                   onChange={(e) => setPrice(e.target.value)}
                   placeholder="19.99"
                   inputMode="decimal"
                   className="bg-white"
+                  aria-invalid={
+                    !Number.isFinite(Number(price)) || Number(price) < 0
+                  }
+                  aria-describedby={error ? errorId : undefined}
                 />
               </div>
               <div className="space-y-2 md:col-span-2">
-                <label className="text-sm text-[#4A5568]">
+                <label
+                  htmlFor="plan-features"
+                  className="text-sm text-[#4A5568]"
+                >
                   Fonctionnalités (1 par ligne)
                 </label>
                 <textarea
+                  id="plan-features"
                   value={featuresText}
                   onChange={(e) => setFeaturesText(e.target.value)}
                   placeholder={
                     "Accès illimité\nProgrammes personnalisés\nSupport coach"
                   }
                   className="w-full min-h-28 rounded-md border border-input bg-white px-3 py-2 text-sm shadow-xs outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px]"
+                  aria-describedby="plan-features-help"
                 />
+                <p id="plan-features-help" className="text-xs text-[#4A5568]">
+                  Saisissez une fonctionnalité par ligne ou séparez-les par des
+                  virgules.
+                </p>
               </div>
             </div>
           )}
 
           {error && (
-            <p className="text-sm text-[#FF887B] mt-2" role="alert">
+            <p
+              id={errorId}
+              className="text-sm text-[#FF887B] mt-2"
+              role="alert"
+            >
               {error}
             </p>
           )}
