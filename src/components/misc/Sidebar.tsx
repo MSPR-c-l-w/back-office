@@ -6,6 +6,7 @@ import { Routes } from "@/utils/types/globals";
 import { useAuth } from "@/hooks/useAuth";
 import { hasRequiredRole } from "@/utils/roles";
 import { useEffect, useRef, useState } from "react";
+import { ChevronDown, FolderCog } from "lucide-react";
 
 type SidebarProps = {
   id?: string;
@@ -24,6 +25,15 @@ export const Sidebar = ({
   const { user, loading } = useAuth();
   const sidebarRef = useRef<HTMLElement | null>(null);
   const [isDesktop, setIsDesktop] = useState(false);
+  const [managementOpen, setManagementOpen] = useState(true);
+
+  const managementLabels = new Set([
+    "Gestion Utilisateurs",
+    "Gestion Plans",
+    "Gestion Organisations",
+    "Gestion Exercices",
+    "Gestion Nutrition",
+  ]);
 
   useEffect(() => {
     const mediaQuery = window.matchMedia("(min-width: 1024px)");
@@ -60,6 +70,28 @@ export const Sidebar = ({
 
   if (loading) return <p className="p-4 text-[#4A5568]">Chargement...</p>;
 
+  const visibleRoutes = routes.filter(
+    (item) =>
+      !item.requiredRole ||
+      hasRequiredRole(user?.role?.name ?? null, item.requiredRole)
+  );
+
+  const managementRoutes = visibleRoutes.filter((r) =>
+    managementLabels.has(r.label)
+  );
+  const otherRoutes = visibleRoutes.filter(
+    (r) => !managementLabels.has(r.label)
+  );
+
+  const dashboardRoute = otherRoutes.find((r) => r.path === "/") ?? null;
+  const otherRoutesWithoutDashboard = otherRoutes.filter((r) => r.path !== "/");
+
+  const isManagementActive = managementRoutes.some((r) => {
+    return r.path === "/"
+      ? router.pathname === "/"
+      : router.pathname === r.path || router.pathname.startsWith(r.path + "/");
+  });
+
   return (
     <aside
       id={id}
@@ -83,38 +115,118 @@ export const Sidebar = ({
 
       <nav className="flex-1 p-4">
         <ul className="space-y-2" role="list">
-          {routes
-            .filter(
-              (item) =>
-                !item.requiredRole ||
-                hasRequiredRole(user?.role?.name ?? null, item.requiredRole)
-            )
-            .map((item) => {
-              const Icon = item.icon;
-              const isActive =
-                item.path === "/"
-                  ? router.pathname === "/"
-                  : router.pathname === item.path ||
-                    router.pathname.startsWith(item.path + "/");
-              return (
-                <li key={item.path}>
-                  <Link
-                    href={item.path}
-                    onClick={() => onClose?.()}
-                    className={cn(
-                      "inline-flex w-full items-center justify-start gap-3 rounded-md px-3 py-2 text-sm font-medium transition-colors",
-                      isActive
-                        ? "bg-[#4A90E2] text-white hover:bg-[#4A90E2]/90"
-                        : "text-[#4A5568] hover:bg-gray-100"
-                    )}
-                    aria-current={isActive ? "page" : undefined}
-                  >
-                    <Icon className="h-5 w-5 shrink-0" aria-hidden="true" />
-                    <span>{item.label}</span>
-                  </Link>
-                </li>
-              );
-            })}
+          {dashboardRoute ? (
+            <li key={dashboardRoute.path}>
+              <Link
+                href={dashboardRoute.path}
+                onClick={() => onClose?.()}
+                className={cn(
+                  "inline-flex w-full items-center justify-start gap-3 rounded-md px-3 py-2 text-sm font-medium transition-colors",
+                  router.pathname === "/"
+                    ? "bg-[#4A90E2] text-white hover:bg-[#4A90E2]/90"
+                    : "text-[#4A5568] hover:bg-gray-100"
+                )}
+                aria-current={router.pathname === "/" ? "page" : undefined}
+              >
+                <dashboardRoute.icon
+                  className="h-5 w-5 shrink-0"
+                  aria-hidden="true"
+                />
+                <span>{dashboardRoute.label}</span>
+              </Link>
+            </li>
+          ) : null}
+
+          {managementRoutes.length > 0 ? (
+            <li>
+              <button
+                type="button"
+                onClick={() => setManagementOpen((v) => !v)}
+                className={cn(
+                  "inline-flex w-full items-center justify-between rounded-md px-3 py-2 text-sm font-medium transition-colors",
+                  isManagementActive
+                    ? "bg-[#4A90E2] text-white hover:bg-[#4A90E2]/90"
+                    : "text-[#4A5568] hover:bg-gray-100"
+                )}
+                aria-expanded={managementOpen}
+                aria-controls="sidebar-management-group"
+              >
+                <span className="inline-flex items-center gap-3">
+                  <FolderCog className="h-5 w-5 shrink-0" aria-hidden="true" />
+                  <span>Gestion</span>
+                </span>
+                <ChevronDown
+                  className={cn(
+                    "h-4 w-4 transition-transform",
+                    managementOpen ? "rotate-180" : "rotate-0"
+                  )}
+                  aria-hidden="true"
+                />
+              </button>
+              <ul
+                id="sidebar-management-group"
+                role="list"
+                className={cn(
+                  "mt-1 space-y-1 pl-2",
+                  managementOpen ? "block" : "hidden"
+                )}
+              >
+                {managementRoutes.map((item) => {
+                  const Icon = item.icon;
+                  const isActive =
+                    item.path === "/"
+                      ? router.pathname === "/"
+                      : router.pathname === item.path ||
+                        router.pathname.startsWith(item.path + "/");
+                  return (
+                    <li key={item.path}>
+                      <Link
+                        href={item.path}
+                        onClick={() => onClose?.()}
+                        className={cn(
+                          "inline-flex w-full items-center justify-start gap-3 rounded-md px-3 py-2 text-sm font-medium transition-colors",
+                          isActive
+                            ? "bg-[#4A90E2] text-white hover:bg-[#4A90E2]/90"
+                            : "text-[#4A5568] hover:bg-gray-100"
+                        )}
+                        aria-current={isActive ? "page" : undefined}
+                      >
+                        <Icon className="h-5 w-5 shrink-0" aria-hidden="true" />
+                        <span>{item.label}</span>
+                      </Link>
+                    </li>
+                  );
+                })}
+              </ul>
+            </li>
+          ) : null}
+
+          {otherRoutesWithoutDashboard.map((item) => {
+            const Icon = item.icon;
+            const isActive =
+              item.path === "/"
+                ? router.pathname === "/"
+                : router.pathname === item.path ||
+                  router.pathname.startsWith(item.path + "/");
+            return (
+              <li key={item.path}>
+                <Link
+                  href={item.path}
+                  onClick={() => onClose?.()}
+                  className={cn(
+                    "inline-flex w-full items-center justify-start gap-3 rounded-md px-3 py-2 text-sm font-medium transition-colors",
+                    isActive
+                      ? "bg-[#4A90E2] text-white hover:bg-[#4A90E2]/90"
+                      : "text-[#4A5568] hover:bg-gray-100"
+                  )}
+                  aria-current={isActive ? "page" : undefined}
+                >
+                  <Icon className="h-5 w-5 shrink-0" aria-hidden="true" />
+                  <span>{item.label}</span>
+                </Link>
+              </li>
+            );
+          })}
         </ul>
       </nav>
 
