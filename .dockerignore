@@ -1,0 +1,41 @@
+# Contrôle de version
+**/.git
+**/.gitignore
+
+# Secrets — jamais dans l'image
+**/.env
+**/.env.*
+!**/env.template
+
+# Dépendances & artefacts de build (réinstallés / régénérés dans l'image)
+**/node_modules
+**/.next
+**/out
+**/build
+**/dist
+**/coverage
+
+# Docker (évite d'invalider le cache de contexte)
+**/Dockerfile*
+**/.dockerignore
+**/docker-compose*
+**/compose.y*ml
+
+# Outils & éditeurs
+**/.cursor
+**/.idea
+**/.vscode
+**/*.swp
+**/.github
+
+# Logs & divers
+**/npm-debug.log*
+**/yarn-debug.log*
+**/yarn-error.log*
+**/.pnpm-debug.log*
+**/.DS_Store
+**/*.tsbuildinfo
+
+# Documentation (inutile dans l'image)
+**/*.md
+AGENTS.md
